@@ -1,0 +1,14 @@
+@(message: String)
+
+@main("Welcome to DocDB") {
+
+<link rel="stylesheet" type="text/css" href="/assets/stylesheets/dropzone.css">
+<script src="/assets/javascripts/dropzone.js"></script>
+
+<h2>Dodaj własny plik</h2>
+
+
+<form method="POST" class="dropzone" action="@routes.Application.upload" enctype="multipart/form-data">
+
+</form>
+}

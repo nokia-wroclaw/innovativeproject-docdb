@@ -14,7 +14,9 @@ import views.html.*;
 public class Application extends Controller {
 
     private static String dirPath = "files/";
-
+    private FileParser fp = new FileParser();
+    
+    
 	public static Result index() {
         return ok(index.render("Your new application is ready."));
     }
@@ -25,19 +27,20 @@ public class Application extends Controller {
 		if (uploadedFile != null) {
 			String fileName = uploadedFile.getFilename();
 			String contentType = uploadedFile.getContentType(); 
-			System.out.println("przysłano plik typu:"+contentType);
+			System.out.println("file type:"+contentType);
 			File file = uploadedFile.getFile();
 
 			String tmpPath=dirPath + fileName;
 			
 			try {
 				Files.move(file, new File(tmpPath));
-				System.out.println("zapisano w:"+tmpPath);
+				System.out.println("saved in:"+tmpPath);
 			} catch (IOException e) {
-				System.out.println("nie udało się przenieśc pliku");
+				System.out.println("save failed");
 				e.printStackTrace();
 			}
 
+			fp.parseFile(file);
 
 			return ok(index.render("Plik "+fileName+" przesłano na serwer"));
 		} else {

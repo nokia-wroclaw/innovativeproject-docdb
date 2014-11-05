@@ -14,8 +14,8 @@ import views.html.*;
 public class Application extends Controller {
 
     private static String dirPath = "files/";
-    private FileParser fp = new FileParser();
-    
+//    private FileParser fp = new FileParser();
+//    
     
 	public static Result index() {
         return ok(index.render("Your new application is ready."));
@@ -40,7 +40,7 @@ public class Application extends Controller {
 				e.printStackTrace();
 			}
 
-			fp.parseFile(file);
+//			fp.parseFile(file);
 
 			return ok(index.render("Plik "+fileName+" przesłano na serwer"));
 		} else {

@@ -12,6 +12,9 @@ import org.elasticsearch.search.SearchHit;
 
 public class ElasticSearchManager {
 
+	/*
+	 * Method that put json file on server
+	 * */
 	public void insert(Client client, Map json, String index, String type) {
 
 		client.prepareIndex(index, type).setSource(json).execute().actionGet();
@@ -19,18 +22,22 @@ public class ElasticSearchManager {
 
 	public String[][] search(Client client, String content, String index,
 			String type) {
-
+		
+		//creating query to find out if any of files on server contain search value 
 		QueryBuilder qb = QueryBuilders.matchQuery("content", content);
-		// setFrom(0).setSize(60).setExplain(true)
+		//proceed search with query created above 
 		SearchResponse response = client.prepareSearch(index).setTypes(type)
 				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(qb) // Query
 				.execute().actionGet();
-
+		
+		//getting search result in form of array
 		SearchHit[] results = response.getHits().getHits();
 		int n = results.length;
 		if (n > 0) {
+			//two dimensional array that will contain all titles and paths to files that 
+			//satisfied search conditions. In following form:
+			//resultArray[i][0] = title;  resultArray[i][1] = path
 			String[][] resultArray = new String[n][2];
-
 			int iterator = 0;
 			for (SearchHit hit : results) {
 				Map<String, Object> result = hit.getSource();
@@ -39,11 +46,12 @@ public class ElasticSearchManager {
 				iterator++;
 			}
 			return resultArray;
-		} else {
+		} else {//if search is empty then return null
 			return null;
 		}
 	}
 
+	
 	public Map<String, Object> putJsonDocument(String[] json) {
 
 		Map<String, Object> jsonDocument = new HashMap<String, Object>();

@@ -3,7 +3,8 @@
 @main("Welcome to DocDB") {
 
 <link rel="stylesheet" type="text/css" href="/assets/stylesheets/dropzone.css">
-<script src="/assets/javascripts/dropzone.js"></script>
+<script src="/assets/javascripts/dropzone.js"/>
+<script type="text/javascript" charset="utf-8" src="@routes.Application.SearchScript()"></script>
 
 <h2>Dodaj własny plik</h2>
 
@@ -11,4 +12,7 @@
 <form method="POST" class="dropzone" action="@routes.Application.upload" enctype="multipart/form-data">
 
 </form>
+<input type="text" id="search">
+					<div id="resultDiv">
+					</div>
 }

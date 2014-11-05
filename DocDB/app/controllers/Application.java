@@ -3,6 +3,10 @@ package controllers;
 import java.io.File;
 import java.io.IOException;
 
+import model.ElasticSearchManager;
+import model.ElasticSearchServer;
+import model.FileParser;
+
 import com.google.common.io.Files;
 
 import play.*;
@@ -14,8 +18,9 @@ import views.html.*;
 public class Application extends Controller {
 
     private static String dirPath = "files/";
-//    private FileParser fp = new FileParser();
-//    
+    private static FileParser fp = new FileParser();
+    private static ElasticSearchServer elasticServer = new ElasticSearchServer();
+    private static ElasticSearchManager elasticSearch = new ElasticSearchManager();    
     
 	public static Result index() {
         return ok(index.render("Your new application is ready."));

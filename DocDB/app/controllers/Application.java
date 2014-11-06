@@ -6,7 +6,7 @@ import java.io.IOException;
 import model.ClientWebSocket;
 import model.ElasticSearchManager;
 import model.ElasticSearchServer;
-import model.FileParser;
+//import model.FileParser;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 
@@ -22,14 +22,15 @@ import views.html.*;
 import views.js.SearchScript;
 
 public class Application extends Controller {
-
     private static String dirPath = "files/";
     private static ElasticSearchServer elasticServer = new ElasticSearchServer();
     private static ElasticSearchManager elasticSearch = new ElasticSearchManager(); 
-    private static FileParser fp = new FileParser();   
+//    private static FileParser fp = new FileParser();   
     
 	public static Result index() {
-        return ok(index.render("Your new application is ready."));
+        Logger.info("service started");
+		return ok(index.render("Your new application is ready."));
+        
     }
 	
     
@@ -52,7 +53,7 @@ public class Application extends Controller {
 				e.printStackTrace();
 			}
 
-			fp.parseFile(file);
+//			fp.parseFile(file);
 
 			return ok(index.render("Plik "+fileName+" przesłano na serwer"));
 		} else {
@@ -61,7 +62,17 @@ public class Application extends Controller {
 		}
     }
 
-    
+
+	public static Result getFile(String path) {
+		File file = new File("files/"+path);
+		if(file.exists()){
+			response().setContentType("application/x-download");
+			response().setHeader("Content-disposition","attachment; filename="+path);
+			return ok(file);
+		}else{
+			return redirect(routes.Application.index());   
+		}
+	}
 
 	//websocket
 
@@ -75,8 +86,8 @@ public class Application extends Controller {
 
 			String user = session("connected");
 			public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
-
-				//mamy juz in i out
+				
+				//Starting webSocket handler
 				Akka.system().actorOf(Props.create(ClientWebSocket.class, in, out, user, elasticSearch, elasticServer));
 			}
 

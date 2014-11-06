@@ -40,16 +40,16 @@ public class Application extends Controller {
 		if (uploadedFile != null) {
 			String fileName = uploadedFile.getFilename();
 			String contentType = uploadedFile.getContentType(); 
-			System.out.println("file type:"+contentType);
+			Logger.info("file received. type:"+contentType);
 			File file = uploadedFile.getFile();
 
 			String tmpPath=dirPath + fileName;
 			
 			try {
 				Files.move(file, new File(tmpPath));
-				System.out.println("saved in:"+tmpPath);
+				Logger.info("file saved in:"+tmpPath);
 			} catch (IOException e) {
-				System.out.println("save failed");
+				Logger.info("file save failed");
 				e.printStackTrace();
 			}
 

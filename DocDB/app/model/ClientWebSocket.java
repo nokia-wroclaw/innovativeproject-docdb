@@ -31,7 +31,7 @@ public class ClientWebSocket extends UntypedActor{
 			} 
 		});
 
-		this.in.onClose(new Callback0() {								//socket sie zamknal‚
+		this.in.onClose(new Callback0() {								//socket sie zamkna
 			public void invoke() {
 				//stop actor
 				getContext().stop(getSelf());
@@ -50,20 +50,19 @@ public class ClientWebSocket extends UntypedActor{
 			if(request.equals("search")){
 
 				String pattern = event.get("pattern").asText();
-
+				 
 				String[][] searchResult = searchMan.search(elasticServer.client, pattern, "twitter", "tweet");
 
-
+				System.out.println(searchResult.length);
 				for(int i = 0 ; i < searchResult.length ; i ++){
-					sb.append("<span class=\"fileLine\">"
+						sb.append("<span class=\"fileLine\">"
 						+ searchResult[i][0]
 						+ searchResult[i][1]
-						+ searchResult[i][2]
-						+ searchResult[i][3]
 						+ "</span><br>");
+					
 				}
+				message.put("result", sb.toString());
 			}
-			message.put("result", sb.toString());
 		}
 		out.write(message);				//odpowiedz do websocketa (klienta)
 	}

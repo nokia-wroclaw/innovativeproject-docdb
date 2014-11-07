@@ -5,9 +5,13 @@ version := "1.0-SNAPSHOT"
 libraryDependencies ++= Seq(
   javaJdbc,
   javaEbean,
-  cache
+  cache,
+	"org.apache.tika" % "tika" % "0.3"
 )
 
-libraryDependencies += "org.apache.tika" % "tika" % "1.6"
+
+libraryDependencies += "org.elasticsearch" % "elasticsearch" % "1.4.0"
+
+libraryDependencies += "org.apache.tika" % "tika-parsers" % "1.6"
 
 play.Project.playJavaSettings

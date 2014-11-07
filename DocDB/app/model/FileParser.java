@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.apache.tika.*;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -43,7 +44,8 @@ public class FileParser {
 			ContentHandler handler = new BodyContentHandler();
 			Metadata metadata = new Metadata();
 
-			parser.parse(is, handler, metadata, new ParseContext());
+			parser.parse(is, handler, metadata); // do versii 0.3
+//			parser.parse(is, handler, metadata, new ParseContext());
 			String[] result = dataToArray(metadata, handler, fileName);
 			//ElasticSearchManager esm = new ElasticSearchManager();
 			//Map json = esm.putJsonDocument(result);

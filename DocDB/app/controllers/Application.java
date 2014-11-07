@@ -1,31 +1,28 @@
 package controllers;
 
 import java.io.File;
-import java.io.IOException;
 
 import model.ClientWebSocket;
 import model.ElasticSearchManager;
 import model.ElasticSearchServer;
-//import model.FileParser;
-import akka.actor.ActorRef;
+import model.FileHandler;
+import play.Logger;
+import play.libs.Akka;
+import play.mvc.Controller;
+import play.mvc.Http.MultipartFormData;
+import play.mvc.Http.MultipartFormData.FilePart;
+import play.mvc.Result;
+import play.mvc.WebSocket;
+import views.html.index;
+import views.js.SearchScript;
 import akka.actor.Props;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.io.Files;
-
-import play.*;
-import play.libs.Akka;
-import play.mvc.*;
-import play.mvc.Http.MultipartFormData;
-import play.mvc.Http.MultipartFormData.FilePart;
-import views.html.*;
-import views.js.SearchScript;
 
 public class Application extends Controller {
-    private static String dirPath = "files/";
     private static ElasticSearchServer elasticServer = new ElasticSearchServer();
     private static ElasticSearchManager elasticSearch = new ElasticSearchManager(); 
-//    private static FileParser fp = new FileParser();   
+    private static FileHandler fileHandler = new FileHandler();   
     
 	public static Result index() {
         Logger.info("service started");
@@ -38,24 +35,25 @@ public class Application extends Controller {
     	MultipartFormData body = request().body().asMultipartFormData();
 		FilePart uploadedFile = body.getFile("file");
 		if (uploadedFile != null) {
-			String fileName = uploadedFile.getFilename();
-			String contentType = uploadedFile.getContentType(); 
-			Logger.info("file received. type:"+contentType);
-			File file = uploadedFile.getFile();
-
-			String tmpPath=dirPath + fileName;
+//			String fileName = uploadedFile.getFilename();
+//			String contentType = uploadedFile.getContentType(); 
+			Logger.info("file received. Handling...");
+			fileHandler.handleFile(uploadedFile);
 			
-			try {
-				Files.move(file, new File(tmpPath));
-				Logger.info("file saved in:"+tmpPath);
-			} catch (IOException e) {
-				Logger.info("file save failed");
-				e.printStackTrace();
-			}
+//			File file = uploadedFile.getFile();
 
-//			fp.parseFile(file);
+//			String tmpPath=dirPath + fileName;
+			
+//			try {
+//				Files.move(file, new File(tmpPath));
+//				Logger.info("file saved in:"+tmpPath);
+//			} catch (IOException e) {
+//				Logger.info("file save failed");
+//				e.printStackTrace();
+//			}
+//
 
-			return ok(index.render("Plik "+fileName+" przesłano na serwer"));
+			return ok(index.render("Plik przesłano na serwer"));
 		} else {
 			flash("error", "Missing file");
 			return redirect(routes.Application.index());    

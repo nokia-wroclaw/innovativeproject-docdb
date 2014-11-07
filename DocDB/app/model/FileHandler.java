@@ -2,9 +2,10 @@ package model;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 import com.google.common.io.Files;
-
+import org.elasticsearch.client.Client;
 import play.Logger;
 import play.mvc.Http.MultipartFormData.FilePart;
 
@@ -19,7 +20,7 @@ public class FileHandler {
 		esm = new ElasticSearchManager();
 	}
 	
-	public void handleFile(FilePart uploadedFile) {
+	public void handleFile(FilePart uploadedFile, Client client ) {
 
 //		String fileName = uploadedFile.getFilename();
 //		String contentType = uploadedFile.getContentType(); 
@@ -38,7 +39,8 @@ public class FileHandler {
 		
 		String[] parsedFile = fileParser.parseFile(newFile);
 		if (parsedFile!=null){
-			esm.putJsonDocument(parsedFile);
+			Map json = esm.putJsonDocument(parsedFile);
+			esm.insert(client, json, "twitter", "tweet");
 			Logger.info("metadata saved");
 		}
 

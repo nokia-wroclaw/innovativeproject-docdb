@@ -27,7 +27,6 @@ public class Application extends Controller {
 	public static Result index() {
         Logger.info("service started");
 		return ok(index.render("Your new application is ready."));
-        
     }
 	
     
@@ -38,7 +37,8 @@ public class Application extends Controller {
 //			String fileName = uploadedFile.getFilename();
 //			String contentType = uploadedFile.getContentType(); 
 			Logger.info("file received. Handling...");
-			fileHandler.handleFile(uploadedFile);
+			
+			fileHandler.handleFile(uploadedFile, elasticServer.client);
 			
 //			File file = uploadedFile.getFile();
 

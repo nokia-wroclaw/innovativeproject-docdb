@@ -31,7 +31,7 @@ public class ClientWebSocket extends UntypedActor{
 			} 
 		});
 
-		this.in.onClose(new Callback0() {								//socket się zamknął
+		this.in.onClose(new Callback0() {								//socket sie zamknal�
 			public void invoke() {
 				//stop actor
 				getContext().stop(getSelf());
@@ -40,7 +40,7 @@ public class ClientWebSocket extends UntypedActor{
 	}
 
 
-	protected void checkEvent(JsonNode event) {						//obsługa eventów z websocketa
+	protected void checkEvent(JsonNode event) {						//obslug eventow z websocketa
 		ObjectNode message = Json.newObject();
 
 		if(event.has("request")){

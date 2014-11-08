@@ -13,14 +13,16 @@ public class FileHandler {
 
 	private FileParser fileParser;
 	private ElasticSearchManager esm;
+	private ElasticSearchServer elasticServer;
     private static String dirPath = "files/";
 	
-	public FileHandler() {
+	public FileHandler(ElasticSearchServer elasticServer) {
+		this.elasticServer = elasticServer;
 		fileParser = new FileParser();
 		esm = new ElasticSearchManager();
 	}
 	
-	public void handleFile(FilePart uploadedFile, Client client ) {
+	public void handleFile(FilePart uploadedFile) {
 
 //		String fileName = uploadedFile.getFilename();
 //		String contentType = uploadedFile.getContentType(); 
@@ -40,7 +42,7 @@ public class FileHandler {
 		String[] parsedFile = fileParser.parseFile(newFile);
 		if (parsedFile!=null){
 			Map json = esm.putJsonDocument(parsedFile);
-			esm.insert(client, json, "twitter", "tweet");
+			esm.insert(elasticServer.client, json, "twitter", "tweet");
 			Logger.info("metadata saved");
 		}
 

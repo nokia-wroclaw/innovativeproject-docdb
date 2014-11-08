@@ -13,15 +13,13 @@ public class ClientWebSocket extends UntypedActor{
 	
 	private WebSocket.In<JsonNode> in;
 	private WebSocket.Out<JsonNode> out;
-	private String username;
 	private ElasticSearchManager searchMan;
 	private ElasticSearchServer elasticServer;
 	
-	ClientWebSocket(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out, String username, ElasticSearchManager searchMan, ElasticSearchServer elasticServer){
+	ClientWebSocket(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out, ElasticSearchManager searchMan, ElasticSearchServer elasticServer){
 		System.out.println("New ClientWebSocket");
 		this.in = in;
 		this.out = out;
-		this.username = username;
 		this.searchMan = searchMan;
 		this.elasticServer = elasticServer;
 		

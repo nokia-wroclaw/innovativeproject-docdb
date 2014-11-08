@@ -17,7 +17,7 @@
 
 <div id="resultDiv" ng-app="" ng-controller="searchController">
 	<ul>
-		<li ng-repeat="result in results">
+		<li ng-repeat="result in results track by $index">
 			Plik <a href={{result.link}}>{{result.file}}</a>, waga {{result.size}}kB,
 		</li>
 	</ul>

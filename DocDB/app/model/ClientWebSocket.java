@@ -1,5 +1,6 @@
 package model;
 
+import play.Logger;
 import play.libs.F.Callback;
 import play.libs.F.Callback0;
 import play.libs.Json;
@@ -17,7 +18,7 @@ public class ClientWebSocket extends UntypedActor{
 	private ElasticSearchServer elasticServer;
 	
 	ClientWebSocket(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out, ElasticSearchManager searchMan, ElasticSearchServer elasticServer){
-		System.out.println("New ClientWebSocket");
+		Logger.info("New ClientWebSocket");
 		this.in = in;
 		this.out = out;
 		this.searchMan = searchMan;
@@ -40,6 +41,7 @@ public class ClientWebSocket extends UntypedActor{
 
 	protected void checkEvent(JsonNode event) {						//obslug eventow z websocketa
 		ObjectNode message = Json.newObject();
+		ObjectNode jsonResult = Json.newObject();
 
 		if(event.has("request")){
 			String request = event.get("request").asText();
@@ -48,16 +50,29 @@ public class ClientWebSocket extends UntypedActor{
 			if(request.equals("search")){
 
 				String pattern = event.get("pattern").asText();
-				 
+				Logger.info("searching for:"+pattern);
 				String[][] searchResult = searchMan.search(elasticServer.client, pattern, "twitter", "tweet");
+				if (searchResult==null){
+					Logger.info("No results");
+					out.write(message);
+					return;
+				}else{
+					Logger.info(String.valueOf(searchResult.length));
 
-				System.out.println(searchResult.length);
-				for(int i = 0 ; i < searchResult.length ; i ++){
-						sb.append("<span class=\"fileLine\">"
-						+ searchResult[i][0]
-						+ searchResult[i][1]
-						+ "</span><br>");
-					
+					sb.append("[");
+					for(int i = 0 ; i < searchResult.length ; i ++){
+						sb.append("{file:\""
+								+ searchResult[i][0]//get file name
+								+"\", size:\""
+								+ searchResult[i][1]//get file size
+								+"\", link:\""
+								+ searchResult[i][1]//get link to file (routes)
+								+ "\"}");
+						if (i< searchResult.length-1){
+							sb.append(",");
+						}
+					}
+					sb.append("]");
 				}
 				message.put("result", sb.toString());
 			}

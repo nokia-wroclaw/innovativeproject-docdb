@@ -38,13 +38,10 @@ public class FileHandler {
 			Logger.info("file save failed");
 			e.printStackTrace();
 		}
-
-		String[] parsedFile = fileParser.parseFile(newFile);
+		String size = newFile.length() / 1024 + "";
+		String[] parsedFile = fileParser.parseFile(newFile, newPath, size);
 		if (parsedFile != null) {
-			String size = newFile.length() / 1024 + "";
-			parsedFile[4] = size;
 			Map json = esm.putJsonDocument(parsedFile);
-
 			esm.insert(elasticServer.client, json, "twitter", "tweet");
 			Logger.info("metadata saved");
 		}

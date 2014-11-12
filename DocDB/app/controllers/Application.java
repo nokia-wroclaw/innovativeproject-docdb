@@ -51,7 +51,7 @@ public class Application extends Controller {
 //			}
 //
 
-			return ok(index.render("Plik przesłano na serwer"));
+			return ok(index.render("Plik przeslano na serwer"));
 		} else {
 			flash("error", "Missing file");
 			return redirect(routes.Application.index());    

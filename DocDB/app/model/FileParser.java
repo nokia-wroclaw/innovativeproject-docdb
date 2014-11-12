@@ -34,7 +34,7 @@ public class FileParser {
 	 * @param fileToParse
 	 *            file given by client, which have to be parsed
 	 */
-	public String[] parseFile(File fileToParse) {
+	public String[] parseFile(File fileToParse, String newPath, String size) {
 		InputStream is = null;
 
 		try {
@@ -45,10 +45,10 @@ public class FileParser {
 			Metadata metadata = new Metadata();
 
 			parser.parse(is, handler, metadata); // do versii 0.3
-//			parser.parse(is, handler, metadata, new ParseContext());
-			String[] result = dataToArray(metadata, handler, fileName);
-			//ElasticSearchManager esm = new ElasticSearchManager();
-			//Map json = esm.putJsonDocument(result);
+			// parser.parse(is, handler, metadata, new ParseContext());
+			String[] result = dataToArray(metadata, handler, fileName, newPath, size);
+			// ElasticSearchManager esm = new ElasticSearchManager();
+			// Map json = esm.putJsonDocument(result);
 			return result;
 
 		} catch (IOException e) {
@@ -82,19 +82,21 @@ public class FileParser {
 	 *            name of file used to creating temporary path of file
 	 * @return Array with all interesting data for us
 	 */
-	public String[] dataToArray(Metadata metadata, ContentHandler handler,String fileName) {
+	public String[] dataToArray(Metadata metadata, ContentHandler handler,
+			String fileName, String newPath, String size) {
 		String[] data = new String[5];
 		if (metadata.get("title").length() != 0)
 			data[0] = metadata.get("title");
-		else 
-			data [0] = fileName;
-		
+		else
+			data[0] = fileName;
+
 		if (metadata.get("Author").length() != 0)
 			data[1] = metadata.get("Author");
 		else
 			data[1] = "No_author";
-		data[2] = handler.toString();  //content of file
-		data[3] = "C:/" + fileName;
+		data[2] = handler.toString(); // content of file
+		data[3] = newPath;
+		data[4] = size;
 		return data;
 	}
 }

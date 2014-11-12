@@ -25,6 +25,7 @@ public class ElasticSearchManager {
 		
 		//creating query to find out if any of files on server contain search value 
 		QueryBuilder qb = QueryBuilders.matchQuery("content", content);
+		System.out.println(content);
 		//proceed search with query created above 
 		SearchResponse response = client.prepareSearch(index).setTypes(type)
 				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(qb) // Query
@@ -37,12 +38,13 @@ public class ElasticSearchManager {
 			//two dimensional array that will contain all titles and paths to files that 
 			//satisfied search conditions. In following form:
 			//resultArray[i][0] = title;  resultArray[i][1] = path
-			String[][] resultArray = new String[n][2];
+			String[][] resultArray = new String[n][3];
 			int iterator = 0;
 			for (SearchHit hit : results) {
 				Map<String, Object> result = hit.getSource();
 				resultArray[iterator][0] = (String) result.get("title");
 				resultArray[iterator][1] = (String) result.get("path");
+				resultArray[iterator][2] = (String) result.get("size");
 				iterator++;
 			}
 			return resultArray;
@@ -62,6 +64,7 @@ public class ElasticSearchManager {
 		jsonDocument.put("content", json[2]);
 		jsonDocument.put("path", json[3]);
 		jsonDocument.put("postDate", postDate);
+		jsonDocument.put("size", json[4]);
 
 		return jsonDocument;
 	}

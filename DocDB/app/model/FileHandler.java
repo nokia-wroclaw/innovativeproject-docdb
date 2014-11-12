@@ -14,39 +14,41 @@ public class FileHandler {
 	private FileParser fileParser;
 	private ElasticSearchManager esm;
 	private ElasticSearchServer elasticServer;
-    private static String dirPath = "files/";
-	
+	private static String dirPath = "files/";
+
 	public FileHandler(ElasticSearchServer elasticServer) {
 		this.elasticServer = elasticServer;
 		fileParser = new FileParser();
 		esm = new ElasticSearchManager();
 	}
-	
+
 	public void handleFile(FilePart uploadedFile) {
 
-//		String fileName = uploadedFile.getFilename();
-//		String contentType = uploadedFile.getContentType(); 
+		// String fileName = uploadedFile.getFilename();
+		// String contentType = uploadedFile.getContentType();
 
 		File file = uploadedFile.getFile();
-		String newPath=dirPath + uploadedFile.getFilename();
+		String newPath = dirPath + uploadedFile.getFilename();
 		File newFile = new File(newPath);
-		
+
 		try {
 			Files.move(file, newFile);
-			Logger.info("file saved in: "+newPath);
+			Logger.info("file saved in: " + newPath);
 		} catch (IOException e) {
 			Logger.info("file save failed");
 			e.printStackTrace();
 		}
-		
+
 		String[] parsedFile = fileParser.parseFile(newFile);
-		if (parsedFile!=null){
+		if (parsedFile != null) {
+			String size = newFile.length() / 1024 + "";
+			parsedFile[4] = size;
 			Map json = esm.putJsonDocument(parsedFile);
+
 			esm.insert(elasticServer.client, json, "twitter", "tweet");
 			Logger.info("metadata saved");
 		}
 
 	}
-
 
 }

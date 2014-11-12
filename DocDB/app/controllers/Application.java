@@ -80,7 +80,6 @@ public class Application extends Controller {
 	public static WebSocket<JsonNode> WebSocket() {
 		return new WebSocket<JsonNode>() {
 
-			String user = session("connected");
 			public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
 				
 				//Starting webSocket handler

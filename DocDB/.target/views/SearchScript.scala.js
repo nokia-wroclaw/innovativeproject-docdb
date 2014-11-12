@@ -8,7 +8,8 @@ $(document).ready(function(){
 
 		if( data.result != null){
 			//$("#resultDiv").html(data.result);
-		$('#resultDiv').scope().results = data.result;
+		$('#resultDiv').scope().results = eval(data.result);
+		$("#resultDiv").scope().$apply();
 		/*}else if ( data.loginAttempts != null){
 			$("#loginAttempts").html(data.loginAttempts);
 		}else if ( data.vipButton != null){

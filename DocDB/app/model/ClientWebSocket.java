@@ -41,7 +41,6 @@ public class ClientWebSocket extends UntypedActor{
 
 	protected void checkEvent(JsonNode event) {						//obslug eventow z websocketa
 		ObjectNode message = Json.newObject();
-		ObjectNode jsonResult = Json.newObject();
 
 		if(event.has("request")){
 			String request = event.get("request").asText();
@@ -64,7 +63,7 @@ public class ClientWebSocket extends UntypedActor{
 						sb.append("{file:\""
 								+ searchResult[i][0]//get file name
 								+"\", size:\""
-								+ searchResult[i][1]//get file size
+								+ searchResult[i][2]//get file size
 								+"\", link:\""
 								+ searchResult[i][1]//get link to file (routes)
 								+ "\"}");

@@ -11,7 +11,6 @@ import org.apache.tika.*;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
-import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.ContentHandler;
@@ -34,7 +33,7 @@ public class FileParser {
 	 * @param fileToParse
 	 *            file given by client, which have to be parsed
 	 */
-	public String[] parseFile(File fileToParse, String newPath, String size) {
+	public String[] parseFile(File fileToParse, String newPath) {
 		InputStream is = null;
 
 		try {
@@ -46,6 +45,7 @@ public class FileParser {
 
 			parser.parse(is, handler, metadata); // do versii 0.3
 			// parser.parse(is, handler, metadata, new ParseContext());
+			String size = fileToParse.length() / 1024 + "";
 			String[] result = dataToArray(metadata, handler, fileName, newPath, size);
 			// ElasticSearchManager esm = new ElasticSearchManager();
 			// Map json = esm.putJsonDocument(result);
@@ -85,12 +85,12 @@ public class FileParser {
 	public String[] dataToArray(Metadata metadata, ContentHandler handler,
 			String fileName, String newPath, String size) {
 		String[] data = new String[5];
-		if (metadata.get("title").length() != 0)
+		if (metadata.get("title") != null)
 			data[0] = metadata.get("title");
 		else
 			data[0] = fileName;
 
-		if (metadata.get("Author").length() != 0)
+		if (metadata.get("Author") != null)
 			data[1] = metadata.get("Author");
 		else
 			data[1] = "No_author";

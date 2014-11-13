@@ -64,7 +64,7 @@ public class ClientWebSocket extends UntypedActor{
 								+ searchResult[i][0]//get file name
 								+"\", size:\""
 								+ searchResult[i][2]//get file size
-								+"\", link:\""
+								+"\", link:\"Download/"
 								+ searchResult[i][1]//get link to file (routes)
 								+ "\"}");
 						if (i< searchResult.length-1){

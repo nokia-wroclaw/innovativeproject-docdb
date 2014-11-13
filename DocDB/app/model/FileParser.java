@@ -46,7 +46,7 @@ public class FileParser {
 			parser.parse(is, handler, metadata); // do versii 0.3
 			// parser.parse(is, handler, metadata, new ParseContext());
 			String size = fileToParse.length() / 1024 + "";
-			String[] result = dataToArray(metadata, handler, fileName, newPath, size);
+			String[] result = dataToArray(metadata, handler, fileName, fileName, size);//TODO change parameters (2x filename?)
 			// ElasticSearchManager esm = new ElasticSearchManager();
 			// Map json = esm.putJsonDocument(result);
 			return result;

@@ -56,7 +56,7 @@ public class ClientWebSocket extends UntypedActor{
 					out.write(message);
 					return;
 				}else{
-					Logger.info(String.valueOf(searchResult.length));
+					Logger.info(String.valueOf(searchResult.length)+" found");
 
 					sb.append("[");
 					for(int i = 0 ; i < searchResult.length ; i ++){

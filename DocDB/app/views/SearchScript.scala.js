@@ -20,7 +20,6 @@ $(document).ready(function(){
 
     webSocket.onmessage = receiveEvent;
 
-	// --------------------------------- M O J E 	F U N K C J E ----------------------------------------
 /* jak wysylac do websocketa
 		var x = 0;
 		webSocket.send(JSON.stringify({"action": "ChangeCards", "cards": x}));
@@ -29,5 +28,16 @@ $(document).ready(function(){
 	$("#search").keyup(function(){
 		webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val()}));
 	});
+
+	$("h2").css("cursor","pointer");
+
+	$("#content1").prev("h2").click(function(){
+		$("#content1").slideToggle(300);
+	});
+	$("#content2").prev("h2").click(function(){
+		$("#content2").slideToggle(300);
+	});
+
+
 
 });

@@ -53,8 +53,7 @@ public class ClientWebSocket extends UntypedActor{
 				String[][] searchResult = searchMan.search(elasticServer.client, pattern, "twitter", "tweet");
 				if (searchResult==null){
 					Logger.info("No results");
-					out.write(message);
-					return;
+					message.put("result", "{}");
 				}else{
 					Logger.info(String.valueOf(searchResult.length)+" found");
 
@@ -72,8 +71,8 @@ public class ClientWebSocket extends UntypedActor{
 						}
 					}
 					sb.append("]");
+					message.put("result", sb.toString());
 				}
-				message.put("result", sb.toString());
 			}
 		}
 		out.write(message);				//odpowiedz do websocketa (klienta)

@@ -45,6 +45,7 @@ public class ElasticSearchManager {
 				resultArray[iterator][0] = (String) result.get("title");
 				resultArray[iterator][1] = (String) result.get("path");
 				resultArray[iterator][2] = (String) result.get("size");
+				resultArray[iterator][3] = (String) result.get("content");
 				iterator++;
 			}
 			return resultArray;

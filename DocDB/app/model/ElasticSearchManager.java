@@ -18,8 +18,10 @@ public class ElasticSearchManager {
 	 * Method that put json file on server
 	 */
 	public void insert(Client client, Map json, String index, String type) {
-
-		client.prepareIndex(index, type).setSource(json).execute().actionGet();
+		if(client != null && json != null && index != null && type != null)
+			client.prepareIndex(index, type).setSource(json).execute().actionGet();
+		else
+			System.out.println("Problem with insert()");
 	}
 
 	public String[][] search(Client client, String content, String index,
@@ -65,17 +67,19 @@ public class ElasticSearchManager {
 	}
 
 	public Map<String, Object> putJsonDocument(String[] json) {
+		if (json != null) {
+			Map<String, Object> jsonDocument = new HashMap<String, Object>();
+			Date postDate = new Date();
 
-		Map<String, Object> jsonDocument = new HashMap<String, Object>();
-		Date postDate = new Date();
+			jsonDocument.put("title", json[0]);
+			jsonDocument.put("author", json[1]);
+			jsonDocument.put("content", json[2]);
+			jsonDocument.put("path", json[3]);
+			jsonDocument.put("postDate", postDate);
+			jsonDocument.put("size", json[4]);
 
-		jsonDocument.put("title", json[0]);
-		jsonDocument.put("author", json[1]);
-		jsonDocument.put("content", json[2]);
-		jsonDocument.put("path", json[3]);
-		jsonDocument.put("postDate", postDate);
-		jsonDocument.put("size", json[4]);
-
-		return jsonDocument;
+			return jsonDocument;
+		} else
+			return null;
 	}
 }

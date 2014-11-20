@@ -5,8 +5,8 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 
 public class ElasticSearchServer {
-	Node node;
-	Client client;
+	public Node node;
+	public Client client;
 
 	// on startup
 	public ElasticSearchServer() {

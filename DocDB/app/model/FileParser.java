@@ -91,7 +91,7 @@ public class FileParser {
 		if (metadata.get("title") != null && metadata.get("title").length() != 0)
 			data[0] = metadata.get("title");
 		else
-			data[0] = ("No title");
+			data[0] = (fileName);
 
 		if (metadata.get("Author") != null&& metadata.get("Author").length() != 0)
 			data[1] = metadata.get("Author");

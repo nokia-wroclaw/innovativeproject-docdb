@@ -17,10 +17,10 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
- * Purpose of this class is taking file from client, parsing it with Tika
- * Apache, then giving the result to elastic search database
+ * Purpose of this class is taking file from File handler, parsing it with Tika
+ * Apache, then giving back the result to handler
  * 
- * @author s.majkrzak
+ * @author a. dyngosz. s.majkrzak, m.wierzbicki
  * 
  */
 public class FileParser {
@@ -28,7 +28,7 @@ public class FileParser {
 	/**
 	 * With using Tika Apache, this method takes all data from file, handle it
 	 * in Metadata class object and BodyContentHandler class object, gives it to
-	 * dataToArray method, and sends final result to Elastic Search database
+	 * dataToArray method, and return final result to File Handler
 	 * 
 	 * @param fileToParse
 	 *            file given by client, which have to be parsed
@@ -40,13 +40,14 @@ public class FileParser {
 			String fileName = fileToParse.getName();
 			is = new BufferedInputStream(new FileInputStream(fileToParse));
 			Parser parser = new AutoDetectParser();
-			ContentHandler handler = new BodyContentHandler();
-			Metadata metadata = new Metadata();
+			ContentHandler handler = new BodyContentHandler();	//it keeps content of document
+			Metadata metadata = new Metadata();		//all metadata stored in file
 
 			parser.parse(is, handler, metadata); // do versii 0.3
 			// parser.parse(is, handler, metadata, new ParseContext());
 			String size = fileToParse.length() / 1024 + "";
-			String[] result = dataToArray(metadata, handler, fileName, fileName, size);//TODO change parameters (2x filename?)
+			String [] result = dataToArray(metadata, handler, fileName, size);
+			//String[] result = dataToArray(metadata, handler, fileName, fileName, size);//TODO change parameters (2x filename?)
 			// ElasticSearchManager esm = new ElasticSearchManager();
 			// Map json = esm.putJsonDocument(result);
 			return result;
@@ -80,10 +81,12 @@ public class FileParser {
 	 *            object with content of file
 	 * @param fileName
 	 *            name of file used to creating temporary path of file
+	 * @param size
+	 * 			  size of given file in kb
 	 * @return Array with all interesting data for us
 	 */
 	public String[] dataToArray(Metadata metadata, ContentHandler handler,
-			String fileName, String newPath, String size) {
+			String fileName, String size) {
 		String[] data = new String[5];
 		if (metadata.get("title") != null)
 			data[0] = metadata.get("title");
@@ -95,7 +98,7 @@ public class FileParser {
 		else
 			data[1] = "No_author";
 		data[2] = handler.toString(); // content of file
-		data[3] = newPath;
+		data[3] = fileName;
 		data[4] = size;
 		return data;
 	}

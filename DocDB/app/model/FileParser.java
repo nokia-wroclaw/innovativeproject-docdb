@@ -88,18 +88,24 @@ public class FileParser {
 	public String[] dataToArray(Metadata metadata, ContentHandler handler,
 			String fileName, String size) {
 		String[] data = new String[5];
-		if (metadata.get("title") != null)
+		if (metadata.get("title") != null && metadata.get("title").length() != 0)
 			data[0] = metadata.get("title");
 		else
-			data[0] = fileName;
+			data[0] = ("No title");
 
-		if (metadata.get("Author") != null)
+		if (metadata.get("Author") != null&& metadata.get("Author").length() != 0)
 			data[1] = metadata.get("Author");
 		else
 			data[1] = "No_author";
 		data[2] = handler.toString(); // content of file
 		data[3] = fileName;
 		data[4] = size;
+/*		for (int i = 0; i < 5; i++) {
+			if (i == 2) {
+				continue;
+			}
+			System.out.println(data[i]);
+		}*/
 		return data;
 	}
 }

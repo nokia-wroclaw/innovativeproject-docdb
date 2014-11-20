@@ -48,7 +48,7 @@ public class FileHandler {
 			Logger.info("file save failed");
 			e.printStackTrace();
 		}
-		String[] parsedFile = fileParser.parseFile(newFile, newPath);
+		String[] parsedFile = fileParser.parseFile(newFile);
 		if (parsedFile != null) {
 			Map json = esm.putJsonDocument(parsedFile);
 			esm.insert(elasticServer.client, json, "twitter", "tweet");

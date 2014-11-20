@@ -33,7 +33,7 @@ public class FileParser {
 	 * @param fileToParse
 	 *            file given by client, which have to be parsed
 	 */
-	public String[] parseFile(File fileToParse, String newPath) {
+	public String[] parseFile(File fileToParse) {
 		InputStream is = null;
 
 		try {

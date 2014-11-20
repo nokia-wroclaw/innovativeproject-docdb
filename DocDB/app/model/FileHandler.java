@@ -8,7 +8,10 @@ import com.google.common.io.Files;
 import org.elasticsearch.client.Client;
 import play.Logger;
 import play.mvc.Http.MultipartFormData.FilePart;
-
+/**
+ * Class control flow of file during uploading, parsing and sending it to elastic search database.
+ * @author a.dyngosz, s.majkrzak. m. wierzbicki
+ */
 public class FileHandler {
 
 	private FileParser fileParser;
@@ -22,6 +25,13 @@ public class FileHandler {
 		esm = new ElasticSearchManager();
 	}
 
+	/**
+	 * ClientWebSocket invoke this method, when user wants to send files to server. It takes care of giving it to Tika Apache
+	 * parser, getting back array with content and metadata. Next, method receive the map (requiered for Elastic search) and 
+	 * send it to ES server
+	 * 
+	 * @param uploadedFile file given by user to upload
+	 */
 	public void handleFile(FilePart uploadedFile) {
 
 		// String fileName = uploadedFile.getFilename();

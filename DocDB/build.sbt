@@ -14,4 +14,6 @@ libraryDependencies += "org.elasticsearch" % "elasticsearch" % "1.4.0"
 
 libraryDependencies += "org.apache.tika" % "tika-parsers" % "1.6"
 
+libraryDependencies += "junit" % "junit" % "4.11"
+
 play.Project.playJavaSettings

@@ -62,7 +62,7 @@ public class ElasticSearchManagerTest {
 
 		assertTrue(manager.search(server.client, "nothing", "test", "testing") != null);
 	}
-	@Ignore
+	
 	@Test
 	public void WrongDataSearchTest() {
 		

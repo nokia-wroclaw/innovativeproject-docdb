@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.tika.*;
@@ -33,7 +35,7 @@ public class FileParser {
 	 * @param fileToParse
 	 *            file given by client, which have to be parsed
 	 */
-	public String[] parseFile(File fileToParse) {
+	public ArrayList <String> parseFile(File fileToParse, String newPath) {
 		InputStream is = null;
 
 		try {
@@ -46,8 +48,8 @@ public class FileParser {
 			parser.parse(is, handler, metadata); // do versii 0.3
 			// parser.parse(is, handler, metadata, new ParseContext());
 			String size = fileToParse.length() / 1024 + "";
-			String [] result = dataToArray(metadata, handler, fileName, size);
-			//String[] result = dataToArray(metadata, handler, fileName, fileName, size);//TODO change parameters (2x filename?)
+			ArrayList <String> result = dataToArray(metadata, handler, fileName, size);
+			//String[] result = dataToArray(metadata, handler, fileName, fileName, size);//
 			// ElasticSearchManager esm = new ElasticSearchManager();
 			// Map json = esm.putJsonDocument(result);
 			return result;
@@ -85,21 +87,22 @@ public class FileParser {
 	 * 			  size of given file in kb
 	 * @return Array with all interesting data for us
 	 */
-	public String[] dataToArray(Metadata metadata, ContentHandler handler,
+	public ArrayList <String> dataToArray(Metadata metadata, ContentHandler handler,
 			String fileName, String size) {
-		String[] data = new String[5];
+		ArrayList <String> data = new ArrayList <String> ();
+		//String[] data = new String[5];
 		if (metadata.get("title") != null && metadata.get("title").length() != 0)
-			data[0] = metadata.get("title");
+			data.add(metadata.get("title"));
 		else
-			data[0] = (fileName);
+			data.add(fileName);
 
 		if (metadata.get("Author") != null&& metadata.get("Author").length() != 0)
-			data[1] = metadata.get("Author");
+			data.add(metadata.get("Author"));
 		else
-			data[1] = "No_author";
-		data[2] = handler.toString(); // content of file
-		data[3] = fileName;
-		data[4] = size;
+			data.add("No_author");
+		data.add(handler.toString()); // content of file
+		data.add(fileName);
+		data.add(size);
 /*		for (int i = 0; i < 5; i++) {
 			if (i == 2) {
 				continue;

@@ -2,10 +2,13 @@ package model;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.common.io.Files;
+
 import org.elasticsearch.client.Client;
+
 import play.Logger;
 import play.mvc.Http.MultipartFormData.FilePart;
 /**
@@ -32,7 +35,7 @@ public class FileHandler {
 	 * 
 	 * @param uploadedFile file given by user to upload
 	 */
-	public void handleFile(FilePart uploadedFile) {
+	public void handleFile(FilePart uploadedFile, ArrayList <String> tagsArray) {
 
 		// String fileName = uploadedFile.getFilename();
 		// String contentType = uploadedFile.getContentType();
@@ -48,7 +51,8 @@ public class FileHandler {
 			Logger.info("file save failed");
 			e.printStackTrace();
 		}
-		String[] parsedFile = fileParser.parseFile(newFile);
+		ArrayList <String> parsedFile = fileParser.parseFile(newFile, newPath);
+		parsedFile.addAll(tagsArray);
 		if (parsedFile != null) {
 			Map json = esm.putJsonDocument(parsedFile);
 			esm.insert(elasticServer.client, json, "twitter", "tweet");

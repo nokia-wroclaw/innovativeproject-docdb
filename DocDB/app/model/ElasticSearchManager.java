@@ -45,8 +45,8 @@ public class ElasticSearchManager {
 				.execute().actionGet();
 
 		// getting search result in form of array
-		SearchHit[] results = response.getHits().getHits();
-		int n = results.length;
+		SearchHit[] resultsArray = response.getHits().getHits();
+		int n = resultsArray.length;
 		if (n > 0) {
 			// two dimensional array that will contain all titles and paths
 			// to
@@ -55,13 +55,15 @@ public class ElasticSearchManager {
 			// resultArray[i][0] = title; resultArray[i][1] = path
 			String[][] resultArray = new String[n][4];
 			int iterator = 0;
-			for (SearchHit hit : results) {
+			for (SearchHit hit : resultsArray) {
 				Map<String, Object> result = hit.getSource();
 				resultArray[iterator][0] = (String) result.get("title");
 				resultArray[iterator][1] = (String) result.get("path");
 				resultArray[iterator][2] = (String) result.get("size");
 				resultArray[iterator][3] = (String) result.get("content");
+				System.out.println(hit.getId());
 				iterator++;
+
 			}
 			return resultArray;
 

@@ -2,6 +2,9 @@ package controllers;
 
 import java.io.File;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import model.ClientWebSocket;
 import model.ElasticSearchManager;
 import model.ElasticSearchServer;
@@ -35,8 +38,10 @@ public class Application extends Controller {
 		FilePart uploadedFile = body.getFile("file");
 		if (uploadedFile != null) {
 			Logger.info("file received. Handling...");
-			
-			fileHandler.handleFile(uploadedFile);
+			//teraz tylko sztucznie dodam tagi, coby sie kompilowalo
+			ArrayList <String> tags = new ArrayList<String>();
+			tags.add("file");
+			fileHandler.handleFile(uploadedFile, tags);
 			
 //			File file = uploadedFile.getFile();
 

@@ -1,6 +1,8 @@
 package model;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +10,10 @@ import java.util.Map;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+
+import static org.elasticsearch.common.xcontent.XContentFactory.*;
+
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -18,7 +24,7 @@ public class ElasticSearchManager {
 	/*
 	 * Method that put json file on server
 	 */
-	public void insert(Client client, Map json, String index, String type) {
+	public void insert(Client client, XContentBuilder json, String index, String type) {
 		if (client != null && json != null && index != null && type != null)
 			client.prepareIndex(index, type).setSource(json).execute()
 					.actionGet();
@@ -31,7 +37,7 @@ public class ElasticSearchManager {
 
 		// creating query to find out if any of files on server contain search
 		// value
-		
+
 		QueryBuilder qb = QueryBuilders.matchQuery("content", content);
 		String[] fieldNames = { "title", "content", "author", "size" }; // "postDate",
 																		// "size"};
@@ -49,11 +55,9 @@ public class ElasticSearchManager {
 		int n = resultsArray.length;
 		if (n > 0) {
 			// two dimensional array that will contain all titles and paths
-			// to
-			// files that
-			// satisfied search conditions. In following form:
+			// to files that satisfied search conditions. In following form:
 			// resultArray[i][0] = title; resultArray[i][1] = path
-			String[][] resultArray = new String[n][4];
+			String[][] resultArray = new String[n][5];
 			int iterator = 0;
 			for (SearchHit hit : resultsArray) {
 				Map<String, Object> result = hit.getSource();
@@ -61,7 +65,10 @@ public class ElasticSearchManager {
 				resultArray[iterator][1] = (String) result.get("path");
 				resultArray[iterator][2] = (String) result.get("size");
 				resultArray[iterator][3] = (String) result.get("content");
-				System.out.println(hit.getId());
+				//problem is that result.get("tags") is a ArrayList of String
+				// System.out.println(hit.getId());
+				 
+				//System.out.println(result.get("tags"));
 				iterator++;
 
 			}
@@ -73,19 +80,27 @@ public class ElasticSearchManager {
 
 	}
 
-	public Map<String, Object> putJsonDocument(ArrayList<String> parsedFile) {
+	public XContentBuilder putJsonDocument(ArrayList<String> parsedFile,
+			ArrayList<String> tags) {
 		if (parsedFile.isEmpty() == false) {
-			Map<String, Object> jsonDocument = new HashMap<String, Object>();
-			Date postDate = new Date();
+			XContentBuilder builder = null;
+			try {
+				Date postDate = new Date();
 
-			jsonDocument.put("title", parsedFile.get(0));
-			jsonDocument.put("author", parsedFile.get(1));
-			jsonDocument.put("content", parsedFile.get(2));
-			jsonDocument.put("path", parsedFile.get(3));
-			jsonDocument.put("postDate", parsedFile.get(4));
-			jsonDocument.put("size", parsedFile.get(5));
-
-			return jsonDocument;
+				builder = jsonBuilder().startObject()
+						.field("title", parsedFile.get(0))
+						.field("author", parsedFile.get(1))
+						.field("content", parsedFile.get(2))
+						.field("path", parsedFile.get(3))
+						.field("size", parsedFile.get(4))
+						.field("postDate", postDate)
+						.field("tags", tags)
+						.endObject();
+				//System.out.println(builder.string());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return builder;
 		} else
 			return null;
 	}

@@ -8,6 +8,7 @@ import java.util.Map;
 import com.google.common.io.Files;
 
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 
 import play.Logger;
 import play.mvc.Http.MultipartFormData.FilePart;
@@ -52,9 +53,8 @@ public class FileHandler {
 			e.printStackTrace();
 		}
 		ArrayList <String> parsedFile = fileParser.parseFile(newFile, newPath);
-		parsedFile.addAll(tagsArray);
 		if (parsedFile != null) {
-			Map json = esm.putJsonDocument(parsedFile);
+			XContentBuilder json = esm.putJsonDocument(parsedFile, tagsArray);
 			esm.insert(elasticServer.client, json, "twitter", "tweet");
 			Logger.info("metadata saved");
 		}

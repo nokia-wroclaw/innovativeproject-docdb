@@ -11,41 +11,44 @@ public class FileParserTest {
 	static File f;
 	static File f_2;
 	static FileParser fp;
-	static String [] testArray;
+	static String [] testArrayWstep;
+	static String [] testArrayAnaliza;
 	
 	@BeforeClass
 	public static void setUp() {
 		f = new File ("Wstep.pdf");
+		f_2 = new File ("AnalizaNumeryczna.pdf")
 		fp = new FileParser();
-		testArray = fp.parseFile(f);
+		testArrayWstep = fp.parseFile(f);
+		testArrayAnaliza = fp.parseFile(f_2);
 		
 	}
 	
 	@Test
 	public static void titleNotFoundTest() {
 		
-		assertFalse(f.getName().equals(testArray[0]));
+		assertFalse(f.getName().equals(testArrayWstep[0]));
 	}
 	
 	@Test
 	public static void authorNotFoundTest() {
-		assertTrue(testArray[1].equals("No_author"));
+		assertTrue(testArrayWstep[1].equals("No_author"));
 	}
 	
 	@Test
 	public static void sizeOfFileTest() {
-		assertTrue(new Integer(1771).equals(Integer.valueOf(testArray[4])));
+		assertTrue(new Integer(1771).equals(Integer.valueOf(testArrayWstep[4])));
 	}
 	
 	@Test
 	public static void titleFoundTest() {
 		
-		assertTrue(f_2.getName().equals(testArray[0]));
+		assertTrue(f_2.getName().equals(testArrayAnaliza[0]));
 	}
 	
 	@Test
 	public static void authorFoundTest() {
-		assertFalse(testArray[1].equals("No_author"));
+		assertFalse(testArrayAnaliza[1].equals("No_author"));
 	}
 	
 	

@@ -73,7 +73,7 @@ public class ClientWebSocket extends UntypedActor{
 						 * searchResult.get(i).get(4) - first tag, and so on
 						 * quantity of tags searchResult.get(i).size() - 4
 						 * */
-						//System.out.println(searchResult.get(i));
+						//System.out.println(searchResult.get(i).get(4));
 						if (i< searchResult.size()-1){
 							sb.append(",");
 						}

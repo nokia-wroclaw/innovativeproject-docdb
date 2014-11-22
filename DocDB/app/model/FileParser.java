@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,14 +47,14 @@ public class FileParser {
 			Parser parser = new AutoDetectParser();
 			ContentHandler handler = new BodyContentHandler();	//it keeps content of document
 			Metadata metadata = new Metadata();		//all metadata stored in file
-
+			
 			parser.parse(is, handler, metadata); // do versii 0.3
 			// parser.parse(is, handler, metadata, new ParseContext());
 			String size = fileToParse.length() / 1024 + "";
 			ArrayList <String> result = dataToArray(metadata, handler, fileName, size);
-			//String[] result = dataToArray(metadata, handler, fileName, fileName, size);//
-			// ElasticSearchManager esm = new ElasticSearchManager();
-			// Map json = esm.putJsonDocument(result);
+			Path path = Paths.get(newPath); 
+			result.add("#"+Files.probeContentType(path));
+			
 			return result;
 
 		} catch (IOException e) {
@@ -103,7 +106,7 @@ public class FileParser {
 		data.add(handler.toString()); // content of file
 		data.add(fileName);
 		data.add(size);
-/*		for (int i = 0; i < 5; i++) {
+		/*for (int i = 0; i < 5; i++) {
 			if (i == 2) {
 				continue;
 			}

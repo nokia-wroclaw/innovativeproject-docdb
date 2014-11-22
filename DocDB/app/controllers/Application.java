@@ -40,9 +40,6 @@ public class Application extends Controller {
 			Logger.info("file received. Handling...");
 			//teraz tylko sztucznie dodam tagi, coby sie kompilowalo
 			ArrayList <String> tags = new ArrayList<String>();
-			tags.add("file");
-			tags.add("hash");
-			tags.add("wierzba!");
 			fileHandler.handleFile(uploadedFile, tags);
 			
 //			File file = uploadedFile.getFile();

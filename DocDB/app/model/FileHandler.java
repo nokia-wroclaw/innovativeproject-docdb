@@ -54,6 +54,11 @@ public class FileHandler {
 		}
 		ArrayList <String> parsedFile = fileParser.parseFile(newFile, newPath);
 		if (parsedFile != null) {
+			//musze usunac tagi dotyczace plikow z parsedFile i
+			//przeniesc je do tagsArray
+			String temp = parsedFile.get(parsedFile.size() - 1);
+			parsedFile.remove(parsedFile.size() - 1);
+			tagsArray.add(temp);
 			XContentBuilder json = esm.putJsonDocument(parsedFile, tagsArray);
 			esm.insert(elasticServer.client, json, "twitter", "tweet");
 			Logger.info("metadata saved");

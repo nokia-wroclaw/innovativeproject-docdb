@@ -24,7 +24,8 @@ public class ElasticSearchManager {
 	/*
 	 * Method that put json file on server
 	 */
-	public void insert(Client client, XContentBuilder json, String index, String type) {
+	public void insert(Client client, XContentBuilder json, String index,
+			String type) {
 		if (client != null && json != null && index != null && type != null)
 			client.prepareIndex(index, type).setSource(json).execute()
 					.actionGet();
@@ -32,8 +33,8 @@ public class ElasticSearchManager {
 			System.out.println("Problem with insert()");
 	}
 
-	public String[][] search(Client client, String content, String index,
-			String type) {
+	public ArrayList<ArrayList<String>> search(Client client, String content,
+			String index, String type) {
 
 		// creating query to find out if any of files on server contain search
 		// value
@@ -57,27 +58,25 @@ public class ElasticSearchManager {
 			// two dimensional array that will contain all titles and paths
 			// to files that satisfied search conditions. In following form:
 			// resultArray[i][0] = title; resultArray[i][1] = path
-			String[][] resultArray = new String[n][5];
-			int iterator = 0;
+
+			ArrayList<ArrayList<String>> resultArray = new ArrayList<ArrayList<String>>();
+
 			for (SearchHit hit : resultsArray) {
 				Map<String, Object> result = hit.getSource();
-				resultArray[iterator][0] = (String) result.get("title");
-				resultArray[iterator][1] = (String) result.get("path");
-				resultArray[iterator][2] = (String) result.get("size");
-				resultArray[iterator][3] = (String) result.get("content");
-				//problem is that result.get("tags") is a ArrayList of String
+				ArrayList<String> temp = new ArrayList<String>();
+				temp.add((String) result.get("title"));
+				temp.add((String) result.get("path"));
+				temp.add((String) result.get("size"));
+				temp.add((String) result.get("content"));
+				temp.addAll((ArrayList) result.get("tags"));
+				resultArray.add(temp);
 				// System.out.println(hit.getId());
-				 
-				//System.out.println(result.get("tags"));
-				iterator++;
-
+				// System.out.println(result.get("tags"));
 			}
 			return resultArray;
-
 		} else
 			// if search is empty then return null
 			return null;
-
 	}
 
 	public XContentBuilder putJsonDocument(ArrayList<String> parsedFile,
@@ -94,9 +93,8 @@ public class ElasticSearchManager {
 						.field("path", parsedFile.get(3))
 						.field("size", parsedFile.get(4))
 						.field("postDate", postDate)
-						.field("tags", tags)
-						.endObject();
-				//System.out.println(builder.string());
+						.field("tags", tags).endObject();
+				// System.out.println(builder.string());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

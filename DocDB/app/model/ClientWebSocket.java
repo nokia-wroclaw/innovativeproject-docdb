@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 import play.Logger;
 import play.libs.F.Callback;
 import play.libs.F.Callback0;
@@ -50,23 +52,29 @@ public class ClientWebSocket extends UntypedActor{
 
 				String pattern = event.get("pattern").asText();
 				Logger.info("searching for:"+pattern);
-				String[][] searchResult = searchMan.search(elasticServer.client, pattern, "twitter", "tweet");
+				ArrayList<ArrayList<String>> searchResult = searchMan.search(elasticServer.client, pattern, "twitter", "tweet");
 				if (searchResult==null){
 					Logger.info("No results");
 					message.put("result", "{}");
 				}else{
-					Logger.info(String.valueOf(searchResult.length)+" found");
+					Logger.info(String.valueOf(searchResult.size())+" found");
 
 					sb.append("[");
-					for(int i = 0 ; i < searchResult.length ; i ++){
+					for(int i = 0 ; i < searchResult.size() ; i ++){
 						sb.append("{file:\""
-								+ searchResult[i][0]//get file name
+								+ searchResult.get(i).get(0)//get file name
 								+"\", size:\""
-								+ searchResult[i][2]//get file size
+								+ searchResult.get(i).get(2)//get file size
 								+"\", link:\"Download/"
-								+ searchResult[i][1]//get link to file (routes)
+								+ searchResult.get(i).get(1)//get link to file (routes)
 								+ "\"}");
-						if (i< searchResult.length-1){
+						/*
+						 * searchResult.get(i).get(3) - content
+						 * searchResult.get(i).get(4) - first tag, and so on
+						 * quantity of tags searchResult.get(i).size() - 4
+						 * */
+						//System.out.println(searchResult.get(i));
+						if (i< searchResult.size()-1){
 							sb.append(",");
 						}
 					}

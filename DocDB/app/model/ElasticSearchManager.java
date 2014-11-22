@@ -40,7 +40,7 @@ public class ElasticSearchManager {
 		// value
 
 		QueryBuilder qb = QueryBuilders.matchQuery("content", content);
-		String[] fieldNames = { "title", "content", "author", "size" }; // "postDate",
+		String[] fieldNames = { "title", "content", "author", "size", "tags" }; // "postDate",
 																		// "size"};
 
 		MultiMatchQueryBuilder qb3 = new MultiMatchQueryBuilder(content,

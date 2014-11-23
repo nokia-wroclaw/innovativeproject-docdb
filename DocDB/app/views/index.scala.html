@@ -2,19 +2,6 @@
 
 @main("Welcome to DocDB") {
 
-<link rel="stylesheet" type="text/css" href="/assets/stylesheets/dropzone.css">
-<script src="/assets/javascripts/dropzone.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="@routes.Application.SearchScript()"></script>
-<!-- Latest Bootstrap -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-
-<style>
-body{overflow-y: scroll;}
-</style>
-
 
 <div class="container">
 
@@ -27,9 +14,24 @@ body{overflow-y: scroll;}
 		</div>
 
 
-		<div id="resultDiv" ng-app="" ng-controller="searchController" class="btn-group-vertical" role="group" aria-label="Search Results">
-			<a ng-repeat="result in results track by $index"  href={{result.link}} class="btn btn-default" >
-				<span style="float:left;">Plik {{result.file}}, waga {{result.size}}kB</span>&nbsp;<span style="float:right;" class="glyphicon glyphicon-download"></span>
+
+		<div id="resultDiv" ng-app="searchRes" ng-controller="searchController" class="list-group">
+			<a ng-repeat="result in results track by $index" href={{result.link}} class="list-group-item">
+
+
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<span class="badge" style="float: right;">{{result.size}}kB</span>
+						<h3 class="panel-title">{{result.file}}</h3>
+					</div>
+					<div class="panel-body">
+						<span style="float:right;" class="glyphicon glyphicon-download"></span>
+						<span ng-bind-html="result.context | unsafe"></span>
+					</div>
+					<div class="panel-footer"><small>{{result.tags}}</small></div>
+				</div>
+
+
 			</a>
 		</div>
 	</div>
@@ -47,6 +49,13 @@ body{overflow-y: scroll;}
 
 
 <script>
+var commentApp = angular.module('searchRes', []);
+commentApp.filter('unsafe', function($sce) {
+    return function(val) {
+        return $sce.trustAsHtml(val);
+    };
+});
+
 	function searchController($scope){
 		/*$scope.results=[
 		{file:"a.txt", size:"3", link:"@routes.Application.getFile("a.txt")"},

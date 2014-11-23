@@ -7,7 +7,6 @@ $(document).ready(function(){
         var data = JSON.parse(event.data)
 
 		if( data.result != null){
-			//$("#resultDiv").html(data.result);
 		$('#resultDiv').scope().results = eval(data.result);
 		$("#resultDiv").scope().$apply();
 		/*}else if ( data.loginAttempts != null){

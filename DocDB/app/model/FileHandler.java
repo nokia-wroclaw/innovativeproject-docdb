@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
 
 import com.google.common.io.Files;
 
@@ -21,35 +22,54 @@ public class FileHandler {
 	private FileParser fileParser;
 	private ElasticSearchManager esm;
 	private ElasticSearchServer elasticServer;
+	private MD5Checksum md5;
 	private static String dirPath = "files/";
 
 	public FileHandler(ElasticSearchServer elasticServer) {
 		this.elasticServer = elasticServer;
 		fileParser = new FileParser();
 		esm = new ElasticSearchManager();
+		md5 = new MD5Checksum();
 	}
 
 	/**
-	 * ClientWebSocket invoke this method, when user wants to send files to server. It takes care of giving it to Tika Apache
+	 * Controller invokes this method, when user wants to send files to server. It takes care of giving it to Tika Apache
 	 * parser, getting back array with content and metadata. Next, method receive the map (requiered for Elastic search) and 
 	 * send it to ES server
 	 * 
 	 * @param uploadedFile file given by user to upload
 	 */
 	public void handleFile(FilePart uploadedFile, ArrayList <String> tagsArray) {
-
+		int number=0;
 		// String fileName = uploadedFile.getFilename();
 		// String contentType = uploadedFile.getContentType();
 
 		File file = uploadedFile.getFile();
 		String newPath = dirPath + uploadedFile.getFilename();
 		File newFile = new File(newPath);
+		try {
+			while (newFile.exists() && md5.getMD5Checksum(newFile)!=md5.getMD5Checksum(file)){
+				number++;
+				newFile = new File(newPath+number);
+			}
+			newPath=newPath+number;
+		} catch (Exception e1) {
+			Logger.info("FileNotFound? (md5)");
+			e1.printStackTrace();
+		}
 
 		try {
-			Files.move(file, newFile);
-			Logger.info("file saved in: " + newPath);
+			if(md5.getMD5Checksum(newFile)!=md5.getMD5Checksum(file)){
+				Files.move(file, newFile);
+			}else{
+				Logger.info("same file already exists: " + newPath);
+				return;
+			}
 		} catch (IOException e) {
 			Logger.info("file save failed");
+			e.printStackTrace();
+		} catch (Exception e) {
+			Logger.info("file save failed (md5)");
 			e.printStackTrace();
 		}
 		ArrayList <String> parsedFile = fileParser.parseFile(newFile, newPath);

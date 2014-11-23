@@ -23,6 +23,21 @@ public class MD5Checksum {
 		fis.close();
 		return md.digest();
 	}
+	public byte[] createChecksum(File file) throws Exception {
+		InputStream fis = new FileInputStream(file);
+		byte[] buffer = new byte[1024];
+		MessageDigest md = MessageDigest.getInstance("MD5");
+
+		int bytesReader;
+		do {
+			bytesReader = fis.read(buffer);
+			if (bytesReader > 0)
+				md.update(buffer, 0, bytesReader);
+		} while (bytesReader != -1);
+
+		fis.close();
+		return md.digest();
+	}
 
 	/*
 	 * Method use createChecksum() to generate byte array, and then makes a HEX
@@ -31,6 +46,16 @@ public class MD5Checksum {
 	public String getMD5Checksum(String filename) throws Exception {
 
 		byte[] bytesArray = createChecksum(filename);
+		String result = "";
+		for (int i = 0; i < bytesArray.length; i++)
+			result += Integer.toString((bytesArray[i] & 0xff) + 0x100, 16)
+					.substring(1);
+
+		return result;
+	}
+	public String getMD5Checksum(File file) throws Exception {
+
+		byte[] bytesArray = createChecksum(file);
 		String result = "";
 		for (int i = 0; i < bytesArray.length; i++)
 			result += Integer.toString((bytesArray[i] & 0xff) + 0x100, 16)

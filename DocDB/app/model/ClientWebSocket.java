@@ -18,6 +18,7 @@ public class ClientWebSocket extends UntypedActor{
 	private WebSocket.Out<JsonNode> out;
 	private ElasticSearchManager searchMan;
 	private ElasticSearchServer elasticServer;
+	private ContextExtractor ctxEx;
 	
 	ClientWebSocket(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out, ElasticSearchManager searchMan, ElasticSearchServer elasticServer){
 		Logger.info("New ClientWebSocket");
@@ -25,6 +26,7 @@ public class ClientWebSocket extends UntypedActor{
 		this.out = out;
 		this.searchMan = searchMan;
 		this.elasticServer = elasticServer;
+		ctxEx = ContextExtractor.getInstance();
 		
 		this.in.onMessage(new Callback<JsonNode>() {						//msg z socketu
 			public void invoke(JsonNode event) {
@@ -63,23 +65,32 @@ public class ClientWebSocket extends UntypedActor{
 					for(int i = 0 ; i < searchResult.size() ; i ++){
 						sb.append("{file:\""
 								+ searchResult.get(i).get(0)//get file name
-								+"\", size:\""
-								+ searchResult.get(i).get(2)//get file size
 								+"\", link:\"Download/"
 								+ searchResult.get(i).get(1)//get link to file (routes)
-								+ "\"}");
+								+"\", size:\""
+								+ searchResult.get(i).get(2)//get file size
+								+"\", context:\""
+								+ ctxEx.getContext(searchResult.get(i).get(3),pattern)
+								+"\", tags:\"");
+								int tagcount = searchResult.get(i).size() - 4;
+								for(int tagnr=0 ; tagnr<tagcount ; tagnr++){
+									sb.append(searchResult.get(i).get(4)
+											+", ");
+								}
+								sb.append("\"}");
 						/*
 						 * searchResult.get(i).get(3) - content
 						 * searchResult.get(i).get(4) - first tag, and so on
 						 * quantity of tags searchResult.get(i).size() - 4
 						 * */
-						//System.out.println(searchResult.get(i).get(4));
 						if (i< searchResult.size()-1){
 							sb.append(",");
 						}
 					}
 					sb.append("]");
-					message.put("result", sb.toString());
+					String sbResult = sb.toString();
+					Logger.info(sbResult);
+					message.put("result", sbResult);
 				}
 			}
 		}

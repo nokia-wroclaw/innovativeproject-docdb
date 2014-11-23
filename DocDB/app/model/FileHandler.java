@@ -47,29 +47,34 @@ public class FileHandler {
 		File file = uploadedFile.getFile();
 		String newPath = dirPath + uploadedFile.getFilename();
 		File newFile = new File(newPath);
+
+		//get new file md5
+		String newFileCheckSum = null;
 		try {
-			while (newFile.exists() && md5.getMD5Checksum(newFile)!=md5.getMD5Checksum(file)){
-				number++;
-				newFile = new File(newPath+number);
+			newFileCheckSum = md5.getMD5Checksum(file);
+		} catch (Exception e1) {e1.printStackTrace();}
+		
+		//check if filename already exists
+		while (newFile.exists()){//file exists. need new name
+			try {
+				if(md5.getMD5Checksum(newFile).equals(newFileCheckSum)){//unless content is the same
+					Logger.info("same file already exists: " + newPath);
+					return;		//no need to have 2 same files
+				}
+			} catch (Exception e2) {
+				e2.printStackTrace();
 			}
-			newPath=newPath+number;
-		} catch (Exception e1) {
-			Logger.info("FileNotFound? (md5)");
-			e1.printStackTrace();
+			number++;
+			newFile = new File(newPath+number);
 		}
+		newPath=newPath+number;
+	
 
 		try {
-			if(md5.getMD5Checksum(newFile)!=md5.getMD5Checksum(file)){
-				Files.move(file, newFile);
-			}else{
-				Logger.info("same file already exists: " + newPath);
-				return;
-			}
+			Files.move(file, newFile);
+			Logger.info("file saved");
 		} catch (IOException e) {
 			Logger.info("file save failed");
-			e.printStackTrace();
-		} catch (Exception e) {
-			Logger.info("file save failed (md5)");
 			e.printStackTrace();
 		}
 		ArrayList <String> parsedFile = fileParser.parseFile(newFile, newPath);

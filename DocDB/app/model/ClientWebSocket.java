@@ -73,8 +73,8 @@ public class ClientWebSocket extends UntypedActor{
 								+ ctxEx.getContext(searchResult.get(i).get(3),pattern)
 								+"\", tags:\"");
 								int tagcount = searchResult.get(i).size() - 4;
-								for(int tagnr=0 ; tagnr<tagcount ; tagnr++){
-									sb.append(searchResult.get(i).get(4)
+								for(int tagnr=0 ; tagnr<tagcount-1 ; tagnr++){
+									sb.append(searchResult.get(i).get(4+tagnr)
 											+", ");
 								}
 								sb.append("\"}");

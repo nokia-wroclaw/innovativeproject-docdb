@@ -41,7 +41,7 @@ public class Application extends Controller {
     	MultipartFormData body = request().body().asMultipartFormData();
 		FilePart uploadedFile = body.getFile("file");
 		if (uploadedFile != null) {
-			Logger.info("file received. Handling...");
+			Logger.info("file received. tags are:\""+tags+"\". Handling...");
 
 			String[] tagArray = tags.split(",");
 			ArrayList <String> tagList = new ArrayList<String>(Arrays.asList(tagArray));

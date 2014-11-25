@@ -4,7 +4,8 @@
 
 # Home page
 GET		/							controllers.Application.index()
-POST	/upload						controllers.Application.upload()
+#POST	/upload						controllers.Application.upload()
+POST	/upload/:tags				controllers.Application.upload(tags)
 GET		/WebSocket					controllers.Application.WebSocket()
 GET		/SearchScript				controllers.Application.SearchScript()
 GET		/Download/:path				controllers.Application.getFile(path)

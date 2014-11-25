@@ -1,8 +1,8 @@
 package controllers;
 
 import java.io.File;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import model.ClientWebSocket;
@@ -32,29 +32,21 @@ public class Application extends Controller {
 		return ok(index.render("Your new application is ready."));
     }
 	
-    
+
     public static Result upload(){
+			return upload("");
+    }
+    
+    public static Result upload(String tags){
     	MultipartFormData body = request().body().asMultipartFormData();
 		FilePart uploadedFile = body.getFile("file");
 		if (uploadedFile != null) {
 			Logger.info("file received. Handling...");
-			//teraz tylko sztucznie dodam tagi, coby sie kompilowalo
-			ArrayList <String> tags = new ArrayList<String>();
-			fileHandler.handleFile(uploadedFile, tags);
-			
-//			File file = uploadedFile.getFile();
 
-//			String tmpPath=dirPath + fileName;
+			String[] tagArray = tags.split(",");
+			ArrayList <String> tagList = new ArrayList<String>(Arrays.asList(tagArray));
+			fileHandler.handleFile(uploadedFile, tagList);
 			
-//			try {
-//				Files.move(file, new File(tmpPath));
-//				Logger.info("file saved in:"+tmpPath);
-//			} catch (IOException e) {
-//				Logger.info("file save failed");
-//				e.printStackTrace();
-//			}
-//
-
 			return ok(index.render("Plik przeslano na serwer"));
 		} else {
 			flash("error", "Missing file");

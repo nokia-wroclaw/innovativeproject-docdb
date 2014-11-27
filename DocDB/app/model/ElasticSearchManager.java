@@ -71,7 +71,7 @@ public class ElasticSearchManager {
 				temp.addAll((ArrayList) result.get("tags"));
 				resultArray.add(temp);
 				// System.out.println(hit.getId());
-				// System.out.println(result.get("tags"));
+				System.out.println(result.get("tags"));
 			}
 			return resultArray;
 		} else

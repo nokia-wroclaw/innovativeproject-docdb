@@ -38,7 +38,7 @@ public class FileParser {
 	 * @param fileToParse
 	 *            file given by client, which have to be parsed
 	 */
-	public ArrayList <String> parseFile(File fileToParse, String newPath) {
+	public ArrayList <String> parseFile(File fileToParse, String newPath, String oldPath) {
 		InputStream is = null;
 
 		try {
@@ -47,14 +47,13 @@ public class FileParser {
 			Parser parser = new AutoDetectParser();
 			ContentHandler handler = new BodyContentHandler();	//it keeps content of document
 			Metadata metadata = new Metadata();		//all metadata stored in file
-			
 			parser.parse(is, handler, metadata); // do versii 0.3
 			// parser.parse(is, handler, metadata, new ParseContext());
 			String size = fileToParse.length() / 1024 + "";
 			ArrayList <String> result = dataToArray(metadata, handler, fileName, size);
-			Path path = Paths.get(newPath); 
-			result.add("#"+Files.probeContentType(path));
 			
+			Path path = Paths.get(oldPath); 
+			result.add(Files.probeContentType(path));
 			return result;
 
 		} catch (IOException e) {
@@ -106,6 +105,7 @@ public class FileParser {
 		data.add(handler.toString()); // content of file
 		data.add(fileName);
 		data.add(size);
+		
 		/*for (int i = 0; i < 5; i++) {
 			if (i == 2) {
 				continue;

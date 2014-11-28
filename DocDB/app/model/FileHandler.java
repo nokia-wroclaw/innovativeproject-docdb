@@ -3,16 +3,13 @@ package model;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Random;
 
-import com.google.common.io.Files;
-
-import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 
 import play.Logger;
 import play.mvc.Http.MultipartFormData.FilePart;
+
+import com.google.common.io.Files;
 
 /**
  * Class control flow of file during uploading, parsing and sending it to
@@ -22,9 +19,9 @@ import play.mvc.Http.MultipartFormData.FilePart;
  */
 public class FileHandler {
 
-	private FileParser fileParser;
-	private ElasticSearchServer elasticServer;
-	private MD5Checksum md5;
+	private final FileParser fileParser;
+	private final ElasticSearchServer elasticServer;
+	private final MD5Checksum md5;
 	private static String dirPath = "files/";
 
 	public FileHandler(ElasticSearchServer elasticServer) {
@@ -86,8 +83,7 @@ public class FileHandler {
 			Logger.info("file save failed");
 			e.printStackTrace();
 		}
-		ArrayList<String> parsedFile = fileParser.parseFile(newFile, newPath,
-				oldPath);
+		ArrayList<String> parsedFile = fileParser.parseFile(newFile, newPath, oldPath);
 		if (parsedFile != null) {
 			// musze usunac tagi dotyczace plikow z parsedFile i
 			// przeniesc je do tagsArray
@@ -95,10 +91,8 @@ public class FileHandler {
 			parsedFile.remove(parsedFile.size() - 1);
 			tagsArray.add(temp);
 			parsedFile.add(newFileCheckSum);
-			XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(
-					parsedFile, tagsArray);
-			elasticServer.elasticSearch.insert(elasticServer.client, json,
-					"twitter", "tweet");
+			XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagsArray);
+			elasticServer.elasticSearch.insert(elasticServer.client, json, "twitter", "tweet");
 			Logger.info("metadata saved");
 		}
 
@@ -108,12 +102,13 @@ public class FileHandler {
 
 		String[] fields = { "MD5" };
 
-		if (elasticServer.client.admin().indices().prepareExists("twitter")
-				.execute().actionGet().isExists() == false)
+		if (elasticServer.client.admin().indices().prepareExists("twitter").execute().actionGet().isExists() == false)
 			return false;
-		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch
-				.search(elasticServer.client, MD5, "twitter", "tweet", fields);
-		return searchResult == null || searchResult.isEmpty();
+		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,
+				"twitter", "tweet", fields);
+		if (searchResult == null)
+			return false;
+		return true;
 	}
 
 }

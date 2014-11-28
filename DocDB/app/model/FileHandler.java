@@ -58,31 +58,27 @@ public class FileHandler {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		if (fileExists(newFileCheckSum)){
+		if (fileExists(newFileCheckSum)) {
 			Logger.info("same file already exists: " + newPath);
 			return;
 		}
-		//jesli plik istniał to wyszliśmy
-		
-		
-		
-		
+
 		// check if filename already exists
-//		while (newFile.exists()) {// file exists. need new name
-//			try {
-//				if (md5.getMD5Checksum(newFile).equals(newFileCheckSum)) {
-//					// unless content is the same
-//					Logger.info("same file already exists: " + newPath);
-//					return; // no need to have 2 same files
-//				}
-//			} catch (Exception e2) {
-//				e2.printStackTrace();
-//			}
-//			number++;
-//			newFile = new File(newPath + number);
-//		}
+		// while (newFile.exists()) {// file exists. need new name
+		// try {
+		// if (md5.getMD5Checksum(newFile).equals(newFileCheckSum)) {
+		// // unless content is the same
+		// Logger.info("same file already exists: " + newPath);
+		// return; // no need to have 2 same files
+		// }
+		// } catch (Exception e2) {
+		// e2.printStackTrace();
+		// }
+		// number++;
+		// newFile = new File(newPath + number);
+		// }
 		String oldPath = newPath;
-//		newPath = newPath + number;
+		// newPath = newPath + number;
 		try {
 			Files.move(file, newFile);
 			Logger.info("file saved");
@@ -90,7 +86,8 @@ public class FileHandler {
 			Logger.info("file save failed");
 			e.printStackTrace();
 		}
-		ArrayList<String> parsedFile = fileParser.parseFile(newFile, newPath, oldPath);
+		ArrayList<String> parsedFile = fileParser.parseFile(newFile, newPath,
+				oldPath);
 		if (parsedFile != null) {
 			// musze usunac tagi dotyczace plikow z parsedFile i
 			// przeniesc je do tagsArray
@@ -98,19 +95,25 @@ public class FileHandler {
 			parsedFile.remove(parsedFile.size() - 1);
 			tagsArray.add(temp);
 			parsedFile.add(newFileCheckSum);
-			XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagsArray);
-			elasticServer.elasticSearch.insert(elasticServer.client, json, "twitter", "tweet");
+			XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(
+					parsedFile, tagsArray);
+			elasticServer.elasticSearch.insert(elasticServer.client, json,
+					"twitter", "tweet");
 			Logger.info("metadata saved");
 		}
 
 	}
 
 	private boolean fileExists(String MD5) {
-		
-		String[] fields= {"MD5"};
-		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(
-				elasticServer.client, MD5, "twitter", "tweet", fields);
-		return searchResult==null || searchResult.isEmpty();
+
+		String[] fields = { "MD5" };
+
+		if (elasticServer.client.admin().indices().prepareExists("twitter")
+				.execute().actionGet().isExists() == false)
+			return false;
+		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch
+				.search(elasticServer.client, MD5, "twitter", "tweet", fields);
+		return searchResult == null || searchResult.isEmpty();
 	}
 
 }

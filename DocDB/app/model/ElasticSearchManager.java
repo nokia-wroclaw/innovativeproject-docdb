@@ -26,18 +26,21 @@ public class ElasticSearchManager {
 	 */
 	public void insert(Client client, XContentBuilder json, String index,
 			String type) {
+		try{
 		if (client != null && json != null && index != null && type != null)
 			client.prepareIndex(index, type).setSource(json).execute()
 					.actionGet();
 		else
 			System.out.println("Problem with insert()");
-	}
+
+		}catch (Exception e ){System.out.println("Try");}
+		}
 
 	public ArrayList<ArrayList<String>> search(Client client, String content,
 			String index, String type) {
-		String[] fieldNames = { "title", "content", "author", "size", "tags"};
-		return search(client,content,index,type, fieldNames);
-	
+		String[] fieldNames = { "title", "content", "author", "size", "tags" };
+		return search(client, content, index, type, fieldNames);
+
 	}
 
 	public ArrayList<ArrayList<String>> search(Client client, String content,

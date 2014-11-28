@@ -9,6 +9,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import play.Logger;
 import play.mvc.Http.MultipartFormData.FilePart;
 
+import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 /**
@@ -21,13 +22,13 @@ public class FileHandler {
 
 	private final FileParser fileParser;
 	private final ElasticSearchServer elasticServer;
-	private final MD5Checksum md5;
+	// private final MD5Checksum md5;
 	private static String dirPath = "files/";
 
 	public FileHandler(ElasticSearchServer elasticServer) {
 		this.elasticServer = elasticServer;
 		fileParser = new FileParser();
-		md5 = new MD5Checksum();
+		// md5 = new MD5Checksum();
 	}
 
 	/**
@@ -40,7 +41,7 @@ public class FileHandler {
 	 *            file given by user to upload
 	 */
 	public void handleFile(FilePart uploadedFile, ArrayList<String> tagsArray) {
-		int number = 0;
+		// int number = 0;
 		// String fileName = uploadedFile.getFilename();
 		// String contentType = uploadedFile.getContentType();
 
@@ -51,7 +52,9 @@ public class FileHandler {
 		// get new file md5
 		String newFileCheckSum = null;
 		try {
-			newFileCheckSum = md5.getMD5Checksum(file);
+			// newFileCheckSum = md5.getMD5Checksum(file);
+			newFileCheckSum = Files.hash(file, Hashing.md5()).toString();
+			Logger.info(newFileCheckSum);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}

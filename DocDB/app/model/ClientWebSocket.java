@@ -87,37 +87,6 @@ public class ClientWebSocket extends UntypedActor {
 			results.add(innerMsg);
 		}
 		socketOut.write(message);
-
-		//
-		// for (int i = 0; i < searchResult.size(); i++) {
-		//
-		// + "\", link:\"Download/" + searchResult.get(i).get(1)// get
-		// // link
-		// // to
-		// // file
-		// // (routes)
-		// + "\", size:\"" + searchResult.get(i).get(2)// get file size
-		// + "\", context:\"" + ctxEx.getContext(searchResult.get(i).get(3),
-		// pattern) + "\", tags:\"");
-		//
-		// int tagcount = searchResult.get(i).size() - 4;
-		// for (int tagnr = 0; tagnr < tagcount; tagnr++) {
-		// sb.append(searchResult.get(i).get(4 + tagnr) + ", ");
-		// }
-		// sb.append("\"}");
-		/*
-		 * searchResult.get(i).get(3) - content searchResult.get(i).get(4) -
-		 * first tag, and so on quantity of tags searchResult.get(i).size() - 4
-		 */
-		// if (i < searchResult.size() - 1) {
-		// sb.append(",");
-		// }
-		// }
-		// sb.append("]");
-		// String sbResult = sb.toString();
-		// Logger.info(sbResult);
-		// message.put("result", sbResult);
-		// socketOut.write(message); // odpowiedz do websocketa (klienta)
 	}
 
 	private ArrayList<ArrayList<String>> search(String pattern) {

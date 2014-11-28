@@ -23,7 +23,6 @@ import play.mvc.Http.MultipartFormData.FilePart;
 public class FileHandler {
 
 	private FileParser fileParser;
-	private ElasticSearchManager esm;
 	private ElasticSearchServer elasticServer;
 	private MD5Checksum md5;
 	private static String dirPath = "files/";
@@ -31,7 +30,6 @@ public class FileHandler {
 	public FileHandler(ElasticSearchServer elasticServer) {
 		this.elasticServer = elasticServer;
 		fileParser = new FileParser();
-		esm = new ElasticSearchManager();
 		md5 = new MD5Checksum();
 	}
 
@@ -60,7 +58,15 @@ public class FileHandler {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-
+		if (fileExists(newFileCheckSum)){
+			Logger.info("same file already exists: " + newPath);
+			return;
+		}
+		//jesli plik istniał to wyszliśmy
+		
+		
+		
+		
 		// check if filename already exists
 //		while (newFile.exists()) {// file exists. need new name
 //			try {
@@ -76,10 +82,7 @@ public class FileHandler {
 //			newFile = new File(newPath + number);
 //		}
 		String oldPath = newPath;
-		newPath = newPath + number;
-		String[] fieldNames = {"MD5"};
-		searchMan.search(
-				elasticServer.client, pattern, "twitter", "tweet");
+//		newPath = newPath + number;
 		try {
 			Files.move(file, newFile);
 			Logger.info("file saved");
@@ -87,8 +90,7 @@ public class FileHandler {
 			Logger.info("file save failed");
 			e.printStackTrace();
 		}
-		ArrayList<String> parsedFile = fileParser.parseFile(newFile, newPath,
-				oldPath);
+		ArrayList<String> parsedFile = fileParser.parseFile(newFile, newPath, oldPath);
 		if (parsedFile != null) {
 			// musze usunac tagi dotyczace plikow z parsedFile i
 			// przeniesc je do tagsArray
@@ -96,17 +98,19 @@ public class FileHandler {
 			parsedFile.remove(parsedFile.size() - 1);
 			tagsArray.add(temp);
 			parsedFile.add(newFileCheckSum);
-			XContentBuilder json = esm.putJsonDocument(parsedFile, tagsArray);
-			esm.insert(elasticServer.client, json, "twitter", "tweet");
+			XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagsArray);
+			elasticServer.elasticSearch.insert(elasticServer.client, json, "twitter", "tweet");
 			Logger.info("metadata saved");
 		}
 
 	}
-	
-	private ArrayList<ArrayList<String>> search(String pattern, ) {
+
+	private boolean fileExists(String MD5) {
+		
+		String[] fields= {"MD5"};
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(
-				elasticServer.client, pattern, "twitter", "tweet");
-		return searchResult;
+				elasticServer.client, MD5, "twitter", "tweet", fields);
+		return searchResult==null || searchResult.isEmpty();
 	}
 
 }

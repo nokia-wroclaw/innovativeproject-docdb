@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class Application extends Controller {
     private static ElasticSearchServer elasticServer = new ElasticSearchServer();
-    private static ElasticSearchManager elasticSearch = new ElasticSearchManager(); 
     private static FileHandler fileHandler = new FileHandler(elasticServer);   
     
 	public static Result index() {
@@ -79,7 +78,7 @@ public class Application extends Controller {
 			public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out) {
 				
 				//Starting webSocket handler
-				Akka.system().actorOf(Props.create(ClientWebSocket.class, in, out, elasticSearch, elasticServer));
+				Akka.system().actorOf(Props.create(ClientWebSocket.class, in, out, elasticServer));
 			}
 
 		};

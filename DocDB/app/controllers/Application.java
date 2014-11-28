@@ -47,7 +47,7 @@ public class Application extends Controller {
 			ArrayList <String> tagList = new ArrayList<String>(Arrays.asList(tagArray));
 			fileHandler.handleFile(uploadedFile, tagList);
 			
-			return ok(index.render("Plik przeslano na serwer"));
+			return ok(index.render("File is on server"));
 		} else {
 			flash("error", "Missing file");
 			return redirect(routes.Application.index());    

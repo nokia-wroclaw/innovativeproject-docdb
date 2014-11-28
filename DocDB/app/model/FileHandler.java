@@ -62,22 +62,24 @@ public class FileHandler {
 		}
 
 		// check if filename already exists
-		while (newFile.exists()) {// file exists. need new name
-			try {
-				if (md5.getMD5Checksum(newFile).equals(newFileCheckSum)) {
-					// unless content is the same
-					Logger.info("same file already exists: " + newPath);
-					return; // no need to have 2 same files
-				}
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
-			number++;
-			newFile = new File(newPath + number);
-		}
+//		while (newFile.exists()) {// file exists. need new name
+//			try {
+//				if (md5.getMD5Checksum(newFile).equals(newFileCheckSum)) {
+//					// unless content is the same
+//					Logger.info("same file already exists: " + newPath);
+//					return; // no need to have 2 same files
+//				}
+//			} catch (Exception e2) {
+//				e2.printStackTrace();
+//			}
+//			number++;
+//			newFile = new File(newPath + number);
+//		}
 		String oldPath = newPath;
 		newPath = newPath + number;
-
+		String[] fieldNames = {"MD5"};
+		searchMan.search(
+				elasticServer.client, pattern, "twitter", "tweet");
 		try {
 			Files.move(file, newFile);
 			Logger.info("file saved");
@@ -93,11 +95,18 @@ public class FileHandler {
 			String temp = parsedFile.get(parsedFile.size() - 1);
 			parsedFile.remove(parsedFile.size() - 1);
 			tagsArray.add(temp);
+			parsedFile.add(newFileCheckSum);
 			XContentBuilder json = esm.putJsonDocument(parsedFile, tagsArray);
 			esm.insert(elasticServer.client, json, "twitter", "tweet");
 			Logger.info("metadata saved");
 		}
 
+	}
+	
+	private ArrayList<ArrayList<String>> search(String pattern, ) {
+		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(
+				elasticServer.client, pattern, "twitter", "tweet");
+		return searchResult;
 	}
 
 }

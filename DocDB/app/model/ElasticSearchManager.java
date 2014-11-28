@@ -35,13 +35,21 @@ public class ElasticSearchManager {
 
 	public ArrayList<ArrayList<String>> search(Client client, String content,
 			String index, String type) {
+		String[] fieldNames = { "title", "content", "author", "size", "tags"};
+		return search(client,content,index,type, fieldNames);
+	
+	}
+
+	public ArrayList<ArrayList<String>> search(Client client, String content,
+			String index, String type, String[] fieldNames) {
 
 		// creating query to find out if any of files on server contain search
 		// value
 
 		QueryBuilder qb = QueryBuilders.matchQuery("content", content);
-		String[] fieldNames = { "title", "content", "author", "size", "tags" }; // "postDate",
-																		// "size"};
+		// String[] fieldNames = { "title", "content", "author", "size", "tags"
+		// }; // "postDate",
+		// "size"};
 
 		MultiMatchQueryBuilder qb3 = new MultiMatchQueryBuilder(content,
 				fieldNames);
@@ -92,8 +100,9 @@ public class ElasticSearchManager {
 						.field("content", parsedFile.get(2))
 						.field("path", parsedFile.get(3))
 						.field("size", parsedFile.get(4))
-						.field("postDate", postDate)
-						.field("tags", tags).endObject();
+						.field("MD5", parsedFile.get(5))
+						.field("postDate", postDate).field("tags", tags)
+						.endObject();
 				// System.out.println(builder.string());
 			} catch (IOException e) {
 				e.printStackTrace();

@@ -54,8 +54,8 @@ public class ClientWebSocket extends UntypedActor {
 
 				String pattern = event.get("pattern").asText();
 				Logger.info("searching for:" + pattern);
-				ArrayList<ArrayList<String>> searchResult = searchMan.search(
-						elasticServer.client, pattern, "twitter", "tweet");
+				
+				ArrayList<ArrayList<String>> searchResult = search(pattern);
 				if (searchResult == null) {
 					Logger.info("No results");
 					message.put("result", "{}");
@@ -97,6 +97,12 @@ public class ClientWebSocket extends UntypedActor {
 			}
 		}
 		out.write(message); // odpowiedz do websocketa (klienta)
+	}
+
+	private ArrayList<ArrayList<String>> search(String pattern) {
+		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(
+				elasticServer.client, pattern, "twitter", "tweet");
+		return searchResult;
 	}
 
 	@Override

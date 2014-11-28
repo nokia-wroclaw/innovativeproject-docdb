@@ -41,43 +41,50 @@ public class FileHandler {
 	 *            file given by user to upload
 	 */
 	public void handleFile(FilePart uploadedFile, ArrayList<String> tagsArray) {
-		// int number = 0;
 		// String fileName = uploadedFile.getFilename();
 		// String contentType = uploadedFile.getContentType();
 
 		File file = uploadedFile.getFile();
 		String newPath = dirPath + uploadedFile.getFilename();
+		String oldPath = dirPath + uploadedFile.getFilename();
 		File newFile = new File(newPath);
 
-		// get new file md5
+		// get new file hash
 		String newFileCheckSum = null;
 		try {
-			// newFileCheckSum = md5.getMD5Checksum(file);
 			newFileCheckSum = Files.hash(file, Hashing.md5()).toString();
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 		if (fileExists(newFileCheckSum)) {
-			Logger.info("same file already exists: " + newPath);
-			return;
+			// file exists with the same name:
+			if (new File(newPath).exists()) {
+				Logger.info("same file already exists: " + newPath);
+				return;
+			}
+			// file exist with different name:
+			newPath = dirPath + getExistingFileName(newFileCheckSum);
+			ArrayList<String> parsedFile = fileParser.parseFile(new File(newPath), newPath, oldPath);
+			if (parsedFile != null) {
+				// musze usunac tagi dotyczace plikow z parsedFile i
+				// przeniesc je do tagsArray
+				extractTags(tagsArray, newFileCheckSum, parsedFile);
+				XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagsArray);
+				elasticServer.elasticSearch.insert(elasticServer.client, json, "twitter", "tweet");
+				Logger.info("metadata saved");
+				return;
+			}
+
 		}
 
 		// check if filename already exists
-		// while (newFile.exists()) {// file exists. need new name
-		// try {
-		// if (md5.getMD5Checksum(newFile).equals(newFileCheckSum)) {
-		// // unless content is the same
-		// Logger.info("same file already exists: " + newPath);
-		// return; // no need to have 2 same files
-		// }
-		// } catch (Exception e2) {
-		// e2.printStackTrace();
-		// }
-		// number++;
-		// newFile = new File(newPath + number);
-		// }
-		String oldPath = newPath;
-		// newPath = newPath + number;
+		int number = 0;
+		while (newFile.exists()) {// file exists. need new name
+			number++;
+			newFile = new File(number + newPath);
+		}
+		newPath = dirPath + number + uploadedFile.getFilename();
+
 		try {
 			Files.move(file, newFile);
 			Logger.info("file saved");
@@ -85,14 +92,12 @@ public class FileHandler {
 			Logger.info("file save failed");
 			e.printStackTrace();
 		}
+
 		ArrayList<String> parsedFile = fileParser.parseFile(newFile, newPath, oldPath);
 		if (parsedFile != null) {
 			// musze usunac tagi dotyczace plikow z parsedFile i
 			// przeniesc je do tagsArray
-			String temp = parsedFile.get(parsedFile.size() - 1);
-			parsedFile.remove(parsedFile.size() - 1);
-			tagsArray.add(temp);
-			parsedFile.add(newFileCheckSum);
+			extractTags(tagsArray, newFileCheckSum, parsedFile);
 			XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagsArray);
 			elasticServer.elasticSearch.insert(elasticServer.client, json, "twitter", "tweet");
 			Logger.info("metadata saved");
@@ -100,17 +105,31 @@ public class FileHandler {
 
 	}
 
+	/**
+	 * @param tagsArray
+	 * @param newFileCheckSum
+	 * @param parsedFile
+	 */
+	private void extractTags(ArrayList<String> tagsArray, String newFileCheckSum, ArrayList<String> parsedFile) {
+		String temp = parsedFile.get(parsedFile.size() - 1);
+		parsedFile.remove(parsedFile.size() - 1);
+		tagsArray.add(temp);
+		parsedFile.add(newFileCheckSum);
+	}
+
 	private boolean fileExists(String MD5) {
+		return getExistingFileName(MD5) != null;
+	}
 
+	private String getExistingFileName(String MD5) {
 		String[] fields = { "MD5" };
-
 		if (elasticServer.client.admin().indices().prepareExists("twitter").execute().actionGet().isExists() == false)
-			return false;
+			return null;
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,
 				"twitter", "tweet", fields);
 		if (searchResult == null)
-			return false;
-		return true;
+			return null;
+		return searchResult.get(0).get(1);
 	}
 
 }

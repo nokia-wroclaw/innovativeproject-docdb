@@ -54,7 +54,6 @@ public class FileHandler {
 		try {
 			// newFileCheckSum = md5.getMD5Checksum(file);
 			newFileCheckSum = Files.hash(file, Hashing.md5()).toString();
-			Logger.info(newFileCheckSum);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}

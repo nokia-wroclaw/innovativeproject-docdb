@@ -1,14 +1,38 @@
 package model;
 
 import play.Logger;
+import java.util.regex.Pattern;
 
 public class ContextExtractor {
 	private static ContextExtractor instance = null;
-
+	private Pattern tagPattern;
+	
 	private ContextExtractor() {
-
+		tagPattern = Pattern.compile("(#\S+\s)|(\s#\S+)");
 	}
 
+	/**
+	* returns search pattern without tags
+	*/
+	private String stripTags(String pattern){
+		return pattern.replaceAll(tagPattern);
+	}
+	
+	/**
+	* returns list of tags in pattern
+	*/
+	private List<String> extractTags(String pattern){
+		List<String> tags = new LinkedList<>();
+		Matcher m = tagPattern.maches(pattern);
+		while(m.find()){
+			tags.add(m.group())
+		}
+		return tags;
+	}
+	
+	/**
+	* returns context of given word within given content
+	*/
 	public String getContext(String content, String word) {
 		int distanceFromWord = 200;
 		int wordStart = content.indexOf(word);

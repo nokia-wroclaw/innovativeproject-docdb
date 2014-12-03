@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import play.Logger;
 import play.libs.F.Callback;
@@ -56,8 +57,15 @@ public class ClientWebSocket extends UntypedActor {
 		String pattern = event.get("pattern").asText();
 		Logger.info("searching for:" + pattern);
 
-		ArrayList<ArrayList<String>> searchResult = search(pattern);
+		List<String> tagList = ctxEx.extractTags(pattern);
+		String searchPattern = ctxEx.stripTags(pattern);
+
+		Logger.info("search:" + pattern);
+		Logger.info("tags:" + pattern);
+
+		ArrayList<ArrayList<String>> searchResult = search(searchPattern);
 		if (searchResult == null) {
+			filterOutByTags(searchResult, tagList);
 			ObjectNode message = Json.newObject();
 			message.put("result", "{}");
 			Logger.info("No results");
@@ -87,6 +95,23 @@ public class ClientWebSocket extends UntypedActor {
 			results.add(innerMsg);
 		}
 		socketOut.write(message);
+	}
+
+	private void filterOutByTags(ArrayList<ArrayList<String>> searchResult, List<String> tags) {
+		ArrayList<ArrayList<String>> resultList = new ArrayList<>();
+
+		for (ArrayList<String> result : searchResult) {
+			int tagcount = result.size() - 4;
+			for (int tagnr = 0; tagnr < tagcount; tagnr++) {
+				for (String tag : tags) {
+					if (result.get(tagnr + 4).equals(tag)) {
+						resultList.add(result);
+						tagnr = tagcount;// break the second loop
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	private ArrayList<ArrayList<String>> search(String pattern) {

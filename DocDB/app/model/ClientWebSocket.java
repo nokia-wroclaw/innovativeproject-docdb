@@ -65,7 +65,8 @@ public class ClientWebSocket extends UntypedActor {
 
 		ArrayList<ArrayList<String>> searchResult = search(searchPattern);
 		if (searchResult == null) {
-			filterOutByTags(searchResult, tagList);
+			if (!tagList.isEmpty())
+				filterOutByTags(searchResult, tagList);
 			ObjectNode message = Json.newObject();
 			message.put("result", "{}");
 			Logger.info("No results");

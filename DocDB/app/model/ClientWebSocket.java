@@ -60,13 +60,13 @@ public class ClientWebSocket extends UntypedActor {
 		List<String> tagList = ctxEx.extractTags(pattern);
 		String searchPattern = ctxEx.stripTags(pattern);
 
-		Logger.info("search:" + pattern);
-		Logger.info("tags:" + pattern);
+		Logger.info("search:" + searchPattern);
+		Logger.info("tags:" + tagList.toString());
 
 		ArrayList<ArrayList<String>> searchResult = search(searchPattern);
 		if (searchResult == null) {
 			if (!tagList.isEmpty())
-				filterOutByTags(searchResult, tagList);
+				searchResult = filterOutByTags(searchResult, tagList);
 			ObjectNode message = Json.newObject();
 			message.put("result", "{}");
 			Logger.info("No results");
@@ -98,7 +98,7 @@ public class ClientWebSocket extends UntypedActor {
 		socketOut.write(message);
 	}
 
-	private void filterOutByTags(ArrayList<ArrayList<String>> searchResult, List<String> tags) {
+	private ArrayList<ArrayList<String>> filterOutByTags(ArrayList<ArrayList<String>> searchResult, List<String> tags) {
 		ArrayList<ArrayList<String>> resultList = new ArrayList<>();
 
 		for (ArrayList<String> result : searchResult) {
@@ -113,6 +113,7 @@ public class ClientWebSocket extends UntypedActor {
 				}
 			}
 		}
+		return resultList;
 	}
 
 	private ArrayList<ArrayList<String>> search(String pattern) {

@@ -29,7 +29,7 @@ public class ContextExtractor {
 		List<String> tags = new LinkedList<>();
 		Matcher m = tagPattern.matcher(pattern);
 		while (m.find()) {
-			tags.add(m.group());
+			tags.add(m.group().trim().substring(1));
 		}
 		return tags;
 	}

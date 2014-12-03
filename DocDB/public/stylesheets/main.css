@@ -1,0 +1,15 @@
+div #content2{
+margin: 0 auto;
+margin-bottom: 1%;
+background-color: #82B89F;
+text-align: center;  
+-webkit-border-radius:20px; 
+-moz-border-radius:20px; 
+border-radius:20px;
+font-size: 150%;
+}
+
+div #outer{
+ display: table;
+ text-align: center;
+ }

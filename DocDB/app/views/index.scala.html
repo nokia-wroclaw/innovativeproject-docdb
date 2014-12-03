@@ -6,15 +6,29 @@
 <div class="container">
 
 <div class="jumbotron">
+	<script>
+			Dropzone.autoDiscover = false; var tag; var tagSecond= "#Musi"; var tagThird= "#sięZgadzać";
+			if(!localStorage["tagID"]=="")
+				tag = localStorage["tagID"];
+			else
+				tag = "#Fejm";
+			if(!localStorage["tagSecond"]=="")	
+				tagSecond = localStorage["tagSecond"];
+			else
+				tagSecond = "#Fejm";
+			if(!localStorage["tagThird"]=="")	
+				tagThird = localStorage["tagThird"];
+			else
+				tagThird = "#sięZgadzać";
+			
+		</script>
 <h2>Search</h2>
 	<div id="content1">
 		<div class="input-group">
 		  <input type="text" id="search" class="form-control" placeholder="Search">
 		  <span class="input-group-addon glyphicon glyphicon-search"></span>
 		</div>
-
-
-
+		
 		<div id="resultDiv" ng-app="searchRes" ng-controller="searchController" class="list-group">
 			<a ng-repeat="result in results track by $index" href={{result.link}} class="list-group-item">
 
@@ -40,32 +54,80 @@
 
 <div class="jumbotron">
 	<h2>Drop files</h2>
-	<div id="content2">
-		<form method="POST" id="notagdz" class="dropzone" action="@routes.Application.upload("notag")" enctype="multipart/form-data">
-		</form>
-	</div>
+	 
+		 
+				<div id="content2">
+					<input type="text" class="form-control" style=" margin: 0 auto;" id="tagID" placeholder="Put Your tags here" onkeydown="checkKey('tagID');">
+					<form method="POST" id="dropzone1" action="@routes.Application.upload("tag")" enctype="multipart/form-data" class="dropzone"></form>
+				</div>
+				<div id="content2"> 
+					<input type="text" class="form-control" style="margin: 0 auto;" id="tagSecond" placeholder="Put Your tags here" onkeydown="checkKey('tagSecond');">
+					<form method="POST" id="dropzone2" action="@routes.Application.upload("tagSecond")" enctype="multipart/form-data" class="dropzone"></form>
+				</div>
+				<div id="content2"> 
+					<input type="text" class="form-control" style=" margin: 0 auto;" id="tagThird" placeholder="Put Your tags here" onkeydown="checkKey('tagThird');">
+					<form method="POST" id="dropzone3" action="@routes.Application.upload("tagThird")" enctype="multipart/form-data" class="dropzone"></form>
+				</div>
+			 
+		<!--<form method="POST" id="notagdz" class="dropzone" action="@routes.Application.upload("notag")" enctype="multipart/form-data">
+		</form>-->
+	 
 </div>
 </div>
 
 
 <script>
-var tags = "notag";
-
-	Dropzone.options.notagdz = {
-	  init: function() {
-		this.on("processing", function(file) {
-		  this.options.url = "upload/"+tags;
-		});
-	  }
-	};
-
-
-var commentApp = angular.module('searchRes', []);
-commentApp.filter('unsafe', function($sce) {
-    return function(val) {
-        return $sce.trustAsHtml(val);
-    };
-});
+	function checkKey(tagID){
+		if (event.keyCode == 13) { 
+			changeTag(tagID); 
+			return false; 
+			}
+		}
+		function changeTag(tagIDDef){	
+			var tag = document.getElementById(tagIDDef).value;
+			var	tagID = document.getElementById(tagIDDef);
+			var text = document.createTextNode(tag);
+			if(tagID.childNodes.length == 0){
+				tagID.appendChild(text)
+			}else{
+				tagID.firstChild.nodeValue = text;
+			}
+			localStorage[tagIDDef] = tag;	
+			location.reload();
+		}
+		Dropzone.options.dropzone1 = {
+			dictDefaultMessage: tag,
+			init: function() {
+				this.on("processing", function(file) {
+					this.options.url = "upload/"+tag;
+				});
+			}
+		};
+		alert(tagSecond);
+		Dropzone.options.dropzone2 = {
+			dictDefaultMessage: tagSecond,
+			init: function() {
+				this.on("processing", function(file) {
+					this.options.url = "upload/"+tagSecond;
+				});
+			}
+		};
+		Dropzone.options.dropzone3 = {
+			dictDefaultMessage: tagThird,
+			init: function() {
+				this.on("processing", function(file) {
+					this.options.url = "upload/"+tagThird;
+				});
+			}
+		};
+		Dropzone.autoDiscover = true;
+		
+		var commentApp = angular.module('searchRes', []);
+		commentApp.filter('unsafe', function($sce) {
+		return function(val) {
+			return $sce.trustAsHtml(val);
+		};
+	});
 
 	function searchController($scope){
 		/*$scope.results=[

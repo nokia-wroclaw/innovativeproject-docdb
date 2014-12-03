@@ -1,49 +1,49 @@
 package model;
 
-import play.Logger;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ContextExtractor {
 	private static ContextExtractor instance = null;
 	private Pattern tagPattern;
-	
+	private String patternString;
+
 	private ContextExtractor() {
-		tagPattern = Pattern.compile("(#\S+\s)|(\s#\S+)");
+		patternString = "(#\\S+\\s)|(\\s#\\S+)";
+		tagPattern = Pattern.compile(patternString);
 	}
 
 	/**
-	* returns search pattern without tags
-	*/
-	private String stripTags(String pattern){
-		return pattern.replaceAll(tagPattern);
+	 * returns search pattern without tags
+	 */
+	public String stripTags(String pattern) {
+		return pattern.replaceAll(patternString, "");
 	}
-	
+
 	/**
-	* returns list of tags in pattern
-	*/
-	private List<String> extractTags(String pattern){
+	 * returns list of tags in pattern
+	 */
+	public List<String> extractTags(String pattern) {
 		List<String> tags = new LinkedList<>();
-		Matcher m = tagPattern.maches(pattern);
-		while(m.find()){
-			tags.add(m.group())
+		Matcher m = tagPattern.matcher(pattern);
+		while (m.find()) {
+			tags.add(m.group());
 		}
 		return tags;
 	}
-	
+
 	/**
-	* returns context of given word within given content
-	*/
+	 * returns context of given word within given content
+	 */
 	public String getContext(String content, String word) {
 		int distanceFromWord = 200;
 		int wordStart = content.indexOf(word);
 		if (wordStart == -1)
-			return content.substring(0,
-					distanceFromWord >= content.length() ? content.length()
-							: distanceFromWord);
-		int ctxStart = wordStart - distanceFromWord <= 0 ? 0 : wordStart
-				- distanceFromWord;
-		int ctxEnd = wordStart + distanceFromWord >= content.length() ? content
-				.length() : wordStart + distanceFromWord;
+			return content.substring(0, distanceFromWord >= content.length() ? content.length() : distanceFromWord);
+		int ctxStart = wordStart - distanceFromWord <= 0 ? 0 : wordStart - distanceFromWord;
+		int ctxEnd = wordStart + distanceFromWord >= content.length() ? content.length() : wordStart + distanceFromWord;
 		String context = content.substring(ctxStart, ctxEnd);
 		int dotStart;
 		if ((dotStart = context.substring(0, wordStart - ctxStart).indexOf(".")) != -1) {

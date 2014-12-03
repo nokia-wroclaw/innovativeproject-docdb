@@ -70,7 +70,7 @@ public class FileHandler {
 				// przeniesc je do tagsArray
 				extractTags(tagsArray, newFileCheckSum, parsedFile);
 				XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagsArray);
-				elasticServer.elasticSearch.insert(elasticServer.client, json, "twitter", "tweet");
+				elasticServer.elasticSearch.insert(elasticServer.client, json, "documents", "file");
 				Logger.info("metadata saved");
 				return;
 			}
@@ -99,7 +99,7 @@ public class FileHandler {
 			// przeniesc je do tagsArray
 			extractTags(tagsArray, newFileCheckSum, parsedFile);
 			XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagsArray);
-			elasticServer.elasticSearch.insert(elasticServer.client, json, "twitter", "tweet");
+			elasticServer.elasticSearch.insert(elasticServer.client, json, "documents", "file");
 			Logger.info("metadata saved");
 		}
 
@@ -123,10 +123,10 @@ public class FileHandler {
 
 	private String getExistingFileName(String MD5) {
 		String[] fields = { "MD5" };
-		if (elasticServer.client.admin().indices().prepareExists("twitter").execute().actionGet().isExists() == false)
+		if (elasticServer.client.admin().indices().prepareExists("documents").execute().actionGet().isExists() == false)
 			return null;
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,
-				"twitter", "tweet", fields);
+				"documents", "file", fields);
 		if (searchResult == null)
 			return null;
 		return searchResult.get(0).get(1);

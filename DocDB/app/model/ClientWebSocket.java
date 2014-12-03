@@ -91,7 +91,7 @@ public class ClientWebSocket extends UntypedActor {
 
 	private ArrayList<ArrayList<String>> search(String pattern) {
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, pattern,
-				"twitter", "tweet");
+				"documents", "file");
 		return searchResult;
 	}
 

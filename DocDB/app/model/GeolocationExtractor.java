@@ -18,12 +18,22 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
-
+/**
+ * This class is used to read exifs from *.jpg and *.jpeg. If there are geolocation tags, it will convert it to name of place, using Google API
+ * @author a.dyngosz, s.majkrzak, m.wierzbicki
+ */
 public class GeolocationExtractor {
 	
+	/**
+	 * Read geolocation tags from file and convert it to adress
+	 * @param file photo, in which you want to search geolocation tags
+	 * @return location_string name of place, in which photo was taken
+	 * @throws IOException no file found
+	 * @throws ImageProcessingException 
+	 */
 	public String extractor (File file) throws IOException, ImageProcessingException {
-		 Metadata metadata = ImageMetadataReader.readMetadata(file);
-	       // See whether it has GPS data
+		 	Metadata metadata = ImageMetadataReader.readMetadata(file);
+		 	// See whether it has GPS data
 	        GpsDirectory gpsDirectory = metadata.getDirectory(GpsDirectory.class);
 	        // Try to read out the location, making sure it's non-zero
 	        GeoLocation geoLocation = gpsDirectory.getGeoLocation();
@@ -39,7 +49,7 @@ public class GeolocationExtractor {
 	            location = ret.getJSONArray("results").getJSONObject(0); 
 	            // Get the value of the attribute whose name is "formatted_string"
 	            location_string = location.getString("formatted_address");
-	            return (location_string);
+	            return location_string;
 	        } catch (JSONException e1) {
 	            e1.printStackTrace();
 
@@ -47,6 +57,12 @@ public class GeolocationExtractor {
 	        return location_string;
 	}
 	
+	/**
+	 * Using Google API this method read information about a place, and return it.
+	 * @param lat latitude of a place
+	 * @param lng longtitude of a place
+	 * @return JSON with all data about this place
+	 */
 	public static JSONObject getLocationInfo( double lat, double lng) {
 
         HttpGet httpGet = new HttpGet("http://maps.google.com/maps/api/geocode/json?latlng="+lat+","+lng+"&sensor=false");

@@ -11,15 +11,15 @@
 			if(!localStorage["tagID"]=="")
 				tag = localStorage["tagID"];
 			else
-				tag = "#Fejm";
+				tag = "file";
 			if(!localStorage["tagSecond"]=="")	
 				tagSecond = localStorage["tagSecond"];
 			else
-				tagSecond = "#Fejm";
+				tagSecond = "nokia";
 			if(!localStorage["tagThird"]=="")	
 				tagThird = localStorage["tagThird"];
 			else
-				tagThird = "#sięZgadzać";
+				tagThird = "Uczelnia";
 			
 		</script>
 <h2>Search</h2>
@@ -64,10 +64,6 @@
 					<input type="text" class="form-control" style=" margin: 0 auto;" id="tagThird" placeholder="Put Your tags here" onkeydown="checkKey('tagThird');">
 					<form method="POST" id="dropzone3" action="@routes.Application.upload("tagThird")" enctype="multipart/form-data" class="dropzone"></form>
 				</div>
-			 
-		<!--<form method="POST" id="notagdz" class="dropzone" action="@routes.Application.upload("notag")" enctype="multipart/form-data">
-		</form>-->
-	 
 </div>
 </div>
 

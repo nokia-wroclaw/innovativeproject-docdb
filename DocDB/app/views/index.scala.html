@@ -75,23 +75,20 @@
 			return false; 
 			}
 		}
-		function changeTag(tagIDDef){	
-			var tag = document.getElementById(tagIDDef).value;
-			var	tagID = document.getElementById(tagIDDef);
-			var text = document.createTextNode(tag);
-			if(tagID.childNodes.length == 0){
-				tagID.appendChild(text)
-			}else{
-				tagID.firstChild.nodeValue = text;
-			}
-			localStorage[tagIDDef] = tag;	
+		function changeTag(tagIDName){	
+			var tag = document.getElementById(tagIDName).value;
+			var	tagID = document.getElementById(tagIDName);
+			tagID.value = tag;
+			localStorage[tagIDName] = tag;	
 			location.reload();
 		}
+
 		Dropzone.options.dropzone1 = {
 			dictDefaultMessage: tag,
 			init: function() {
 				this.on("processing", function(file) {
-					this.options.url = "upload/"+tag;
+					var temp = tag.replace('#','');
+					this.options.url = "upload/"+temp;
 				});
 			}
 		};
@@ -99,7 +96,9 @@
 			dictDefaultMessage: tagSecond,
 			init: function() {
 				this.on("processing", function(file) {
-					this.options.url = "upload/"+tagSecond;
+					var temp = tagSecond.replace('#','');
+					this.options.url = "upload/"+temp;
+
 				});
 			}
 		};
@@ -107,7 +106,8 @@
 			dictDefaultMessage: tagThird,
 			init: function() {
 				this.on("processing", function(file) {
-					this.options.url = "upload/"+tagThird;
+					var temp = tagThird.replace('#','');
+					this.options.url = "upload/"+temp;
 				});
 			}
 		};

@@ -7,20 +7,14 @@
 
 <div class="jumbotron">
 	<script>
-			Dropzone.autoDiscover = false; var tag; var tagSecond= "#Musi"; var tagThird= "#sięZgadzać";
-			if(!localStorage["tagID"]=="")
-				tag = localStorage["tagID"];
-			else
-				tag = "file";
-			if(!localStorage["tagSecond"]=="")	
-				tagSecond = localStorage["tagSecond"];
-			else
-				tagSecond = "nokia";
-			if(!localStorage["tagThird"]=="")	
-				tagThird = localStorage["tagThird"];
-			else
-				tagThird = "Uczelnia";
-			
+			Dropzone.autoDiscover = false;
+			var tag = []
+			for (i = 0; i <= 2; i++) {
+				if(!localStorage[i]=="")
+					tag[i] = localStorage[i];
+				else
+					tag[i] = "file";
+			}
 		</script>
 <h2>Search</h2>
 	<div id="content1">
@@ -43,7 +37,7 @@
 					</div>
 					<div class="panel-footer"><small>{{result.tags}}</medium></div>
 				</div>
-				<div ng-if="$index == 9" <button type="button" class="btn btn-default btn-lg btn-block">Show all result</button>
+				<div ng-if="$index == 9" <button type="button" action="newSearch();" class="btn btn-default btn-lg btn-block">Show all result </button>
 					</div>
 			</a>
 						
@@ -58,18 +52,22 @@
 	 
 		 
 				<div id="content2">
-					<input type="text" class="form-control" style=" margin: 0 auto;" id="tagID" placeholder="Put Your tags here" onkeydown="checkKey('tagID');">
-					<form method="POST" id="dropzone1" action="@routes.Application.upload("tag")" enctype="multipart/form-data" class="dropzone"></form>
-					<input type="text" class="form-control" style="margin: 0 auto;" id="tagSecond" placeholder="Put Your tags here" onkeydown="checkKey('tagSecond');">
-					<form method="POST" id="dropzone2" action="@routes.Application.upload("tagSecond")" enctype="multipart/form-data" class="dropzone"></form>
-					<input type="text" class="form-control" style=" margin: 0 auto;" id="tagThird" placeholder="Put Your tags here" onkeydown="checkKey('tagThird');">
-					<form method="POST" id="dropzone3" action="@routes.Application.upload("tagThird")" enctype="multipart/form-data" class="dropzone"></form>
+					<input type="text" class="form-control" style=" margin: 0 auto;" id="0" placeholder="Put Your tags here" onkeydown="checkKey('0');">
+					<form method="POST" id="dropzone1" action="@routes.Application.upload("tag[0]")" enctype="multipart/form-data" class="dropzone"></form>
+					<input type="text" class="form-control" style="margin: 0 auto;" id="1" placeholder="Put Your tags here" onkeydown="checkKey('1');">
+					<form method="POST" id="dropzone2" action="@routes.Application.upload("tag[1]")" enctype="multipart/form-data" class="dropzone"></form>
+					<input type="text" class="form-control" style=" margin: 0 auto;" id="2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
+					<form method="POST" id="dropzone3" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></form>
 				</div>
 </div>
 </div>
 
 
 <script>
+	function newSearch(){
+		alert("Hello!");
+	}
+
 	function checkKey(tagID){
 		if (event.keyCode == 13) { 
 			changeTag(tagID); 
@@ -85,29 +83,29 @@
 		}
 
 		Dropzone.options.dropzone1 = {
-			dictDefaultMessage: tag,
+			dictDefaultMessage: tag[0],
 			init: function() {
 				this.on("processing", function(file) {
-					var temp = tag.replace('#','');
+					var temp = tag[0].replace('#','');
 					this.options.url = "upload/"+temp;
 				});
 			}
 		};
 		Dropzone.options.dropzone2 = {
-			dictDefaultMessage: tagSecond,
+			dictDefaultMessage: tag[1],
 			init: function() {
 				this.on("processing", function(file) {
-					var temp = tagSecond.replace('#','');
+					var temp = tag[1].replace('#','');
 					this.options.url = "upload/"+temp;
 
 				});
 			}
 		};
 		Dropzone.options.dropzone3 = {
-			dictDefaultMessage: tagThird,
+			dictDefaultMessage: tag[2],
 			init: function() {
 				this.on("processing", function(file) {
-					var temp = tagThird.replace('#','');
+					var temp = tag[2].replace('#','');
 					this.options.url = "upload/"+temp;
 				});
 			}

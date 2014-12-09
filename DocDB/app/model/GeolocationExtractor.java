@@ -26,14 +26,7 @@ import org.json.JSONObject;
  * @author a.dyngosz, s.majkrzak, m.wierzbicki
  */
 public class GeolocationExtractor {
-	Metadata metadata;
-	GpsDirectory gpsDirectory;
-	GeoLocation geoLocation;
-	String[] latlng;
-	Double lat, lng;
-	JSONObject ret, location;
-	String location_string = "";
-
+	
 	/**
 	 * Read geolocation tags from file and convert it to adress
 	 * 
@@ -45,6 +38,14 @@ public class GeolocationExtractor {
 	 * @throws ImageProcessingException
 	 */
 	public String extractor(File file) throws IOException, ImageProcessingException {
+		String location_string = "";
+		Metadata metadata;
+		GpsDirectory gpsDirectory;
+		GeoLocation geoLocation;
+		String[] latlng;
+		Double lat, lng;
+		JSONObject ret, location;
+		
 		metadata = ImageMetadataReader.readMetadata(file);
 		// See whether it has GPS data
 		gpsDirectory = metadata.getDirectory(GpsDirectory.class);
@@ -63,7 +64,7 @@ public class GeolocationExtractor {
 			// object as JSON
 			location = ret.getJSONArray("results").getJSONObject(0);
 			// Get the value of the attribute whose name is "formatted_string"
-			location_string = location.getString("formatted_address");
+			location_string = getPlaceName(location); //location.getString("formatted_address");
 			return location_string;
 		} catch (JSONException e1) {
 			e1.printStackTrace();
@@ -82,7 +83,7 @@ public class GeolocationExtractor {
 	 *            longtitude of a place
 	 * @return JSON with all data about this place
 	 */
-	public static JSONObject getLocationInfo(double lat, double lng) {
+	public JSONObject getLocationInfo(double lat, double lng) {
 
 		HttpGet httpGet = new HttpGet("http://maps.google.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&sensor=false");
 		HttpClient client = new DefaultHttpClient();
@@ -108,5 +109,10 @@ public class GeolocationExtractor {
 			e.printStackTrace();
 		}
 		return jsonObject;
+	}
+	
+	public String getPlaceName (JSONObject location) throws JSONException {
+		String location_string = location.getString("formatted_address");
+		return location_string;
 	}
 }

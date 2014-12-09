@@ -22,6 +22,7 @@ public class ClientWebSocket extends UntypedActor {
 	private final ContextExtractor ctxEx;
 
 	ClientWebSocket(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out, ElasticSearchServer elasticServer) {
+		
 		Logger.info("New ClientWebSocket");
 		this.socketIn = in;
 		this.socketOut = out;

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
-
+ 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -28,19 +28,19 @@ public class ElasticSearchManager {
 			else
 				System.out.println("Problem with insert()");
 
-		} catch (Exception e) {
-			System.out.println("Try");
+		} catch (Exception e) {System.out.println("Exception in insert: ");
+		 e.printStackTrace();
 		}
 	}
 
 	public ArrayList<ArrayList<String>> search(Client client, String content, String index, String type) {
 		String[] fieldNames = { "title", "content", "author", "size", "tags" };
-		return search(client, content, index, type, fieldNames);
+		return search(client, content, index, type, fieldNames, 10);
 
 	}
 
 	public ArrayList<ArrayList<String>> search(Client client, String content, String index, String type,
-			String[] fieldNames) {
+			String[] fieldNames, int resultSize) {
 
 		// creating query to find out if any of files on server contain search
 		// value
@@ -51,7 +51,7 @@ public class ElasticSearchManager {
 
 		// proceed search with query created above
 		SearchResponse response = client.prepareSearch(index).setTypes(type)
-				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(qb3) // Query
+				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(qb3).setSize(resultSize).addHighlightedField(content) // Query
 				.execute().actionGet();
 
 		// getting search result in form of array

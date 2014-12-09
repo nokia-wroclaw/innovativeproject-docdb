@@ -126,7 +126,7 @@ public class FileHandler {
 		if (elasticServer.client.admin().indices().prepareExists("documents").execute().actionGet().isExists() == false)
 			return null;
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,
-				"documents", "file", fields);
+				"documents", "file", fields, 10);
 		if (searchResult == null)
 			return null;
 		return searchResult.get(0).get(1);

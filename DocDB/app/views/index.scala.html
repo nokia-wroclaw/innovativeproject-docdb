@@ -15,8 +15,7 @@
 					else
 						tag[i] = "file";
 				}
-				var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-				var webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
+				
 			</script>
 	<h2>Search</h2>
 		<div id="content1">
@@ -42,8 +41,8 @@
 						</div>
 					</div>
 				</a>
-				<div ng-if="$index == 9" id="button"
-						<button type="button" onclick="newSearch();" class="btn btn-default btn-lg btn-block">Show all result </button>
+				<div ng-if="$last == true"
+						<button id="newSearch" type="button" class="btn btn-default btn-lg btn-block">Show all result </button>
 				</div>
 			</div>
 		</div>
@@ -72,11 +71,6 @@
 </div>
 
 <script>
-		function newSearch(){			 
-			webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(), "limit": "true"}));
-			 
-		}
-
 		function checkKey(tagID){
 			if (event.keyCode == 13) {
 				if(tagID == 'link'){

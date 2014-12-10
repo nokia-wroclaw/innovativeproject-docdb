@@ -9,12 +9,7 @@ $(document).ready(function(){
 		if( data.result != null){
 			$('#resultDiv').scope().results = eval(data.result);
 			$("#resultDiv").scope().$apply();
-			/*}else if ( data.loginAttempts != null){
-				$("#loginAttempts").html(data.loginAttempts);
-			}else if ( data.vipButton != null){
-				alert(data.vipButton);
-				$("#vipButton").hide(400);
-			*/}
+		}
 	}
 
     webSocket.onmessage = receiveEvent;
@@ -26,6 +21,11 @@ $(document).ready(function(){
 
 	$("#search").keyup(function(){
 		webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(),"limit": "false"}));
+	});
+	
+	 
+	$("#newSearch").click(function(){ 
+		webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(), "limit": "true"}));
 	});
 
 	$("h2").css("cursor","pointer");

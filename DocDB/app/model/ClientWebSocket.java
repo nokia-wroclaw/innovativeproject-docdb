@@ -51,7 +51,23 @@ public class ClientWebSocket extends UntypedActor {
 		}
 		String request = event.get("request").asText();
 
-		if (!request.equals("search")) {
+		if (request.equals("geolocation")) {
+			GeolocationExtractor geoExtractor = new GeolocationExtractor ();
+			double lat = Double.parseDouble(event.get("lat").asText());
+			double lng = Double.parseDouble(event.get("lng").asText());
+			String location = "";
+			System.out.println("lat" + lat);
+			System.out.println("lng" + lng);
+			try {
+				location = geoExtractor.getPlaceName(geoExtractor.getLocationInfo(lat, lng));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ObjectNode message = Json.newObject();
+			message.put("geo", location);
+			socketOut.write(message);
+			Logger.info(location+"witam");
 			return;
 		}
 

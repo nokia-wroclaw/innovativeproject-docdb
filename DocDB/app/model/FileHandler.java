@@ -81,7 +81,7 @@ public class FileHandler {
 		int number = 0;
 		while (newFile.exists()) {// file exists. need new name
 			number++;
-			newFile = new File(number + newPath);
+			newFile = new File( dirPath + number + uploadedFile.getFilename());
 		}
 		newPath = dirPath + number + uploadedFile.getFilename();
 

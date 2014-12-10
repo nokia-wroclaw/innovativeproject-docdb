@@ -25,7 +25,7 @@
 			</div>
 
 			<div id="resultDiv" ng-app="searchRes" ng-controller="searchController" class="list-group">
-				<div ng-repeat="result in results track by $index" <a href={{result.link}} class="list-group-item">
+				<div ng-repeat="result in results track by $index" ><a href={{result.link}} class="list-group-item">
 					<div class="panel panel-primary">
 						<div class="panel-heading">
 							<span class="badge" style="float: right;">{{result.size}}kB</span>
@@ -41,7 +41,7 @@
 						</div>
 					</div>
 				</a>
-				<div ng-if="$last == true">
+				<div ng-if="$last == true && $index == 9">
 						<button id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all result </button>
 				</div>
 			</div>

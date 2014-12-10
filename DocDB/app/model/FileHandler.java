@@ -15,8 +15,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 /**
- * Class control flow of file during uploading, parsing and sending it to
- * elastic search database.
+ * Class control flow of file during uploading, parsing and sending it to elastic search database.
  * 
  * @author a.dyngosz, s.majkrzak. m. wierzbicki
  */
@@ -34,24 +33,34 @@ public class FileHandler {
 	}
 
 	/**
-	 * Controller invokes this method, when user wants to send files to server.
-	 * It takes care of giving it to Tika Apache parser, getting back array with
-	 * content and metadata. Next, method receive the map (requiered for Elastic
+	 * Controller invokes this method, when user wants to send files to server. It takes care of giving it to Tika
+	 * Apache parser, getting back array with content and metadata. Next, method receive the map (requiered for Elastic
 	 * search) and send it to ES server
 	 * 
 	 * @param uploadedFile
 	 *            file given by user to upload
 	 */
-	public void handleFile(FilePart uploadedFile, ArrayList<String> tagsArray) {
-		// String fileName = uploadedFile.getFilename();
-		// String contentType = uploadedFile.getContentType();
-
+	public void handleFile(FilePart uploadedFile, ArrayList<String> tagList) {
 		File file = uploadedFile.getFile();
+		String uploadedFileName = uploadedFile.getFilename();
 
+		handleFile(file, uploadedFileName, tagList);
+
+	}
+
+	public void handleFile(File uploadedLink, ArrayList<String> tagList) {
+		handleFile(uploadedLink, uploadedLink.getName(), tagList);
+	}
+
+	/**
+	 * @param tagList
+	 * @param file
+	 * @param uploadedFileName
+	 */
+	private void handleFile(File file, String uploadedFileName, ArrayList<String> tagList) {
 		// get new file hash
 		String newFileCheckSum = getHash(file);
 
-		String uploadedFileName = dirPath + uploadedFile.getFilename();
 		String newFileName = uploadedFileName;
 		File destFile = new File(newFileName);
 
@@ -63,16 +72,13 @@ public class FileHandler {
 			}
 			// file exist with different name:
 			newFileName = dirPath + getExistingFileName(newFileCheckSum);
+
 			ArrayList<String> parsedFile = fileParser.parseFile(new File(newFileName), newFileName, uploadedFileName);
 			if (parsedFile != null) {
-				// musze usunac tagi dotyczace plikow z parsedFile i
-				// przeniesc je do tagsArray
-				extractTags(tagsArray, newFileCheckSum, parsedFile);
-				XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagsArray);
-				elasticServer.elasticSearch.insert(elasticServer.client, json, "documents", "file");
+				insertToElastic(tagList, newFileCheckSum, parsedFile);
 				Logger.info("metadata saved");
-				return;
 			}
+			return;
 
 		}
 
@@ -80,9 +86,9 @@ public class FileHandler {
 		int number = 0;
 		while (destFile.exists()) {// file exists. need new name
 			number++;
-			destFile = new File(dirPath + number + uploadedFile.getFilename());
+			destFile = new File(dirPath + number + uploadedFileName);
 		}
-		newFileName = dirPath + uploadedFile.getFilename();
+		newFileName = dirPath + number + uploadedFileName;
 
 		try {
 			Files.move(file, destFile);
@@ -94,14 +100,20 @@ public class FileHandler {
 
 		ArrayList<String> parsedFile = fileParser.parseFile(destFile, newFileName, uploadedFileName);
 		if (parsedFile != null) {
-			// musze usunac tagi dotyczace plikow z parsedFile i
-			// przeniesc je do tagsArray
-			extractTags(tagsArray, newFileCheckSum, parsedFile);
-			XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagsArray);
-			elasticServer.elasticSearch.insert(elasticServer.client, json, "documents", "file");
+			insertToElastic(tagList, newFileCheckSum, parsedFile);
 			Logger.info("metadata saved");
 		}
+	}
 
+	/**
+	 * @param tagList
+	 * @param newFileCheckSum
+	 * @param parsedFile
+	 */
+	private void insertToElastic(ArrayList<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile) {
+		extractTags(tagList, newFileCheckSum, parsedFile);
+		XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagList);
+		elasticServer.elasticSearch.insert(elasticServer.client, json, "documents", "file");
 	}
 
 	/**
@@ -118,10 +130,6 @@ public class FileHandler {
 			return null;
 		}
 		return newFileCheckSum;
-	}
-
-	public void handleFile(File uploadedLink, ArrayList<String> tagList) {
-		// TODO handle link file
 	}
 
 	/**

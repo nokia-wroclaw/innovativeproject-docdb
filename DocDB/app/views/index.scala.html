@@ -15,7 +15,7 @@
 					else
 						tag[i] = "file";
 				}
-				
+
 			</script>
 	<h2>Search</h2>
 		<div id="content1">
@@ -23,15 +23,15 @@
 				<input type="text" id="search" class="form-control" placeholder="Search">
 				<span class="input-group-addon glyphicon glyphicon-search"></span>
 			</div>
-			
-			<div id="resultDiv" ng-app="searchRes" ng-controller="searchController" class="list-group">	
+
+			<div id="resultDiv" ng-app="searchRes" ng-controller="searchController" class="list-group">
 				<div ng-repeat="result in results track by $index" <a href={{result.link}} class="list-group-item">
-					<div class="panel panel-primary">	
+					<div class="panel panel-primary">
 						<div class="panel-heading">
 							<span class="badge" style="float: right;">{{result.size}}kB</span>
 							<h3 class="panel-title">{{result.file}}</h3>
 						</div>
-						
+
 						<div class="panel-body">
 							<span style="float:right;" class="glyphicon glyphicon-download"></span>
 							<span ng-bind-html="result.context | unsafe"></span>
@@ -41,8 +41,8 @@
 						</div>
 					</div>
 				</a>
-				<div ng-if="$last == true"
-						<button id="newSearch" type="button" class="btn btn-default btn-lg btn-block">Show all result </button>
+				<div ng-if="$last == true">
+						<button id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all result </button>
 				</div>
 			</div>
 		</div>
@@ -56,14 +56,14 @@
 		</div>
 
 	<div class="jumbotron">
-		<h2>Drop files</h2>		 
+		<h2>Drop files</h2>
 			<div id="content2">
 				<input type="text" class="form-control" style=" margin: 0 auto;" id="0" placeholder="Put Your tags here" onkeydown="checkKey('0');">
 				<form method="POST" id="dropzone1" action="@routes.Application.upload("tag[0]")" enctype="multipart/form-data" class="dropzone"></form>
-				
+
 				<input type="text" class="form-control" style="margin: 0 auto;" id="1" placeholder="Put Your tags here" onkeydown="checkKey('1');">
 				<form method="POST" id="dropzone2" action="@routes.Application.upload("tag[1]")" enctype="multipart/form-data" class="dropzone"></form>
-				
+
 				<input type="text" class="form-control" style=" margin: 0 auto;" id="2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
 				<form method="POST" id="dropzone3" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></form>
 			</div>
@@ -74,27 +74,27 @@
 		function checkKey(tagID){
 			if (event.keyCode == 13) {
 				if(tagID == 'link'){
-					handleLink(tagID); 
-					return false; 
+					handleLink(tagID);
+					return false;
 				} else {
-					changeTag(tagID); 
-					return false; 
+					changeTag(tagID);
+					return false;
 				}
 			}
 		}
-		function changeTag(tagIDName){	
+		function changeTag(tagIDName){
 			var tag = document.getElementById(tagIDName).value;
 			var	tagID = document.getElementById(tagIDName);
 			tagID.value = tag;
-			localStorage[tagIDName] = tag;	
+			localStorage[tagIDName] = tag;
 			location.reload();
 		}
-		
+
 		function handleLink(tagIDName){
 			link = document.getElementById(tagIDName).value;
 			var win = window.open(link, '_blank');
 			win.focus();
-			
+
 		}
 
 		Dropzone.options.dropzone1 = {
@@ -126,7 +126,7 @@
 			}
 		};
 		Dropzone.autoDiscover = true;
-		
+
 		var commentApp = angular.module('searchRes', []);
 		commentApp.filter('unsafe', function($sce) {
 			return function(val) {

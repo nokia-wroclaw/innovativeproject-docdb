@@ -1,3 +1,4 @@
+var newSearch;
 $(document).ready(function(){
 	var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
 	var webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
@@ -22,11 +23,11 @@ $(document).ready(function(){
 	$("#search").keyup(function(){
 		webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(),"limit": "false"}));
 	});
-	
-	 
-	$("#newSearch").click(function(){ 
+
+
+	newSearch = function (){
 		webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(), "limit": "true"}));
-	});
+	}
 
 	$("h2").css("cursor","pointer");
 

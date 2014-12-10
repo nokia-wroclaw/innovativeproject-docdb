@@ -22,7 +22,7 @@ public class ClientWebSocket extends UntypedActor {
 	private final ContextExtractor ctxEx;
 
 	ClientWebSocket(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out, ElasticSearchServer elasticServer) {
-		
+
 		Logger.info("New ClientWebSocket");
 		this.socketIn = in;
 		this.socketOut = out;
@@ -58,8 +58,7 @@ public class ClientWebSocket extends UntypedActor {
 		String pattern = event.get("pattern").asText();
 		String temp = event.get("limit").asText();
 		Boolean limit = false;
-		if(temp.equals("true"))
-			limit = true;
+		if (temp.equals("true")) limit = true;
 		Logger.info("Full search: " + temp);
 
 		Logger.info("searching for:" + pattern);
@@ -71,8 +70,7 @@ public class ClientWebSocket extends UntypedActor {
 		Logger.info("tags:" + tagList.toString());
 
 		ArrayList<ArrayList<String>> searchResult = search(searchPattern, limit);
-		if (!tagList.isEmpty())
-			searchResult = filterOutByTags(searchResult, tagList);
+		if (!tagList.isEmpty()) searchResult = filterOutByTags(searchResult, tagList);
 		if (searchResult == null) {
 			ObjectNode message = Json.newObject();
 			message.put("result", "{}");

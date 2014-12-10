@@ -5,73 +5,87 @@
 
 <div class="container">
 
-<div class="jumbotron">
-	<script>
-			Dropzone.autoDiscover = false;
-			var tag = []
-			for (i = 0; i <= 2; i++) {
-				if(!localStorage[i]=="")
-					tag[i] = localStorage[i];
-				else
-					tag[i] = "file";
-			}
-		</script>
-<h2>Search</h2>
-	<div id="content1">
-		<div class="input-group">
-		  <input type="text" id="search" class="form-control" placeholder="Search">
-		  <span class="input-group-addon glyphicon glyphicon-search"></span>
-		</div>
-		
-		<div id="resultDiv" ng-app="searchRes" ng-controller="searchController" class="list-group">
-				
-			<a ng-repeat="result in results track by $index" href={{result.link}} class="list-group-item">
-				<div class="panel panel-primary">	
-					<div class="panel-heading">
-						<span class="badge" style="float: right;">{{result.size}}kB</span>
-						<h3 class="panel-title">{{result.file}}</h3>
-					</div>
-					<div class="panel-body">
-						<span style="float:right;" class="glyphicon glyphicon-download"></span>
-						<span ng-bind-html="result.context | unsafe"></span>
-					</div>
-					<div class="panel-footer"><small>{{result.tags}}</medium></div>
-				</div>
-				<div ng-if="$index == 9" <button type="button" action="newSearch();" class="btn btn-default btn-lg btn-block">Show all result </button>
-					</div>
-			</a>
-						
+	<div class="jumbotron">
+		<script>
+				Dropzone.autoDiscover = false;
+				var tag = []
+				for (i = 0; i <= 2; i++) {
+					if(!localStorage[i]=="")
+						tag[i] = localStorage[i];
+					else
+						tag[i] = "file";
+				}
+				var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
+				var webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
+			</script>
+	<h2>Search</h2>
+		<div id="content1">
+			<div class="input-group">
+				<input type="text" id="search" class="form-control" placeholder="Search">
+				<span class="input-group-addon glyphicon glyphicon-search"></span>
+			</div>
 			
+			<div id="resultDiv" ng-app="searchRes" ng-controller="searchController" class="list-group">	
+				<div ng-repeat="result in results track by $index" <a href={{result.link}} class="list-group-item">
+					<div class="panel panel-primary">	
+						<div class="panel-heading">
+							<span class="badge" style="float: right;">{{result.size}}kB</span>
+							<h3 class="panel-title">{{result.file}}</h3>
+						</div>
+						
+						<div class="panel-body">
+							<span style="float:right;" class="glyphicon glyphicon-download"></span>
+							<span ng-bind-html="result.context | unsafe"></span>
+						</div>
+						<div class="panel-footer">
+							<small>{{result.tags}}</small>
+						</div>
+					</div>
+				</a>
+				<div ng-if="$index == 9" id="button"
+						<button type="button" onclick="newSearch();" class="btn btn-default btn-lg btn-block">Show all result </button>
+				</div>
+			</div>
 		</div>
+	</div>
+
+		<div class="jumbotron">
+			<h2>Drop files via link</h2>
+				<div id="content3">
+					<input type="text" class="form-control" style=" margin: 0 auto;" id="link" placeholder="Put Your link here" onkeydown="checkKey('link');">
+				</div>
+		</div>
+
+	<div class="jumbotron">
+		<h2>Drop files</h2>		 
+			<div id="content2">
+				<input type="text" class="form-control" style=" margin: 0 auto;" id="0" placeholder="Put Your tags here" onkeydown="checkKey('0');">
+				<form method="POST" id="dropzone1" action="@routes.Application.upload("tag[0]")" enctype="multipart/form-data" class="dropzone"></form>
+				
+				<input type="text" class="form-control" style="margin: 0 auto;" id="1" placeholder="Put Your tags here" onkeydown="checkKey('1');">
+				<form method="POST" id="dropzone2" action="@routes.Application.upload("tag[1]")" enctype="multipart/form-data" class="dropzone"></form>
+				
+				<input type="text" class="form-control" style=" margin: 0 auto;" id="2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
+				<form method="POST" id="dropzone3" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></form>
+			</div>
 	</div>
 </div>
 
-
-<div class="jumbotron">
-	<h2>Drop files</h2>
-	 
-		 
-				<div id="content2">
-					<input type="text" class="form-control" style=" margin: 0 auto;" id="0" placeholder="Put Your tags here" onkeydown="checkKey('0');">
-					<form method="POST" id="dropzone1" action="@routes.Application.upload("tag[0]")" enctype="multipart/form-data" class="dropzone"></form>
-					<input type="text" class="form-control" style="margin: 0 auto;" id="1" placeholder="Put Your tags here" onkeydown="checkKey('1');">
-					<form method="POST" id="dropzone2" action="@routes.Application.upload("tag[1]")" enctype="multipart/form-data" class="dropzone"></form>
-					<input type="text" class="form-control" style=" margin: 0 auto;" id="2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
-					<form method="POST" id="dropzone3" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></form>
-				</div>
-</div>
-</div>
-
-
 <script>
-	function newSearch(){
-		alert("Hello!");
-	}
+		function newSearch(){			 
+			webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(), "limit": "true"}));
+			 
+		}
 
-	function checkKey(tagID){
-		if (event.keyCode == 13) { 
-			changeTag(tagID); 
-			return false; 
+		function checkKey(tagID){
+			if (event.keyCode == 13) {
+				if(tagID == 'link'){
+					handleLink(tagID); 
+					return false; 
+				} else {
+					changeTag(tagID); 
+					return false; 
+				}
 			}
 		}
 		function changeTag(tagIDName){	
@@ -80,6 +94,13 @@
 			tagID.value = tag;
 			localStorage[tagIDName] = tag;	
 			location.reload();
+		}
+		
+		function handleLink(tagIDName){
+			link = document.getElementById(tagIDName).value;
+			var win = window.open(link, '_blank');
+			win.focus();
+			
 		}
 
 		Dropzone.options.dropzone1 = {
@@ -114,18 +135,11 @@
 		
 		var commentApp = angular.module('searchRes', []);
 		commentApp.filter('unsafe', function($sce) {
-		return function(val) {
-			return $sce.trustAsHtml(val);
-		};
-	});
+			return function(val) {
+				return $sce.trustAsHtml(val);
+			};
+		});
 
-	function searchController($scope){
-		/*$scope.results=[
-		{file:"a.txt", size:"3", link:"@routes.Application.getFile("a.txt")"},
-		{file:"b.doc", size:"0.5", link:"@routes.Application.getFile("b.doc")"},
-		{file:"c.xml", size:"6", link:"@routes.Application.getFile("c.xml")"},
-		{file:"d.pdf", size:"3", link:"@routes.Application.getFile("d.pdf")"},
-		];*/
-	}
+	function searchController($scope){}
 </script>
 }

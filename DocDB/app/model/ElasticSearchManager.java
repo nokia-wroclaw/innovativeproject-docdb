@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
  
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -28,19 +29,19 @@ public class ElasticSearchManager {
 			else
 				System.out.println("Problem with insert()");
 
-		} catch (Exception e) {System.out.println("Exception in insert: ");
+		} catch (Exception e) {
 		 e.printStackTrace();
 		}
 	}
 
-	public ArrayList<ArrayList<String>> search(Client client, String content, String index, String type) {
+	public ArrayList<ArrayList<String>> search(Client client, String content, String index, String type, Boolean limit) {
 		String[] fieldNames = { "title", "content", "author", "size", "tags" };
-		return search(client, content, index, type, fieldNames, 10);
+		return search(client, content, index, type, fieldNames, limit);
 
 	}
 
 	public ArrayList<ArrayList<String>> search(Client client, String content, String index, String type,
-			String[] fieldNames, int resultSize) {
+			String[] fieldNames, Boolean limit) {
 
 		// creating query to find out if any of files on server contain search
 		// value
@@ -48,7 +49,9 @@ public class ElasticSearchManager {
 		QueryBuilder qb = QueryBuilders.matchQuery("content", content);
 
 		MultiMatchQueryBuilder qb3 = new MultiMatchQueryBuilder(content, fieldNames);
-
+		int resultSize = 10;
+		if(limit == true)
+			resultSize = Integer.MAX_VALUE;
 		// proceed search with query created above
 		SearchResponse response = client.prepareSearch(index).setTypes(type)
 				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(qb3).setSize(resultSize).addHighlightedField(content) // Query

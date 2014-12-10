@@ -7,14 +7,14 @@ $(document).ready(function(){
         var data = JSON.parse(event.data)
 
 		if( data.result != null){
-		$('#resultDiv').scope().results = eval(data.result);
-		$("#resultDiv").scope().$apply();
-		/*}else if ( data.loginAttempts != null){
-			$("#loginAttempts").html(data.loginAttempts);
-		}else if ( data.vipButton != null){
-			alert(data.vipButton);
-			$("#vipButton").hide(400);
-		*/}
+			$('#resultDiv').scope().results = eval(data.result);
+			$("#resultDiv").scope().$apply();
+			/*}else if ( data.loginAttempts != null){
+				$("#loginAttempts").html(data.loginAttempts);
+			}else if ( data.vipButton != null){
+				alert(data.vipButton);
+				$("#vipButton").hide(400);
+			*/}
 	}
 
     webSocket.onmessage = receiveEvent;
@@ -25,7 +25,7 @@ $(document).ready(function(){
 */
 
 	$("#search").keyup(function(){
-		webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val()}));
+		webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(),"limit": "false"}));
 	});
 
 	$("h2").css("cursor","pointer");
@@ -36,7 +36,9 @@ $(document).ready(function(){
 	$("#content2").prev("h2").click(function(){
 		$("#content2").slideToggle(300);
 	});
-
+	$("#content3").prev("h2").click(function(){
+		$("#content3").slideToggle(300);
+	});
 
 
 });

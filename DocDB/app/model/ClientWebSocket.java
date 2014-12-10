@@ -56,6 +56,12 @@ public class ClientWebSocket extends UntypedActor {
 		}
 
 		String pattern = event.get("pattern").asText();
+		String temp = event.get("limit").asText();
+		Boolean limit = false;
+		if(temp.equals("true"))
+			limit = true;
+		Logger.info("Full search: " + temp);
+
 		Logger.info("searching for:" + pattern);
 
 		List<String> tagList = ctxEx.extractTags(pattern);
@@ -64,7 +70,7 @@ public class ClientWebSocket extends UntypedActor {
 		Logger.info("search:" + searchPattern);
 		Logger.info("tags:" + tagList.toString());
 
-		ArrayList<ArrayList<String>> searchResult = search(searchPattern);
+		ArrayList<ArrayList<String>> searchResult = search(searchPattern, limit);
 		if (!tagList.isEmpty())
 			searchResult = filterOutByTags(searchResult, tagList);
 		if (searchResult == null) {
@@ -117,9 +123,9 @@ public class ClientWebSocket extends UntypedActor {
 		return resultList;
 	}
 
-	private ArrayList<ArrayList<String>> search(String pattern) {
+	private ArrayList<ArrayList<String>> search(String pattern, Boolean limit) {
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, pattern,
-				"documents", "file");
+				"documents", "file", limit);
 		return searchResult;
 	}
 

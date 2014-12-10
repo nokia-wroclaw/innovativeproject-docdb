@@ -5,6 +5,7 @@
 # Home page
 GET		/							controllers.Application.index()
 POST	/upload/:tags				controllers.Application.upload(tags)
+POST	/takeLink/:tags				controllers.Application.uploadLink(tags)
 GET		/WebSocket					controllers.Application.WebSocket()
 GET		/SearchScript				controllers.Application.SearchScript()
 GET		/Download/:path				controllers.Application.getFile(path)

@@ -3,6 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import play.Logger;
 import play.libs.F.Callback;
 import play.libs.F.Callback0;
@@ -13,9 +15,6 @@ import akka.actor.UntypedActor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class ClientWebSocket extends UntypedActor {
 
@@ -55,72 +54,85 @@ public class ClientWebSocket extends UntypedActor {
 		String request = event.get("request").asText();
 
 		if (request.equals("geolocation")) {
-			GeolocationExtractor geoExtractor = new GeolocationExtractor ();
-			double lat = Double.parseDouble(event.get("lat").asText());
-			double lng = Double.parseDouble(event.get("lng").asText());
-			String location = "";
-			System.out.println("lat" + lat);
-			System.out.println("lng" + lng);
-			try {
-				JSONObject jo = geoExtractor.getLocationInfo(lat, lng);
-				location = geoExtractor.getPlaceName(jo);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			handleGeolocation(event);
+			return;
+		} else if (request.equals("search")) {
+
+			// get request data
+			String pattern = event.get("pattern").asText();
+			Boolean limit = event.get("limit").asText().equals("true");
+			List<String> tagList = ctxEx.extractTags(pattern);
+			String searchPattern = ctxEx.stripTags(pattern);
+
+			Logger.info("searching for:" + pattern + "with" + (limit ? "out" : "") + " limit");
+			Logger.info("search:" + searchPattern + "\ntags:" + tagList.toString());
+
+			// search elasticSearch search
+			ArrayList<ArrayList<String>> searchResult = search(searchPattern, limit);
+
+			if (!tagList.isEmpty()) searchResult = filterOutByTags(searchResult, tagList);
+
+			if (searchResult == null) {
+				sendEmptyResults();
+			} else {
+				Logger.info(String.valueOf(searchResult.size()) + " found");
+
+				ObjectNode message = Json.newObject(); // create message
+				ArrayNode results = message.putArray("result"); // results array in message
+
+				for (ArrayList<String> result : searchResult) {
+					ObjectNode innerMsg = Json.newObject(); // inner message (file info)
+					innerMsg.put("file", result.get(0));
+					innerMsg.put("link", "Download/" + result.get(1));
+					innerMsg.put("size", result.get(2));
+					innerMsg.put("context", ctxEx.getContext(result.get(3), pattern));
+
+					ArrayNode tags = innerMsg.putArray("tags"); // tags array in innerMsg (for this file)
+
+					int tagcount = result.size() - 4;
+					for (int tagnr = 0; tagnr < tagcount; tagnr++) {
+						tags.add(result.get(4 + tagnr));
+					}
+					// innerMsg.put("tags", tags);
+
+					results.add(innerMsg);
+				}
+				socketOut.write(message);
 			}
-			ObjectNode message = Json.newObject();
-			message.put("geo", location);
-			socketOut.write(message);
-			Logger.info(location+"witam");
-			return;
 		}
+	}
 
-		String pattern = event.get("pattern").asText();
-		String temp = event.get("limit").asText();
-		Boolean limit = false;
-		if (temp.equals("true")) limit = true;
-		Logger.info("Full search: " + temp);
-
-		Logger.info("searching for:" + pattern);
-
-		List<String> tagList = ctxEx.extractTags(pattern);
-		String searchPattern = ctxEx.stripTags(pattern);
-
-		Logger.info("search:" + searchPattern);
-		Logger.info("tags:" + tagList.toString());
-
-		ArrayList<ArrayList<String>> searchResult = search(searchPattern, limit);
-		if (!tagList.isEmpty()) searchResult = filterOutByTags(searchResult, tagList);
-		if (searchResult == null) {
-			ObjectNode message = Json.newObject();
-			message.put("result", "{}");
-			Logger.info("No results");
-			socketOut.write(message);
-			return;
-		}
-
+	/**
+	 * 
+	 */
+	private void sendEmptyResults() {
 		ObjectNode message = Json.newObject();
-		ArrayNode results = message.putArray("result");
-		Logger.info(String.valueOf(searchResult.size()) + " found");
-
-		for (ArrayList<String> result : searchResult) {
-			ObjectNode innerMsg = Json.newObject();
-			innerMsg.put("file", result.get(0));
-			innerMsg.put("link", "Download/" + result.get(1));
-			innerMsg.put("size", result.get(2));
-			innerMsg.put("context", ctxEx.getContext(result.get(3), pattern));
-
-			ArrayNode tags = message.putArray("tags");
-
-			int tagcount = result.size() - 4;
-			for (int tagnr = 0; tagnr < tagcount; tagnr++) {
-				tags.add(result.get(4 + tagnr));
-			}
-			innerMsg.put("tags", tags);
-
-			results.add(innerMsg);
-		}
+		message.put("result", "{}");
+		Logger.info("No results");
 		socketOut.write(message);
+	}
+
+	/**
+	 * @param event
+	 */
+	private void handleGeolocation(JsonNode event) {
+		GeolocationExtractor geoExtractor = new GeolocationExtractor();
+		double lat = Double.parseDouble(event.get("lat").asText());
+		double lng = Double.parseDouble(event.get("lng").asText());
+		String location = "";
+		System.out.println("lat" + lat);
+		System.out.println("lng" + lng);
+		try {
+			JSONObject jo = geoExtractor.getLocationInfo(lat, lng);
+			location = geoExtractor.getPlaceName(jo);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ObjectNode message = Json.newObject();
+		message.put("geo", location);
+		socketOut.write(message);
+		Logger.info(location + "witam");
 	}
 
 	private ArrayList<ArrayList<String>> filterOutByTags(ArrayList<ArrayList<String>> searchResult, List<String> tags) {

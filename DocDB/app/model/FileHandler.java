@@ -47,26 +47,23 @@ public class FileHandler {
 		// String contentType = uploadedFile.getContentType();
 
 		File file = uploadedFile.getFile();
-		String newPath = dirPath + uploadedFile.getFilename();
-		String oldPath = dirPath + uploadedFile.getFilename();
-		File newFile = new File(newPath);
 
 		// get new file hash
-		String newFileCheckSum = null;
-		try {
-			newFileCheckSum = Files.hash(file, Hashing.md5()).toString();
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
+		String newFileCheckSum = getHash(file);
+
+		String uploadedFileName = dirPath + uploadedFile.getFilename();
+		String newFileName = uploadedFileName;
+		File destFile = new File(newFileName);
+
 		if (fileExists(newFileCheckSum)) {
 			// file exists with the same name:
-			if (new File(newPath).exists()) {
-				Logger.info("same file already exists: " + newPath);
+			if (destFile.exists()) {
+				Logger.info("same file already exists: " + newFileName);
 				return;
 			}
 			// file exist with different name:
-			newPath = dirPath + getExistingFileName(newFileCheckSum);
-			ArrayList<String> parsedFile = fileParser.parseFile(new File(newPath), newPath, oldPath);
+			newFileName = dirPath + getExistingFileName(newFileCheckSum);
+			ArrayList<String> parsedFile = fileParser.parseFile(new File(newFileName), newFileName, uploadedFileName);
 			if (parsedFile != null) {
 				// musze usunac tagi dotyczace plikow z parsedFile i
 				// przeniesc je do tagsArray
@@ -81,21 +78,21 @@ public class FileHandler {
 
 		// check if filename already exists
 		int number = 0;
-		while (newFile.exists()) {// file exists. need new name
+		while (destFile.exists()) {// file exists. need new name
 			number++;
-			newFile = new File( dirPath + number + uploadedFile.getFilename());
+			destFile = new File(dirPath + number + uploadedFile.getFilename());
 		}
-		newPath = dirPath + uploadedFile.getFilename();
+		newFileName = dirPath + uploadedFile.getFilename();
 
 		try {
-			Files.move(file, newFile);
+			Files.move(file, destFile);
 			Logger.info("file saved");
 		} catch (IOException e) {
 			Logger.info("file save failed");
 			e.printStackTrace();
 		}
 
-		ArrayList<String> parsedFile = fileParser.parseFile(newFile, newPath, oldPath);
+		ArrayList<String> parsedFile = fileParser.parseFile(destFile, newFileName, uploadedFileName);
 		if (parsedFile != null) {
 			// musze usunac tagi dotyczace plikow z parsedFile i
 			// przeniesc je do tagsArray
@@ -105,6 +102,26 @@ public class FileHandler {
 			Logger.info("metadata saved");
 		}
 
+	}
+
+	/**
+	 * @param file
+	 * @param newFileCheckSum
+	 * @return
+	 */
+	private String getHash(File file) {
+		String newFileCheckSum;
+		try {
+			newFileCheckSum = Files.hash(file, Hashing.md5()).toString();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		return newFileCheckSum;
+	}
+
+	public void handleFile(File uploadedLink, ArrayList<String> tagList) {
+		// TODO handle link file
 	}
 
 	/**
@@ -125,15 +142,15 @@ public class FileHandler {
 
 	private String getExistingFileName(String MD5) {
 		String[] fields = { "MD5" };
-		ClusterHealthResponse healthResponse = elasticServer.client.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+		ClusterHealthResponse healthResponse = elasticServer.client.admin().cluster().prepareHealth()
+				.setWaitForGreenStatus().execute().actionGet();
 		ClusterHealthStatus healthStatus = healthResponse.getStatus();
-		Logger.info("Elastic is "+healthStatus);
+		Logger.info("Elastic is " + healthStatus);
 		if (elasticServer.client.admin().indices().prepareExists("documents").execute().actionGet().isExists() == false)
 			return null;
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,
 				"documents", "file", fields, true);
-		if (searchResult == null)
-			return null;
+		if (searchResult == null) return null;
 		return searchResult.get(0).get(1);
 	}
 

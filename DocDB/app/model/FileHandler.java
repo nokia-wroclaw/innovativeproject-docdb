@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 
 import play.Logger;
@@ -83,7 +85,7 @@ public class FileHandler {
 			number++;
 			newFile = new File( dirPath + number + uploadedFile.getFilename());
 		}
-		newPath = dirPath + number + uploadedFile.getFilename();
+		newPath = dirPath + uploadedFile.getFilename();
 
 		try {
 			Files.move(file, newFile);
@@ -123,6 +125,9 @@ public class FileHandler {
 
 	private String getExistingFileName(String MD5) {
 		String[] fields = { "MD5" };
+		ClusterHealthResponse healthResponse = elasticServer.client.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+		ClusterHealthStatus healthStatus = healthResponse.getStatus();
+		Logger.info("Elastic is "+healthStatus);
 		if (elasticServer.client.admin().indices().prepareExists("documents").execute().actionGet().isExists() == false)
 			return null;
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,

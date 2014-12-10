@@ -112,7 +112,9 @@ public class GeolocationExtractor {
 	}
 	
 	public String getPlaceName (JSONObject location) throws JSONException {
-		String location_string = location.getString("formatted_address");
+		String location_string = "";
+		if (location.getJSONArray("results").getJSONObject(0).has("formatted_address"))
+			location_string = location.getJSONArray("results").getJSONObject(0).getString("formatted_address");
 		return location_string;
 	}
 }

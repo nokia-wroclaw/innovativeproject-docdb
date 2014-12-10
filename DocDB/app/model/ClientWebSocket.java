@@ -14,6 +14,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class ClientWebSocket extends UntypedActor {
 
 	private final WebSocket.In<JsonNode> socketIn;
@@ -59,7 +62,8 @@ public class ClientWebSocket extends UntypedActor {
 			System.out.println("lat" + lat);
 			System.out.println("lng" + lng);
 			try {
-				location = geoExtractor.getPlaceName(geoExtractor.getLocationInfo(lat, lng));
+				JSONObject jo = geoExtractor.getLocationInfo(lat, lng);
+				location = geoExtractor.getPlaceName(jo);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

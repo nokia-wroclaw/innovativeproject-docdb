@@ -86,7 +86,7 @@ public class ClientWebSocket extends UntypedActor {
 					innerMsg.put("file", result.get(0));
 					innerMsg.put("link", "Download/" + result.get(1));
 					innerMsg.put("size", result.get(2));
-					innerMsg.put("context", ctxEx.getContext(result.get(3), pattern));
+					innerMsg.put("context", ctxEx.getContext(result.get(3), searchPattern));
 
 					ArrayNode tags = innerMsg.putArray("tags"); // tags array in innerMsg (for this file)
 

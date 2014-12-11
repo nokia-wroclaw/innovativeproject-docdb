@@ -19,7 +19,7 @@ public class ContextExtractor {
 	 * returns search pattern without tags
 	 */
 	public String stripTags(String pattern) {
-		return pattern.replaceAll(patternString, "");
+		return pattern.replaceAll(patternString, "").trim();
 	}
 
 	/**
@@ -52,16 +52,14 @@ public class ContextExtractor {
 		context = context.replaceAll("\n", " ");// usuwanie nowych linii
 		ctxStart = context.indexOf(" ");// od spacji
 		ctxEnd = context.lastIndexOf(" ");// do spacji
-		if (ctxEnd < context.lastIndexOf("."))
-			ctxEnd = context.lastIndexOf(".");// lub do kropki
+		if (ctxEnd < context.lastIndexOf(".")) ctxEnd = context.lastIndexOf(".");// lub do kropki
 		context = context.substring(ctxStart, ctxEnd);
 		context = context.replaceAll(word, "<b>" + word + "</b>");
 		return context;
 	}
 
 	public static ContextExtractor getInstance() {
-		if (instance == null)
-			instance = new ContextExtractor();
+		if (instance == null) instance = new ContextExtractor();
 		return instance;
 	}
 }

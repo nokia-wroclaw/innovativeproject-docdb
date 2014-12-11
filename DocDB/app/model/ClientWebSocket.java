@@ -78,6 +78,7 @@ public class ClientWebSocket extends UntypedActor {
 				Logger.info(String.valueOf(searchResult.size()) + " found");
 
 				ObjectNode message = Json.newObject(); // create message
+				message.put("resultsCount", String.valueOf(searchResult.size()));
 				ArrayNode results = message.putArray("result"); // results array in message
 
 				for (ArrayList<String> result : searchResult) {

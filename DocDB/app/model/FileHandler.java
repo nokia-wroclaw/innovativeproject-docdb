@@ -15,7 +15,8 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 /**
- * Class control flow of file during uploading, parsing and sending it to elastic search database.
+ * Class control flow of file during uploading, parsing and sending it to
+ * elastic search database.
  * 
  * @author a.dyngosz, s.majkrzak. m. wierzbicki
  */
@@ -33,8 +34,9 @@ public class FileHandler {
 	}
 
 	/**
-	 * Controller invokes this method, when user wants to send files to server. It takes care of giving it to Tika
-	 * Apache parser, getting back array with content and metadata. Next, method receive the map (requiered for Elastic
+	 * Controller invokes this method, when user wants to send files to server.
+	 * It takes care of giving it to Tika Apache parser, getting back array with
+	 * content and metadata. Next, method receive the map (requiered for Elastic
 	 * search) and send it to ES server
 	 * 
 	 * @param uploadedFile
@@ -88,7 +90,9 @@ public class FileHandler {
 			number++;
 			destFile = new File(dirPath + number + uploadedFileName);
 		}
-		newFileName = dirPath + number + uploadedFileName;
+		if(number == 0)
+			destFile = new File(dirPath + uploadedFileName);
+		newFileName = dirPath + uploadedFileName;
 
 		try {
 			Files.move(file, destFile);
@@ -153,12 +157,17 @@ public class FileHandler {
 		ClusterHealthResponse healthResponse = elasticServer.client.admin().cluster().prepareHealth()
 				.setWaitForGreenStatus().execute().actionGet();
 		ClusterHealthStatus healthStatus = healthResponse.getStatus();
+		if (!healthStatus.equals("GREEN")) {
+			Logger.info("Waiting for GREEN or YELLOW status, now it is: " + healthStatus);
+			elasticServer.client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
+		}
 		Logger.info("Elastic is " + healthStatus);
 		if (elasticServer.client.admin().indices().prepareExists("documents").execute().actionGet().isExists() == false)
 			return null;
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,
 				"documents", "file", fields, true);
-		if (searchResult == null) return null;
+		if (searchResult == null)
+			return null;
 		return searchResult.get(0).get(1);
 	}
 

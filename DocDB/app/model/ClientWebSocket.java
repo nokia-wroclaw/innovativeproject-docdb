@@ -1,174 +1,168 @@
 package model;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
-import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.json.JSONObject;
 
 import play.Logger;
-import play.mvc.Http.MultipartFormData.FilePart;
+import play.libs.F.Callback;
+import play.libs.F.Callback0;
+import play.libs.Json;
+import play.mvc.WebSocket;
+import akka.actor.UntypedActor;
 
-import com.google.common.hash.Hashing;
-import com.google.common.io.Files;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-/**
- * Class control flow of file during uploading, parsing and sending it to
- * elastic search database.
- * 
- * @author a.dyngosz, s.majkrzak. m. wierzbicki
- */
-public class FileHandler {
+public class ClientWebSocket extends UntypedActor {
 
-	private final FileParser fileParser;
+	private final WebSocket.In<JsonNode> socketIn;
+	private final WebSocket.Out<JsonNode> socketOut;
 	private final ElasticSearchServer elasticServer;
-	// private final MD5Checksum md5;
-	private static String dirPath = "files/";
+	private final ContextExtractor ctxEx;
 
-	public FileHandler(ElasticSearchServer elasticServer) {
+	ClientWebSocket(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out, ElasticSearchServer elasticServer) {
+
+		Logger.info("New ClientWebSocket");
+		this.socketIn = in;
+		this.socketOut = out;
 		this.elasticServer = elasticServer;
-		fileParser = new FileParser();
-		// md5 = new MD5Checksum();
+		ctxEx = ContextExtractor.getInstance();
+		socketIn.onMessage(new Callback<JsonNode>() { // msg z socketu
+			@Override
+			public void invoke(JsonNode event) {
+				handleEvent(event);
+			}
+		});
+
+		socketIn.onClose(new Callback0() { // socket sie zamkna
+			@Override
+			public void invoke() {
+				// stop actor
+				getContext().stop(getSelf());
+			}
+		});
+	}
+
+	protected void handleEvent(JsonNode event) { // obslug eventow z websocketa
+
+		if (!event.has("request")) {
+			return;
+		}
+		String request = event.get("request").asText();
+
+		if (request.equals("geolocation")) {
+			handleGeolocation(event);
+			return;
+		} else if (request.equals("search")) {
+
+			// get request data
+			String pattern = event.get("pattern").asText();
+			Boolean limit = event.get("limit").asText().equals("true");
+			List<String> tagList = ctxEx.extractTags(pattern);
+			String searchPattern = ctxEx.stripTags(pattern);
+
+			Logger.info("searching for:" + pattern + " with" + (limit ? "out" : "") + " limit");
+			Logger.info("search:" + searchPattern + "\ntags:" + tagList.toString());
+
+			// search elasticSearch search
+			ArrayList<ArrayList<String>> searchResult = search(searchPattern, limit);
+
+			if (!tagList.isEmpty()) searchResult = filterOutByTags(searchResult, tagList);
+
+			if (searchResult == null) {
+				sendEmptyResults();
+			} else {
+				Logger.info(String.valueOf(searchResult.size()) + " found");
+
+				ObjectNode message = Json.newObject(); // create message
+				ArrayNode results = message.putArray("result"); // results array in message
+
+				for (ArrayList<String> result : searchResult) {
+					ObjectNode innerMsg = Json.newObject(); // inner message (file info)
+					innerMsg.put("file", result.get(0));
+					innerMsg.put("link", "Download/" + result.get(1));
+					innerMsg.put("size", result.get(2));
+					innerMsg.put("context", ctxEx.getContext(result.get(3), pattern));
+
+					ArrayNode tags = innerMsg.putArray("tags"); // tags array in innerMsg (for this file)
+
+					int tagcount = result.size() - 4;
+					for (int tagnr = 0; tagnr < tagcount; tagnr++) {
+						tags.add(result.get(4 + tagnr));
+					}
+					// innerMsg.put("tags", tags);
+
+					results.add(innerMsg);
+				}
+				socketOut.write(message);
+			}
+		}
 	}
 
 	/**
-	 * Controller invokes this method, when user wants to send files to server.
-	 * It takes care of giving it to Tika Apache parser, getting back array with
-	 * content and metadata. Next, method receive the map (requiered for Elastic
-	 * search) and send it to ES server
 	 * 
-	 * @param uploadedFile
-	 *            file given by user to upload
 	 */
-	public void handleFile(FilePart uploadedFile, ArrayList<String> tagList) {
-		File file = uploadedFile.getFile();
-		String uploadedFileName = uploadedFile.getFilename();
-
-		handleFile(file, uploadedFileName, tagList);
-
-	}
-
-	public void handleFile(File uploadedLink, ArrayList<String> tagList) {
-		handleFile(uploadedLink, uploadedLink.getName(), tagList);
+	private void sendEmptyResults() {
+		ObjectNode message = Json.newObject();
+		message.put("result", "{}");
+		Logger.info("No results");
+		socketOut.write(message);
 	}
 
 	/**
-	 * @param tagList
-	 * @param file
-	 * @param uploadedFileName
+	 * @param event
 	 */
-	private void handleFile(File file, String uploadedFileName, ArrayList<String> tagList) {
-		// get new file hash
-		String newFileCheckSum = getHash(file);
-
-		String newFileName = uploadedFileName;
-		File destFile = new File(newFileName);
-
-		if (fileExists(newFileCheckSum)) {
-			// file exists with the same name:
-			if (destFile.exists()) {
-				Logger.info("same file already exists: " + newFileName);
-				return;
-			}
-			// file exist with different name:
-			newFileName = dirPath + getExistingFileName(newFileCheckSum);
-
-			ArrayList<String> parsedFile = fileParser.parseFile(new File(newFileName), newFileName, uploadedFileName);
-			if (parsedFile != null) {
-				insertToElastic(tagList, newFileCheckSum, parsedFile);
-				Logger.info("metadata saved");
-				return;
-			}
-
-		}
-
-		// check if filename already exists
-		int number = 0;
-		while (destFile.exists()) {// file exists. need new name
-			number++;
-			destFile = new File(dirPath + number + uploadedFileName);
-		}
-		if(number == 0)
-			destFile = new File(dirPath + uploadedFileName);
-		newFileName = dirPath + uploadedFileName;
-
+	private void handleGeolocation(JsonNode event) {
+		GeolocationExtractor geoExtractor = new GeolocationExtractor();
+		double lat = Double.parseDouble(event.get("lat").asText());
+		double lng = Double.parseDouble(event.get("lng").asText());
+		String location = "";
+		System.out.println("lat" + lat);
+		System.out.println("lng" + lng);
 		try {
-			Files.move(file, destFile);
-			Logger.info("file saved");
-		} catch (IOException e) {
-			Logger.info("file save failed");
+			JSONObject jo = geoExtractor.getLocationInfo(lat, lng);
+			location = geoExtractor.getPlaceName(jo);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		ObjectNode message = Json.newObject();
+		message.put("geo", location);
+		socketOut.write(message);
+		Logger.info(location + "witam");
+	}
 
-		ArrayList<String> parsedFile = fileParser.parseFile(destFile, newFileName, uploadedFileName);
-		if (parsedFile != null) {
-			insertToElastic(tagList, newFileCheckSum, parsedFile);
-			Logger.info("metadata saved");
+	private ArrayList<ArrayList<String>> filterOutByTags(ArrayList<ArrayList<String>> searchResult, List<String> tags) {
+		ArrayList<ArrayList<String>> resultList = new ArrayList<>();
+
+		for (ArrayList<String> result : searchResult) {
+			int tagcount = result.size() - 4;
+			for (int tagnr = 0; tagnr < tagcount; tagnr++) {
+				for (String tag : tags) {
+					if (result.get(tagnr + 4).equals(tag)) {
+						resultList.add(result);
+						tagnr = tagcount;// break the second loop
+						break;
+					}
+				}
+			}
 		}
+		return resultList;
 	}
 
-	/**
-	 * @param tagList
-	 * @param newFileCheckSum
-	 * @param parsedFile
-	 */
-	private void insertToElastic(ArrayList<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile) {
-		extractTags(tagList, newFileCheckSum, parsedFile);
-		XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagList);
-		elasticServer.elasticSearch.insert(elasticServer.client, json, "documents", "file");
+	private ArrayList<ArrayList<String>> search(String pattern, Boolean limit) {
+		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, pattern,
+				"documents", "file", limit);
+		return searchResult;
 	}
 
-	/**
-	 * @param file
-	 * @param newFileCheckSum
-	 * @return
-	 */
-	private String getHash(File file) {
-		String newFileCheckSum;
-		try {
-			newFileCheckSum = Files.hash(file, Hashing.md5()).toString();
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			return null;
-		}
-		return newFileCheckSum;
-	}
+	@Override
+	public void onReceive(Object arg0) throws Exception { // msg od innych
+															// aktorów /
+															// systemu
 
-	/**
-	 * @param tagsArray
-	 * @param newFileCheckSum
-	 * @param parsedFile
-	 */
-	private void extractTags(ArrayList<String> tagsArray, String newFileCheckSum, ArrayList<String> parsedFile) {
-		String temp = parsedFile.get(parsedFile.size() - 1);
-		parsedFile.remove(parsedFile.size() - 1);
-		tagsArray.add(temp);
-		parsedFile.add(newFileCheckSum);
 	}
-
-	private boolean fileExists(String MD5) {
-		return getExistingFileName(MD5) != null;
-	}
-
-	private String getExistingFileName(String MD5) {
-		String[] fields = { "MD5" };
-		ClusterHealthResponse healthResponse = elasticServer.client.admin().cluster().prepareHealth()
-				.setWaitForGreenStatus().execute().actionGet();
-		ClusterHealthStatus healthStatus = healthResponse.getStatus();
-		if (!healthStatus.equals("GREEN")) {
-			Logger.info("Waiting for GREEN or YELLOW status, now it is: " + healthStatus);
-			elasticServer.client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
-		}
-		Logger.info("Elastic is " + healthStatus);
-		if (elasticServer.client.admin().indices().prepareExists("documents").execute().actionGet().isExists() == false)
-			return null;
-		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,
-				"documents", "file", fields, true);
-		if (searchResult == null)
-			return null;
-		return searchResult.get(0).get(1);
-	}
-
 }

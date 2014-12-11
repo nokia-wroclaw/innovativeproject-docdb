@@ -37,18 +37,18 @@
 							<span ng-bind-html="result.context | unsafe"></span>
 						</div>
 						<div class="panel-footer">
-							<small>{{result.tags}}</small>
+							<small ng-repeat="tag in result.tags track by $index" class="label label-info" >#{{tag}}</small>
 						</div>
 					</div>
 				</a>
-				<div ng-if="$last == true" > 
+				<div ng-if="$last == true" >
 					<div id="resCount"> </div><!--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 				</div>
 				<div ng-if="$last == true && $index == 9">
 						<button id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all result </button>
-						
+
 				</div>
-				
+
 			</div>
 		</div>
 	</div>

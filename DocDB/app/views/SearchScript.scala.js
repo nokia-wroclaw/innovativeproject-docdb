@@ -1,7 +1,7 @@
-var newSearch;
+var newSearch, webSocket;
 $(document).ready(function(){
 	var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-	var webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
+	webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
 
 
     var receiveEvent = function(event) {
@@ -11,6 +11,7 @@ $(document).ready(function(){
 			$("#resCount").text("I found " + data.resultsCount + " matches");
 			$('#resultDiv').scope().results = eval(data.result);
 			$("#resultDiv").scope().$apply();
+			rebindEventHandlers();
 		}
 	}
 
@@ -22,13 +23,13 @@ $(document).ready(function(){
 */
 
 	$("#search").keyup(function(){
-		webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(),"limit": "false"}));
+		searchRequest("false");
 	});
 	if (navigator.geolocation) {
 		navigator.geolocation.watchPosition(showPosition);
-	} else { 
+	} else {
 		x.innerHTML = "Geolocation is not supported by this browser.";
-	}	
+	}
 	var lat;
 	var lng;
 	function showPosition(position) {
@@ -38,7 +39,8 @@ $(document).ready(function(){
 	}
 
 	newSearch = function (){
-		webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(), "limit": "true"}));
+		searchRequest("true");
+		//webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(), "limit": "true"}));
 	}
 
 	$("h2").css("cursor","pointer");
@@ -55,3 +57,16 @@ $(document).ready(function(){
 
 
 });
+function rebindEventHandlers(){
+	$("#resultDiv small").unbind().click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var tagToInsert = $(this).text();
+		$("#search").val($("#search").val() +" "+ tagToInsert);
+		searchRequest("false");
+	});
+}
+
+function searchRequest(limit){
+	webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(),"limit": limit}));
+}

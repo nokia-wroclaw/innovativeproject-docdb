@@ -63,9 +63,19 @@ $(document).ready(function(){
 		$("#content3").slideToggle(300);
 	});
 
-	//$("#linkUpload").on
 
-	searchFromHref()
+	$("#linkUpload").keyup(function(e) {
+		switch(e.which) {
+			case 13: // enter
+				address = "takeLink/"+prompt("Wpisz tagi")+","+$('#geoLoc').text();
+				$.post( address.replace("#",""), { link : $("#linkUpload").val() } );
+			break;
+			default: return; // exit this handler for other keys
+		}
+		e.preventDefault(); // prevent the default action (scroll / move caret)
+	});
+
+	searchFromHash()
 
 });
 function rebindEventHandlers(){
@@ -77,17 +87,23 @@ function rebindEventHandlers(){
 		searchRequest("false");
 	});
 }
-function searchFromHref(){
-	var href = window.location.href;
-	if(href.indexOf("/Search/")==-1) return;
 
-	var searchText = href.substring(href.indexOf("/Search/")+8).replace("%23","#").replace("%20"," ");
+function searchFromHash(){
+	var hash = window.location.hash;
+	if(hash.indexOf("/Search/")==-1) return;
+
+	var searchText = hash.substring(9).replace("%23","#").replace("%20"," ");
+	if($("#search").val() == searchText) return;
 	$("#search").val(searchText);
 	searchRequest("false");
 }
+
+window.onhashchange = searchFromHash;
+
 function searchRequest(limit){
 	var searchText = $("#search").val();
-	window.history.pushState(searchText, 'DocDB - Search', '/Search/'+searchText.replace("#","%23").replace(" ","%20"));
+	//window.history.pushState(searchText, 'DocDB - Search', '/Search/'+searchText.replace("#","%23").replace(" ","%20"));
+	window.location.hash  = '/Search/'+searchText.replace("#","%23").replace(" ","%20")
 	send(JSON.stringify({"request": "search", "pattern": searchText,"limit": limit}));
 }
 function send(json){

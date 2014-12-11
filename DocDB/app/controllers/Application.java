@@ -43,15 +43,10 @@ public class Application extends Controller {
 		return ok(index.render(""));
 	}
 
-	public static Result search(String search) {
-		Logger.info("index is searching");
-		return ok(index.render(""));
-	}
-
 	public static Result uploadLink(String tags) {
 		DynamicForm requestData = Form.form().bindFromRequest();
 		String link = requestData.get("link");
-		String filename = getFreeRandomFileName();
+		String filename = getFreeRandomFileName() + ".html";
 		try {
 			File uploadedLink = saveLinkToFile(link, filename);
 

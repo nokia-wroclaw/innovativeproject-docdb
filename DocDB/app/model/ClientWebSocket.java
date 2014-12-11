@@ -136,7 +136,7 @@ public class ClientWebSocket extends UntypedActor {
 		ObjectNode message = Json.newObject();
 		message.put("geo", location);
 		socketOut.write(message);
-		Logger.info(location + "witam");
+		Logger.info(location);
 	}
 
 	private ArrayList<ArrayList<String>> filterOutByTags(ArrayList<ArrayList<String>> searchResult, List<String> tags) {

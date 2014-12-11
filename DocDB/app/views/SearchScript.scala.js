@@ -6,14 +6,14 @@ $(document).ready(function(){
 
     var receiveEvent = function(event) {
         var data = JSON.parse(event.data)
-		
+
 		if( data.result != null){
 			$("#resCount").text("I found " + data.resultsCount + " matches");
 			$('#resultDiv').scope().results = eval(data.result);
 			$("#resultDiv").scope().$apply();
 			rebindEventHandlers();
 		}
-		
+
 		if (data.geo != null) {
 			var gloc = data.geo;
 			geoloc = gloc.split(", ");
@@ -49,11 +49,6 @@ $(document).ready(function(){
 
 	newSearch = function (){
 		searchRequest("true");
-		//webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(), "limit": "true"}));
-	}
-	sendLink = function(link){
-		alert(link);
-		webSocket.send(JSON.stringify({"request": "requestData", "link": link}));
 	}
 
 	$("h2").css("cursor","pointer");
@@ -68,6 +63,7 @@ $(document).ready(function(){
 		$("#content3").slideToggle(300);
 	});
 
+	//$("#linkUpload").on
 
 	searchFromHref()
 

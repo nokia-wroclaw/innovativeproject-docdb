@@ -17,3 +17,7 @@ div #outer{
 	margin-right: 4px;
 	cursor: alias;
  }
+
+ #linkUpload{
+ margin: 0 auto;
+ }

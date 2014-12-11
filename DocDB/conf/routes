@@ -8,7 +8,7 @@ POST	/upload/:tags				controllers.Application.upload(tags)
 POST	/takeLink/:tags				controllers.Application.uploadLink(tags)
 GET		/WebSocket					controllers.Application.WebSocket()
 GET		/SearchScript				controllers.Application.SearchScript()
-GET		/Search/Download/:path				controllers.Application.getFile(path)
+GET		/Search/Download/:path		controllers.Application.getFile(path)
 GET		/Search/:search				controllers.Application.search(search)
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

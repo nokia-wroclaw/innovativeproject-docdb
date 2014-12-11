@@ -51,6 +51,7 @@ public class ClientWebSocket extends UntypedActor {
 		if (!event.has("request")) {
 			return;
 		}
+
 		String request = event.get("request").asText();
 
 		if (request.equals("geolocation")) {
@@ -78,7 +79,7 @@ public class ClientWebSocket extends UntypedActor {
 				Logger.info(String.valueOf(searchResult.size()) + " found");
 
 				ObjectNode message = Json.newObject(); // create message
-				
+
 				ArrayNode results = message.putArray("result"); // results array in message
 
 				for (ArrayList<String> result : searchResult) {
@@ -99,7 +100,7 @@ public class ClientWebSocket extends UntypedActor {
 					results.add(innerMsg);
 				}
 				int temp = searchResult.size();
-				String temp2 = ""+temp;
+				String temp2 = "" + temp;
 				message.put("resultsCount", temp2);
 				socketOut.write(message);
 			}
@@ -130,7 +131,6 @@ public class ClientWebSocket extends UntypedActor {
 			JSONObject jo = geoExtractor.getLocationInfo(lat, lng);
 			location = geoExtractor.getPlaceName(jo);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		ObjectNode message = Json.newObject();
@@ -164,9 +164,7 @@ public class ClientWebSocket extends UntypedActor {
 	}
 
 	@Override
-	public void onReceive(Object arg0) throws Exception { // msg od innych
-															// aktorów /
-															// systemu
+	public void onReceive(Object arg0) throws Exception { // msg od innych aktorów / systemu
 
 	}
 }

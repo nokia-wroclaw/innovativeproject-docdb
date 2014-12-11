@@ -40,7 +40,12 @@ public class Application extends Controller {
 
 	public static Result index() {
 		Logger.info("service started");
-		return ok(index.render("Your new application is ready."));
+		return ok(index.render(""));
+	}
+
+	public static Result search(String search) {
+		Logger.info("index is searching");
+		return ok(index.render(""));
 	}
 
 	public static Result uploadLink(String tags) {

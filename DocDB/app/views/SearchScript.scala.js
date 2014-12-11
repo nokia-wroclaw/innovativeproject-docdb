@@ -1,8 +1,7 @@
-var newSearch, webSocket;
+var newSearch, webSocket, searchTimer=0;
 $(document).ready(function(){
 	var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
 	webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
-
 
     var receiveEvent = function(event) {
         var data = JSON.parse(event.data)
@@ -23,8 +22,10 @@ $(document).ready(function(){
 */
 
 	$("#search").keyup(function(){
-		searchRequest("false");
+		if (searchTimer) clearTimeout(searchTimer);
+		searchTimer = setTimeout('searchRequest("false");',250);
 	});
+
 	if (navigator.geolocation) {
 		navigator.geolocation.watchPosition(showPosition);
 	} else {
@@ -35,7 +36,7 @@ $(document).ready(function(){
 	function showPosition(position) {
 		lat = position.coords.latitude;
 		lng = position.coords.longitude;
-		webSocket.send(JSON.stringify({"request": "geolocation", "lat": lat, "lng": lng}));
+		send(JSON.stringify({"request": "geolocation", "lat": lat, "lng": lng}));
 	}
 
 	newSearch = function (){
@@ -56,6 +57,8 @@ $(document).ready(function(){
 	});
 
 
+	searchFromHref()
+
 });
 function rebindEventHandlers(){
 	$("#resultDiv small").unbind().click(function(e){
@@ -66,7 +69,23 @@ function rebindEventHandlers(){
 		searchRequest("false");
 	});
 }
+function searchFromHref(){
+	var href = window.location.href;
+	if(href.indexOf("/Search/")==-1) return;
 
+	var searchText = href.substring(href.indexOf("/Search/")+8).replace("%23","#").replace("%20"," ");
+	$("#search").val(searchText);
+	searchRequest("false");
+}
 function searchRequest(limit){
-	webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(),"limit": limit}));
+	var searchText = $("#search").val();
+	window.history.pushState(searchText, 'DocDB - Search', '/Search/'+searchText.replace("#","%23").replace(" ","%20"));
+	send(JSON.stringify({"request": "search", "pattern": searchText,"limit": limit}));
+}
+function send(json){
+	if (webSocket.readyState == 1) {
+        webSocket.send(json);
+    } else {
+        setTimeout("send('"+json+"');", 100);
+	}
 }

@@ -15,6 +15,19 @@
 					else
 						tag[i] = "file";
 				}
+				
+			$(function() {
+				var availableTags = [localStorage[0], localStorage[1], localStorage[2]];
+					$( "#0" ).autocomplete({
+					  source: availableTags
+					});
+					$( "#1" ).autocomplete({
+					  source: availableTags
+					});
+					$( "#2" ).autocomplete({
+					  source: availableTags
+					});
+				  });
 
 			</script>
 	<h2>Search</h2>
@@ -42,8 +55,7 @@
 						</div>
 					</div>
 				</a>
-				<div ng-if="$last == true" id="resCount" >{{resultCount}}
-					<!--<div > </div>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+				<div ng-if="$last == true" id="resCount" >
 				</div>
 				<div ng-if="$last == true && $index == 9">
 						<button id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all result </button>
@@ -70,7 +82,7 @@
 				<input type="text" class="form-control" style="margin: 0 auto;" id="1" placeholder="Put Your tags here" onkeydown="checkKey('1');">
 				<form method="POST" id="dropzone2" action="@routes.Application.upload("tag[1]")" enctype="multipart/form-data" class="dropzone"></form>
 
-				<input type="text" class="form-control" style=" margin: 0 auto;" id="2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
+				<input type="text" class="form-control" class="ui-widget" style=" margin: 0 auto;" id="2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
 				<form method="POST" id="dropzone3" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></form>
 			</div>
 	</div>
@@ -97,9 +109,24 @@
 		}
 
 		function handleLink(tagIDName){
-			link = document.getElementById(tagIDName).value;
-			var win = window.open(link, '_blank');
-			win.focus();
+			var link = document.getElementById(tagIDName).value;
+			
+			sendLink(link);
+			return false;
+			/*console.log("witam");
+			$.ajax({
+			    url : "upload/",
+			    type: "POST",
+			    data : link,
+			    success: function(data, textStatus, jqXHR)
+			    {
+			        //data - response from server
+			    },
+			    error: function (jqXHR, textStatus, errorThrown)
+			    {
+			 
+			    }
+			});*/
 
 		}
 

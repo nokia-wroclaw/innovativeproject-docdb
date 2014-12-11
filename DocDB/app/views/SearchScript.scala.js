@@ -1,4 +1,4 @@
-var newSearch, webSocket, searchTimer=0;
+var newSearch, webSocket, searchTimer=0, sendLink;
 var geoloc =[];
 $(document).ready(function(){
 	var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
@@ -50,6 +50,10 @@ $(document).ready(function(){
 	newSearch = function (){
 		searchRequest("true");
 		//webSocket.send(JSON.stringify({"request": "search", "pattern": $("#search").val(), "limit": "true"}));
+	}
+	sendLink = function(link){
+		alert(link);
+		webSocket.send(JSON.stringify({"request": "requestData", "link": link}));
 	}
 
 	$("h2").css("cursor","pointer");

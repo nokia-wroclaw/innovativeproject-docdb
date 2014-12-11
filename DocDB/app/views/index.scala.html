@@ -1,23 +1,29 @@
 @(message: String)
 
 @main("Welcome to DocDB") {
-
-
 <div class="container">
 
 	<div class="jumbotron">
 		<script>
-				Dropzone.autoDiscover = false;
-				var tag = []
-				for (i = 0; i <= 2; i++) {
-					if(!localStorage[i]=="")
-						tag[i] = localStorage[i];
-					else
-						tag[i] = "file";
-				}
+
+
+			Dropzone.autoDiscover = false;
+			var tag = []
+			for (i = 0; i <= 2; i++) {
+				if( typeof localStorage[i] != 'undefined')
+					tag[i] = localStorage[i];
+				else
+					tag[i] = "file";
+				if( typeof localStorage["oldTags"] != 'undefined')
+					addTags(tag[i]);
+			}
 
 			$(function() {
-				var availableTags = [localStorage[0], localStorage[1], localStorage[2]];
+				var temp = localStorage["oldTags"];
+				var oldTagsArray = [];
+				var availableTags = [];
+					if(temp != null)
+						availableTags = temp.split(",");
 					$( "#0" ).autocomplete({
 					  source: availableTags
 					});
@@ -28,7 +34,6 @@
 					  source: availableTags
 					});
 				  });
-
 			</script>
 	<h2>Search</h2>
 		<div id="geoLoc" style=" visibility: hidden;" ></div>
@@ -69,7 +74,7 @@
 		<div class="jumbotron">
 			<h2>Drop files via link</h2>
 				<div id="content3">
-					<input type="text" class="form-control" id="linkUpload" placeholder="Put Your link here">
+					<input type="text" class="form-control" style=" margin: 0 auto;" id="link" placeholder="Put Your link here" onkeydown="checkKey('link');">
 				</div>
 		</div>
 
@@ -89,47 +94,6 @@
 </div>
 
 <script>
-		function checkKey(tagID){
-			if (event.keyCode == 13) {
-				if(tagID == 'link'){
-					handleLink(tagID);
-					return false;
-				} else {
-					changeTag(tagID);
-					return false;
-				}
-			}
-		}
-		function changeTag(tagIDName){
-			var tag = document.getElementById(tagIDName).value;
-			var	tagID = document.getElementById(tagIDName);
-			tagID.value = tag;
-			localStorage[tagIDName] = tag;
-			location.reload();
-		}
-
-		function handleLink(tagIDName){
-			var link = document.getElementById(tagIDName).value;
-
-			sendLink(link);
-			return false;
-			/*console.log("witam");
-			$.ajax({
-			    url : "upload/",
-			    type: "POST",
-			    data : link,
-			    success: function(data, textStatus, jqXHR)
-			    {
-			        //data - response from server
-			    },
-			    error: function (jqXHR, textStatus, errorThrown)
-			    {
-			 
-			    }
-			});*/
-
-		}
-
 		Dropzone.options.dropzone1 = {
 			dictDefaultMessage: tag[0],
 			init: function() {
@@ -151,7 +115,6 @@
 					temp = tag[1].replace('#','');
 					arr.push(temp);
 					this.options.url = "upload/"+arr;
-
 				});
 			}
 		};
@@ -168,7 +131,6 @@
 			}
 		};
 		Dropzone.autoDiscover = true;
-
 		var commentApp = angular.module('searchRes', []);
 		commentApp.filter('unsafe', function($sce) {
 			return function(val) {

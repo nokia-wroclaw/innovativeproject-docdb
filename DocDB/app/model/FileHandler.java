@@ -77,8 +77,8 @@ public class FileHandler {
 			if (parsedFile != null) {
 				insertToElastic(tagList, newFileCheckSum, parsedFile);
 				Logger.info("metadata saved");
+				return;
 			}
-			return;
 
 		}
 

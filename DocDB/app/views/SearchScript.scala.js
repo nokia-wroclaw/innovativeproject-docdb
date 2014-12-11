@@ -1,5 +1,5 @@
 var newSearch, webSocket, searchTimer=0;
-var geoloc;
+var geoloc =[];
 $(document).ready(function(){
 	var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
 	webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
@@ -17,6 +17,8 @@ $(document).ready(function(){
 		if (data.geo != null) {
 			var gloc = data.geo;
 			geoloc = gloc.split(", ");
+			$("#geoLoc").append(gloc);
+			//console.log($("#geoLoc"));
 		}
 	}
 

@@ -18,6 +18,7 @@
 
 			</script>
 	<h2>Search</h2>
+		<div id="geoLoc" style=" visibility: hidden;" ></div>
 		<div id="content1">
 			<div class="input-group">
 				<input type="text" id="search" class="form-control" placeholder="Search">
@@ -106,8 +107,11 @@
 			dictDefaultMessage: tag[0],
 			init: function() {
 				this.on("processing", function(file) {
-					var temp = tag[0].replace('#','');
-					this.options.url = "upload/"+temp;
+					var temp = document.getElementById('geoLoc').innerHTML;
+					var arr = temp.split(",");
+					temp = tag[0].replace('#','');
+					arr.push(temp);	
+					this.options.url = "upload/"+arr;
 				});
 			}
 		};
@@ -115,8 +119,11 @@
 			dictDefaultMessage: tag[1],
 			init: function() {
 				this.on("processing", function(file) {
-					var temp = tag[1].replace('#','');
-					this.options.url = "upload/"+temp;
+					var temp = document.getElementById('geoLoc').innerHTML;
+					var arr = temp.split(",");
+					temp = tag[1].replace('#','');
+					arr.push(temp);	
+					this.options.url = "upload/"+arr;
 
 				});
 			}
@@ -125,8 +132,11 @@
 			dictDefaultMessage: tag[2],
 			init: function() {
 				this.on("processing", function(file) {
-					var temp = tag[2].replace('#','');
-					this.options.url = "upload/"+temp;
+					var temp = document.getElementById('geoLoc').innerHTML;
+					var arr = temp.split(",");
+					temp = tag[2].replace('#','');
+					arr.push(temp);	
+					this.options.url = "upload/"+arr;
 				});
 			}
 		};
@@ -137,8 +147,7 @@
 			return function(val) {
 				return $sce.trustAsHtml(val);
 			};
-		});
-
+		});		
 	function searchController($scope){}
 </script>
 }

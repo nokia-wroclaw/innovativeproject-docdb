@@ -154,14 +154,14 @@ public class FileHandler {
 
 	private String getExistingFileName(String MD5) {
 		String[] fields = { "MD5" };
-		ClusterHealthResponse healthResponse = elasticServer.client.admin().cluster().prepareHealth()
-				.setWaitForGreenStatus().execute().actionGet();
-		ClusterHealthStatus healthStatus = healthResponse.getStatus();
+//		ClusterHealthResponse healthResponse = elasticServer.client.admin().cluster().prepareHealth()
+//				.setWaitForGreenStatus().execute().actionGet();
+//		ClusterHealthStatus healthStatus = healthResponse.getStatus();
 		/*if (!healthStatus.equals("GREEN")) {
 			Logger.info("Waiting for GREEN or YELLOW status, now it is: " + healthStatus);
 			//elasticServer.client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
 		}*/
-		Logger.info("Elastic is " + healthStatus);
+		//Logger.info("Elastic is " + healthStatus);
 		if (elasticServer.client.admin().indices().prepareExists("documents").execute().actionGet().isExists() == false)
 			return null;
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,

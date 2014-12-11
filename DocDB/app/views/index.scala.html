@@ -7,23 +7,34 @@
 		<script>
 
 
+			//localStorage["oldSearch"]=""
+			//localStorage.clear();
+			
+			if(typeof localStorage["oldTags"] == 'undefined')
+				localStorage["oldTags"]=""
+			if(typeof localStorage["oldSearch"] == 'undefined')
+				localStorage["oldSearch"]=""	
+			 
 			Dropzone.autoDiscover = false;
 			var tag = []
-			for (i = 0; i <= 2; i++) {
-				if( typeof localStorage[i] != 'undefined')
+			for (i = 0; i <= 2; i++) {				 
+				if(typeof localStorage[i] != 'undefined')
 					tag[i] = localStorage[i];
 				else
 					tag[i] = "file";
-				if( typeof localStorage["oldTags"] != 'undefined')
-					addTags(tag[i]);
+				if( localStorage["oldTags"] == "")
+					addTags(tag[i]);				
 			}
 
 			$(function() {
 				var temp = localStorage["oldTags"];
-				var oldTagsArray = [];
+				var temp2 = localStorage["oldSearch"];
 				var availableTags = [];
+				var availableSearch = [];
 					if(temp != null)
 						availableTags = temp.split(",");
+					if(temp2 != null)
+						availableSearch = temp2.split(",");
 					$( "#0" ).autocomplete({
 					  source: availableTags
 					});
@@ -33,13 +44,16 @@
 					$( "#2" ).autocomplete({
 					  source: availableTags
 					});
+					$( "#search" ).autocomplete({
+					  source: availableSearch
+					});
 				  });
 			</script>
 	<h2>Search</h2>
 		<div id="geoLoc" style=" visibility: hidden;" ></div>
 		<div id="content1">
 			<div class="input-group">
-				<input type="text" id="search" class="form-control" placeholder="Search">
+				<input type="text" id="search" onkeydown="checkKey('search');" class="form-control" placeholder="Search">
 				<span class="input-group-addon glyphicon glyphicon-search"></span>
 			</div>
 
@@ -59,15 +73,13 @@
 							<small ng-repeat="tag in result.tags track by $index" class="label label-info" >#{{tag}}</small>
 						</div>
 					</div>
-				</a>
-				<div ng-if="$last == true" id="resCount" >
+					</a>
+				
+					<div ng-if="$last == true && $index == 9">
+							<button id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all result </button>
+					</div>
 				</div>
-				<div ng-if="$last == true && $index == 9">
-						<button id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all result </button>
-
-				</div>
-
-			</div>
+				<div id="resCount" ></div>
 		</div>
 	</div>
 

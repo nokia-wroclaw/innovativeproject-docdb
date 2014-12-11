@@ -8,6 +8,7 @@ $(document).ready(function(){
         var data = JSON.parse(event.data)
 
 		if( data.result != null){
+			
 			$("#resCount").text("I found " + data.resultsCount + " matches");
 			$('#resultDiv').scope().results = eval(data.result);
 			$("#resultDiv").scope().$apply();
@@ -96,12 +97,14 @@ function searchFromHash(){
 	if($("#search").val() == searchText) return;
 	$("#search").val(searchText);
 	searchRequest("false");
+	
 }
 
 window.onhashchange = searchFromHash;
 
 function searchRequest(limit){
 	var searchText = $("#search").val();
+		
 	//window.history.pushState(searchText, 'DocDB - Search', '/Search/'+searchText.replace("#","%23").replace(" ","%20"));
 	window.location.hash  = '/Search/'+searchText.replace("#","%23").replace(" ","%20")
 	send(JSON.stringify({"request": "search", "pattern": searchText,"limit": limit}));

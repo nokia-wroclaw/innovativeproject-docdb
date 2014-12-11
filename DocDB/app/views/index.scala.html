@@ -41,7 +41,9 @@
 						</div>
 					</div>
 				</a>
-				<span id="resCount"></span>
+				<div ng-if="$last == true" > 
+					<div id="resCount"> </div><!--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+				</div>
 				<div ng-if="$last == true && $index == 9">
 						<button id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all result </button>
 						

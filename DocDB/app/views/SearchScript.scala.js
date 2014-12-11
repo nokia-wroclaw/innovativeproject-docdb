@@ -5,7 +5,7 @@ $(document).ready(function(){
 
     var receiveEvent = function(event) {
         var data = JSON.parse(event.data)
-
+		
 		if( data.result != null){
 			$("#resCount").text("I found " + data.resultsCount + " matches");
 			$('#resultDiv').scope().results = eval(data.result);

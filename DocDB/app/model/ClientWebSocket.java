@@ -78,7 +78,7 @@ public class ClientWebSocket extends UntypedActor {
 				Logger.info(String.valueOf(searchResult.size()) + " found");
 
 				ObjectNode message = Json.newObject(); // create message
-				message.put("resultsCount", String.valueOf(searchResult.size()));
+				
 				ArrayNode results = message.putArray("result"); // results array in message
 
 				for (ArrayList<String> result : searchResult) {
@@ -98,6 +98,9 @@ public class ClientWebSocket extends UntypedActor {
 
 					results.add(innerMsg);
 				}
+				int temp = searchResult.size();
+				String temp2 = ""+temp;
+				message.put("resultsCount", temp2);
 				socketOut.write(message);
 			}
 		}

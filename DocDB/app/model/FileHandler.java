@@ -76,6 +76,16 @@ public class FileHandler {
 			newFileName = dirPath + getExistingFileName(newFileCheckSum);
 
 			ArrayList<String> parsedFile = fileParser.parseFile(new File(newFileName), newFileName, uploadedFileName);
+			if (uploadedFileName.endsWith(".jpg")) {
+				GeolocationExtractor gextractor = new GeolocationExtractor ();
+				String photoGeolocation = "";
+						try {
+							photoGeolocation  = gextractor.extractor(file);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+				tagList.add(photoGeolocation);
+			}
 			if (parsedFile != null) {
 				insertToElastic(tagList, newFileCheckSum, parsedFile);
 				Logger.info("metadata saved");
@@ -103,6 +113,16 @@ public class FileHandler {
 		}
 
 		ArrayList<String> parsedFile = fileParser.parseFile(destFile, newFileName, uploadedFileName);
+		if (uploadedFileName.endsWith(".jpg")) {
+			GeolocationExtractor gextractor = new GeolocationExtractor ();
+			String photoGeolocation = "";
+					try {
+						photoGeolocation  = gextractor.extractor(destFile);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			tagList.add(photoGeolocation);
+		}
 		if (parsedFile != null) {
 			insertToElastic(tagList, newFileCheckSum, parsedFile);
 			Logger.info("metadata saved");

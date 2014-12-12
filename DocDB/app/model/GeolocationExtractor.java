@@ -37,7 +37,7 @@ public class GeolocationExtractor {
 	 *             no file found
 	 * @throws ImageProcessingException
 	 */
-	public String extractor(File file) throws IOException, ImageProcessingException {
+	public String extractor(File file) throws IOException{//, ImageProcessingException {
 		String location_string = "";
 		Metadata metadata;
 		GpsDirectory gpsDirectory;
@@ -45,30 +45,35 @@ public class GeolocationExtractor {
 		String[] latlng;
 		Double lat, lng;
 		JSONObject ret, location;
-		
-		metadata = ImageMetadataReader.readMetadata(file);
-		// See whether it has GPS data
-		gpsDirectory = metadata.getDirectory(GpsDirectory.class);
-		// Try to read out the location, making sure it's non-zero
-		if (gpsDirectory != null) {
-			geoLocation = gpsDirectory.getGeoLocation();
-			latlng = geoLocation.toString().split(", ");
-		} else {
-			return "";
-		}
-		lat = Double.valueOf(latlng[0]);
-		lng = Double.valueOf(latlng[1]);
-		ret = getLocationInfo(lat, lng);
+
 		try {
+			metadata = ImageMetadataReader.readMetadata(file);
+			// See whether it has GPS data
+			gpsDirectory = metadata.getDirectory(GpsDirectory.class);
+			// Try to read out the location, making sure it's non-zero
+			if (gpsDirectory != null) {
+				geoLocation = gpsDirectory.getGeoLocation();
+				latlng = geoLocation.toString().split(", ");
+			} else {
+				return "";
+			}
+			lat = Double.valueOf(latlng[0]);
+			lng = Double.valueOf(latlng[1]);
+			ret = getLocationInfo(lat, lng);
+
 			// Get JSON Array called "results" and then get the 0th complete
 			// object as JSON
-			location = ret.getJSONArray("results").getJSONObject(0);
+			//location = ret.getJSONArray("results").getJSONObject(0);
 			// Get the value of the attribute whose name is "formatted_string"
-			location_string = getPlaceName(location); //location.getString("formatted_address");
+			location_string = getPlaceName(ret); // location.getString("formatted_address");
 			return location_string;
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 
+		}catch (NullPointerException e2) {
+			return location_string;
+		}catch (ImageProcessingException e) {
+			e.printStackTrace();
 		}
 		return location_string;
 	}

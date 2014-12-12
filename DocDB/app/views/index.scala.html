@@ -9,21 +9,21 @@
 
 			//localStorage["oldSearch"]=""
 			//localStorage.clear();
-			
+
 			if(typeof localStorage["oldTags"] == 'undefined')
 				localStorage["oldTags"]=""
 			if(typeof localStorage["oldSearch"] == 'undefined')
-				localStorage["oldSearch"]=""	
-			 
+				localStorage["oldSearch"]=""
+
 			Dropzone.autoDiscover = false;
 			var tag = []
-			for (i = 0; i <= 2; i++) {				 
+			for (i = 0; i <= 2; i++) {
 				if(typeof localStorage[i] != 'undefined')
 					tag[i] = localStorage[i];
 				else
 					tag[i] = "file";
 				if( localStorage["oldTags"] == "")
-					addTags(tag[i]);				
+					addTags(tag[i]);
 			}
 
 			$(function() {
@@ -74,10 +74,15 @@
 						</div>
 					</div>
 					</a>
-				
+
 					<div ng-if="$last == true && $index == 9">
 							<button id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all result </button>
 					</div>
+				</div>
+				<div id="tagsFound" class="list-group-item" style="padding: 15px 100px;">
+					<span ng-repeat="result in results track by $index" style="margin-right: -4px;">
+						<small ng-repeat="tag in result.tags track by $index" class="label label-info" >#{{tag}}</small>
+					</span>
 				</div>
 				<div id="resCount" ></div>
 		</div>

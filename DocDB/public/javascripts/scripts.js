@@ -21,7 +21,7 @@
 				tagID.value = tag;
 				localStorage[tagIDName] = tag;
 				addAutoComp(tag, 'oldTags');
-				//location.reload();
+				location.reload();
 			}
 
 			function checkKey(tagID){

@@ -23,7 +23,7 @@
 				else
 					tag[i] = "file";
 				if( localStorage["oldTags"] == "")
-					addTags(tag[i]);
+					addAutoComp(tag[i], 'oldTags');
 			}
 
 			$(function() {

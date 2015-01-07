@@ -7,14 +7,18 @@
 				if(temp != null)
 					array = temp.split(",");
 				array[array.length] = newEntry;
+				array = removeDup(array);
+				localStorage[name] = array.toString();
+			}	
+			function removeDup(array){
 				//O(n^2) 
 				var uniqueNames = [];
 				$.each(array, function(i, el){
 					if($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
 				});
-				localStorage[name] = uniqueNames.toString();
-			}	
+				return uniqueNames;
 			
+			}
 			function changeTag(tagIDName){
 				var tag = document.getElementById(tagIDName).value;
 				var	tagID = document.getElementById(tagIDName);
@@ -49,5 +53,12 @@
 				sendLink(link);
 				return false;
 			}		
+			
+			//funtion to flat array of arrays
+			var flatten = function (array){
+			  var merged = [];
+			  merged = merged.concat.apply(merged, array);
+			  return merged;
+			}
 		
 			

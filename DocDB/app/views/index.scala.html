@@ -94,7 +94,18 @@
 					<input type="text" class="form-control" id="linkUpload" placeholder="Put Your link here">
 				</div>
 		</div>
-
+		
+		<!-- This is used as the file preview template -->
+	<div id="template" class="file-row">
+        <div>
+            <span class="preview"><img data-dz-thumbnail /></span>
+        </div>
+        <div>
+            <p class="name" data-dz-name></p>
+            <strong class="error text-danger" data-dz-errormessage></strong>
+        </div>
+    </div>
+		<!------------------------------------------>
 	<div class="jumbotron">
 		<h2>Drop files</h2>
 			<div id="content2">
@@ -111,14 +122,22 @@
 </div>
 
 <script>
+		var previewNode = document.querySelector("#template");
+		previewNode.id = "";
+		var previewTemplatee = previewNode.parentNode.innerHTML;
+		previewNode.parentNode.removeChild(previewNode);
+		var imageRegEx = "image/*";
 		Dropzone.options.dropzone1 = {
 			dictDefaultMessage: tag[0],
+			
 			init: function() {
 				this.on("processing", function(file) {
 					var temp = document.getElementById('geoLoc').innerHTML;
 					var arr = temp.split(",");
 					temp = tag[0].replace('#','');
 					arr.push(temp);
+					if(file.type == imageRegEx)
+						this.options.previewTemplate = previewTemplatee;
 					this.options.url = "upload/"+arr;
 				});
 			}
@@ -131,6 +150,8 @@
 					var arr = temp.split(",");
 					temp = tag[1].replace('#','');
 					arr.push(temp);
+					if(file.type == imageRegEx)
+						this.options.previewTemplate = previewTemplatee;
 					this.options.url = "upload/"+arr;
 				});
 			}
@@ -143,6 +164,8 @@
 					var arr = temp.split(",");
 					temp = tag[2].replace('#','');
 					arr.push(temp);
+					if(file.type == imageRegEx)
+						this.options.previewTemplate = previewTemplatee;
 					this.options.url = "upload/"+arr;
 				});
 			}

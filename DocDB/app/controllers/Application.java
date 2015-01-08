@@ -83,8 +83,11 @@ public class Application extends Controller {
 	public static Result getFile(String path) {
 		File file = new File("files/" + path);
 		if (file.exists()) {
-			response().setContentType("application/x-download");
-			response().setHeader("Content-disposition", "attachment; filename=" + path);
+
+			response().setHeader("Content-Type", file.getName());
+	        response().setHeader("Content-Length", String.valueOf(file.length()));
+	        response().setHeader("Content-Disposition", "inline; filename=" + path);
+
 			return ok(file);
 		} else {
 			return redirect(routes.Application.index());

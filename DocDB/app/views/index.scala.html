@@ -5,11 +5,6 @@
 
 	<div class="jumbotron">
 		<script>
-
-
-			//localStorage["oldSearch"]=""
-			//localStorage.clear();
-
 			if(typeof localStorage["oldTags"] == 'undefined')
 				localStorage["oldTags"]=""
 			if(typeof localStorage["oldSearch"] == 'undefined')
@@ -83,6 +78,7 @@
 					<span ng-repeat="result in results track by $index" style="margin-right: -4px;">
 						<small ng-repeat="tag in result.tags track by $index" class="label label-info" >#{{tag}}</small>
 					</span>
+					<script></script>
 				</div>
 				<div id="resCount" ></div>
 		</div>
@@ -126,18 +122,14 @@
 		previewNode.id = "";
 		var previewTemplatee = previewNode.parentNode.innerHTML;
 		previewNode.parentNode.removeChild(previewNode);
-		var imageRegEx = "image/*";
+		
 		Dropzone.options.dropzone1 = {
 			dictDefaultMessage: tag[0],
-			
 			init: function() {
 				this.on("processing", function(file) {
-					var temp = document.getElementById('geoLoc').innerHTML;
-					var arr = temp.split(",");
-					temp = tag[0].replace('#','');
-					arr.push(temp);
-					if(file.type == imageRegEx)
-						this.options.previewTemplate = previewTemplatee;
+					var arr = getTags(0);
+					if( isPic(file.type) == true )
+						this.options.previewTemplate = previewTemplatee;	
 					this.options.url = "upload/"+arr;
 				});
 			}
@@ -146,11 +138,8 @@
 			dictDefaultMessage: tag[1],
 			init: function() {
 				this.on("processing", function(file) {
-					var temp = document.getElementById('geoLoc').innerHTML;
-					var arr = temp.split(",");
-					temp = tag[1].replace('#','');
-					arr.push(temp);
-					if(file.type == imageRegEx)
+					var arr = getTags(1);
+					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
 					this.options.url = "upload/"+arr;
 				});
@@ -160,11 +149,8 @@
 			dictDefaultMessage: tag[2],
 			init: function() {
 				this.on("processing", function(file) {
-					var temp = document.getElementById('geoLoc').innerHTML;
-					var arr = temp.split(",");
-					temp = tag[2].replace('#','');
-					arr.push(temp);
-					if(file.type == imageRegEx)
+					var arr = getTags(2);
+					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
 					this.options.url = "upload/"+arr;
 				});
@@ -178,5 +164,6 @@
 			};
 		});
 	function searchController($scope){}
+	
 </script>
 }

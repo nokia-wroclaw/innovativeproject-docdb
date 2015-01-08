@@ -60,5 +60,18 @@
 			  merged = merged.concat.apply(merged, array);
 			  return merged;
 			}
+			function getTags(index){
+				var temp = document.getElementById('geoLoc').innerHTML;
+				var arr = temp.split(",");
+				temp = tag[index].replace('#','');
+				arr.push(temp);
+				return arr;
+			}
+			
+			function isPic(type){
+				if(type == "image/*")
+					return true;
+				return false;		
+			}
 		
 			

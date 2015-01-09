@@ -56,7 +56,10 @@ public class Application extends Controller {
 
 			fileHandler.handleFile(uploadedLink, tagList);
 
+			response().setHeader("Access-Control-Allow-Origin", "*");
+
 			return ok(index.render("Link is on server"));
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			return internalServerError("Oops, link cannot be handled!");
@@ -85,8 +88,8 @@ public class Application extends Controller {
 		if (file.exists()) {
 
 			response().setHeader("Content-Type", file.getName());
-	        response().setHeader("Content-Length", String.valueOf(file.length()));
-	        response().setHeader("Content-Disposition", "inline; filename=" + path);
+			response().setHeader("Content-Length", String.valueOf(file.length()));
+			response().setHeader("Content-Disposition", "inline; filename=" + path);
 
 			return ok(file);
 		} else {

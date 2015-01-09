@@ -11,6 +11,7 @@ $(document).ready(function(){
 			$("#resCount").text("I found " + data.resultsCount + " matches");
 
 			$('#resultDiv').scope().results = eval(data.result);
+			$('#resultDiv').scope().tags = eval(data.tagList);
 			$("#resultDiv").scope().$apply();
 			rebindEventHandlers();
 		}

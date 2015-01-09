@@ -3,7 +3,8 @@
 @main("Welcome to DocDB") {
 <div class="container">
 
-	<div class="jumbotron">
+	<div class="jumbotron" style="padding-top: 10px;">
+	<a href=""><img src="assets/images/logo.png" style="margin: 0 45%;"></a>
 		<script>
 			if(typeof localStorage["oldTags"] == 'undefined')
 				localStorage["oldTags"]=""
@@ -44,7 +45,7 @@
 					});
 				  });
 			</script>
-	<h2>Search</h2>
+	<h2 style="margin-top: 0px;">Search</h2>
 		<div id="geoLoc" style=" visibility: hidden;" ></div>
 		<div id="content1">
 			<div class="input-group">
@@ -75,10 +76,7 @@
 					</div>
 				</div>
 				<div id="tagsFound" class="list-group-item" style="padding: 15px 100px;">
-					<span ng-repeat="result in results track by $index" style="margin-right: -4px;">
-						<small ng-repeat="tag in result.tags track by $index" class="label label-info" >#{{tag}}</small>
-					</span>
-					<script></script>
+					<small ng-repeat="tag in tags track by $index" class="label label-info" >#{{tag}}</small>
 				</div>
 				<div id="resCount" ></div>
 		</div>
@@ -90,7 +88,7 @@
 					<input type="text" class="form-control" id="linkUpload" placeholder="Put Your link here">
 				</div>
 		</div>
-		
+
 		<!-- This is used as the file preview template -->
 	<div id="template" class="file-row">
         <div>
@@ -122,14 +120,14 @@
 		previewNode.id = "";
 		var previewTemplatee = previewNode.parentNode.innerHTML;
 		previewNode.parentNode.removeChild(previewNode);
-		
+
 		Dropzone.options.dropzone1 = {
 			dictDefaultMessage: tag[0],
 			init: function() {
 				this.on("processing", function(file) {
 					var arr = getTags(0);
 					if( isPic(file.type) == true )
-						this.options.previewTemplate = previewTemplatee;	
+						this.options.previewTemplate = previewTemplatee;
 					this.options.url = "upload/"+arr;
 				});
 			}
@@ -164,6 +162,6 @@
 			};
 		});
 	function searchController($scope){}
-	
+
 </script>
 }

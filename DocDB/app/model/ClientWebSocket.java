@@ -1,7 +1,9 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONObject;
 
@@ -68,7 +70,7 @@ public class ClientWebSocket extends UntypedActor {
 			Logger.info("searching for:" + pattern + " with" + (limit ? "out" : "") + " limit");
 			Logger.info("search:" + searchPattern + "\ntags:" + tagList.toString());
 
-			// search elasticSearch search
+			// search elasticSearch search. search
 			ArrayList<ArrayList<String>> searchResult = search(searchPattern, limit);
 
 			if (!tagList.isEmpty()) searchResult = filterOutByTags(searchResult, tagList);
@@ -81,6 +83,7 @@ public class ClientWebSocket extends UntypedActor {
 				ObjectNode message = Json.newObject(); // create message
 
 				ArrayNode results = message.putArray("result"); // results array in message
+				Set<String> tagsSet = new HashSet<>();
 
 				for (ArrayList<String> result : searchResult) {
 					ObjectNode innerMsg = Json.newObject(); // inner message (file info)
@@ -94,6 +97,8 @@ public class ClientWebSocket extends UntypedActor {
 					int tagcount = result.size() - 4;
 					for (int tagnr = 0; tagnr < tagcount; tagnr++) {
 						tags.add(result.get(4 + tagnr));
+						tagsSet.add("\"" + result.get(4 + tagnr) + "\"");
+
 					}
 					// innerMsg.put("tags", tags);
 
@@ -102,6 +107,7 @@ public class ClientWebSocket extends UntypedActor {
 				int temp = searchResult.size();
 				String temp2 = "" + temp;
 				message.put("resultsCount", temp2);
+				message.put("tagList", tagsSet.toString());
 				socketOut.write(message);
 			}
 		}

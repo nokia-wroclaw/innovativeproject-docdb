@@ -8,10 +8,13 @@ import com.drew.metadata.exif.GpsDirectory;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.URL;
+import java.text.Normalizer;
 
 import org.json.JSONException;
 
@@ -29,7 +32,7 @@ import com.google.gson.JsonParser;
  * @author a.dyngosz, s.majkrzak, m.wierzbicki
  */
 public class GeolocationExtractor {
-	
+
 	/**
 	 * Read geolocation tags from file and convert it to adress
 	 * 
@@ -64,17 +67,15 @@ public class GeolocationExtractor {
 			lat = Double.valueOf(latlng[0]);
 			lng = Double.valueOf(latlng[1]);
 			ret = getLocationInfo(lat, lng);
-			
+
 			location_string = getPlaceName(ret);
 			return location_string;
-		}
-		catch (NullPointerException e2) {
+		} catch (NullPointerException e2) {
+			return location_string;
+		} catch (ImageProcessingException e) {
 			return location_string;
 		}
-		catch (ImageProcessingException e) {
-			return location_string;
-		}
-		//return location_string;
+		// return location_string;
 	}
 
 	/**
@@ -88,9 +89,9 @@ public class GeolocationExtractor {
 	 * @return JSON with all data about this place
 	 */
 	public JsonElement getLocationInfo(double lat, double lng) {
-		
+
 		System.out.println("lat: " + lat + " lang: " + lng);
-		String url = "http://maps.google.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&sensor=false&language=en";
+		String url = "http://maps.google.com/maps/api/geocode/json?latlng=" + lat + "," + lng;
 		InputStream openStream;
 		try {
 			openStream = new URL(url).openStream();
@@ -100,21 +101,26 @@ public class GeolocationExtractor {
 		JsonElement json = readJson(openStream);
 		return json;
 	}
-	
+
 	private JsonElement readJson(InputStream openStream) {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(openStream, Charsets.UTF_8));
 		JsonElement json = new JsonParser().parse(reader);
 		return json;
 	}
-	
-	public String getPlaceName (JsonElement location) {
-		String location_string = "Adres";
+
+	public String getPlaceName(JsonElement location) {
+		String location_string = null;
 		if (location.isJsonNull() == false) {
 			JsonObject jsonobject = location.getAsJsonObject();
 			JsonArray resultArray = jsonobject.get("results").getAsJsonArray();
 			JsonObject addressComponents = resultArray.get(0).getAsJsonObject();
 			JsonElement addressComponentsElement = addressComponents.get("formatted_address");
 			location_string = addressComponentsElement.toString();
+			location_string = Normalizer.normalize(location_string, Normalizer.Form.NFD)
+					.replaceAll("[^\\p{ASCII}]", ""); //removing polish signs 
+			location_string = Normalizer.normalize(location_string, Normalizer.Form.NFD)
+					.replaceAll("[\"]", "");//removing " sign
+
 		}
 		return location_string;
 	}

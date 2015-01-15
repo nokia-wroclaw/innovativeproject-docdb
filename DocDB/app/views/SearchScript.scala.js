@@ -19,8 +19,7 @@ $(document).ready(function(){
 		if (data.geo != null) {
 			var gloc = data.geo;
 			geoloc = gloc.split(", ");
-			$("#geoLoc").append(gloc);
-			//console.log($("#geoLoc"));
+			$("#geoLoc").append(gloc);		
 		}
 	}
 
@@ -106,7 +105,6 @@ window.onhashchange = searchFromHash;
 function searchRequest(limit){
 	var searchText = $("#search").val();
 
-	//window.history.pushState(searchText, 'DocDB - Search', '/Search/'+searchText.replace("#","%23").replace(" ","%20"));
 	window.location.hash  = '/Search/'+searchText.replace("#","%23").replace(" ","%20")
 	send(JSON.stringify({"request": "search", "pattern": searchText,"limit": limit}));
 }

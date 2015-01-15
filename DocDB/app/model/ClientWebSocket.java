@@ -97,11 +97,8 @@ public class ClientWebSocket extends UntypedActor {
 					int tagcount = result.size() - 4;
 					for (int tagnr = 0; tagnr < tagcount; tagnr++) {
 						tags.add(result.get(4 + tagnr));
-						tagsSet.add("\"" + result.get(4 + tagnr) + "\"");
-
+						tagsSet.add("\""+result.get(4 + tagnr)+"\"");
 					}
-					// innerMsg.put("tags", tags);
-
 					results.add(innerMsg);
 				}
 				int temp = searchResult.size();
@@ -130,19 +127,15 @@ public class ClientWebSocket extends UntypedActor {
 		GeolocationExtractor geoExtractor = new GeolocationExtractor();
 		double lat = Double.parseDouble(event.get("lat").asText());
 		double lng = Double.parseDouble(event.get("lng").asText());
-		String location = "";
-		//System.out.println("lat" + lat);
-		//System.out.println("lng" + lng);
+		String location = null;
 		try {
 			location = geoExtractor.getPlaceName(geoExtractor.getLocationInfo(lat, lng));
-			Logger.info("ClientWebSocket geolokacja:" + location);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		ObjectNode message = Json.newObject();
 		message.put("geo", location);
 		socketOut.write(message);
-		Logger.info(location);
 	}
 
 	private ArrayList<ArrayList<String>> filterOutByTags(ArrayList<ArrayList<String>> searchResult, List<String> tags) {
@@ -170,7 +163,6 @@ public class ClientWebSocket extends UntypedActor {
 	}
 
 	@Override
-	public void onReceive(Object arg0) throws Exception { // msg od innych aktorów / systemu
-
+	public void onReceive(Object arg0) throws Exception { 
 	}
 }

@@ -131,11 +131,11 @@ public class ClientWebSocket extends UntypedActor {
 		double lat = Double.parseDouble(event.get("lat").asText());
 		double lng = Double.parseDouble(event.get("lng").asText());
 		String location = "";
-		System.out.println("lat" + lat);
-		System.out.println("lng" + lng);
+		//System.out.println("lat" + lat);
+		//System.out.println("lng" + lng);
 		try {
-			JSONObject jo = geoExtractor.getLocationInfo(lat, lng);
-			location = geoExtractor.getPlaceName(jo);
+			location = geoExtractor.getPlaceName(geoExtractor.getLocationInfo(lat, lng));
+			Logger.info("ClientWebSocket geolokacja:" + location);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

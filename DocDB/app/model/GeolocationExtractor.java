@@ -6,18 +6,21 @@ import com.drew.lang.GeoLocation;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.GpsDirectory;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
-import org.json.JSONObject;
+
+import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * This class is used to read exifs from *.jpg and *.jpeg. If there are
@@ -37,45 +40,41 @@ public class GeolocationExtractor {
 	 *             no file found
 	 * @throws ImageProcessingException
 	 */
-	public String extractor(File file) throws IOException{//, ImageProcessingException {
+	public String extractor(File file) throws IOException {
 		String location_string = "";
-		Metadata metadata;
-		GpsDirectory gpsDirectory;
-		GeoLocation geoLocation;
-		String[] latlng;
+		String[] latlng = {};
 		Double lat, lng;
-		JSONObject ret, location;
-
+		JsonElement ret;
 		try {
-			metadata = ImageMetadataReader.readMetadata(file);
+			Metadata metadata = ImageMetadataReader.readMetadata(file);
 			// See whether it has GPS data
-			gpsDirectory = metadata.getDirectory(GpsDirectory.class);
+			GpsDirectory gpsDirectory = metadata.getDirectory(GpsDirectory.class);
 			// Try to read out the location, making sure it's non-zero
 			if (gpsDirectory != null) {
-				geoLocation = gpsDirectory.getGeoLocation();
-				latlng = geoLocation.toString().split(", ");
+				GeoLocation geoLocation = gpsDirectory.getGeoLocation();
+				System.out.println(geoLocation.toString());
+				if (!geoLocation.isZero()) {
+					latlng = geoLocation.toString().split(", ");
+
+				}
 			} else {
 				return "";
 			}
+
 			lat = Double.valueOf(latlng[0]);
 			lng = Double.valueOf(latlng[1]);
 			ret = getLocationInfo(lat, lng);
-
-			// Get JSON Array called "results" and then get the 0th complete
-			// object as JSON
-			//location = ret.getJSONArray("results").getJSONObject(0);
-			// Get the value of the attribute whose name is "formatted_string"
-			location_string = getPlaceName(ret); // location.getString("formatted_address");
+			
+			location_string = getPlaceName(ret);
 			return location_string;
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-
-		}catch (NullPointerException e2) {
-			return location_string;
-		}catch (ImageProcessingException e) {
-			e.printStackTrace();
 		}
-		return location_string;
+		catch (NullPointerException e2) {
+			return location_string;
+		}
+		catch (ImageProcessingException e) {
+			return location_string;
+		}
+		//return location_string;
 	}
 
 	/**
@@ -88,38 +87,35 @@ public class GeolocationExtractor {
 	 *            longtitude of a place
 	 * @return JSON with all data about this place
 	 */
-	public JSONObject getLocationInfo(double lat, double lng) {
-
-		HttpGet httpGet = new HttpGet("http://maps.google.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&sensor=false&language=en");
-		HttpClient client = new DefaultHttpClient();
-		HttpResponse response;
-		StringBuilder stringBuilder = new StringBuilder();
-
+	public JsonElement getLocationInfo(double lat, double lng) {
+		
+		System.out.println("lat: " + lat + " lang: " + lng);
+		String url = "http://maps.google.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&sensor=false&language=en";
+		InputStream openStream;
 		try {
-			response = client.execute(httpGet);
-			HttpEntity entity = response.getEntity();
-			InputStream stream = entity.getContent();
-			int b;
-			while ((b = stream.read()) != -1) {
-				stringBuilder.append((char) b);
-			}
-		} catch (ClientProtocolException e) {
+			openStream = new URL(url).openStream();
 		} catch (IOException e) {
+			throw Throwables.propagate(e);
 		}
-
-		JSONObject jsonObject = new JSONObject();
-		try {
-			jsonObject = new JSONObject(stringBuilder.toString());
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return jsonObject;
+		JsonElement json = readJson(openStream);
+		return json;
 	}
 	
-	public String getPlaceName (JSONObject location) throws JSONException {
-		String location_string = "";
-		if (location.getJSONArray("results").getJSONObject(0).has("formatted_address"))
-			location_string = location.getJSONArray("results").getJSONObject(0).getString("formatted_address");
+	private JsonElement readJson(InputStream openStream) {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(openStream, Charsets.UTF_8));
+		JsonElement json = new JsonParser().parse(reader);
+		return json;
+	}
+	
+	public String getPlaceName (JsonElement location) {
+		String location_string = "Adres";
+		if (location.isJsonNull() == false) {
+			JsonObject jsonobject = location.getAsJsonObject();
+			JsonArray resultArray = jsonobject.get("results").getAsJsonArray();
+			JsonObject addressComponents = resultArray.get(0).getAsJsonObject();
+			JsonElement addressComponentsElement = addressComponents.get("formatted_address");
+			location_string = addressComponentsElement.toString();
+		}
 		return location_string;
 	}
 }

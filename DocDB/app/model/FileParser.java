@@ -34,19 +34,23 @@ public class FileParser {
 	 * 
 	 * @param fileToParse
 	 *            file given by client, which have to be parsed
+	 * @param parentName TODO
 	 */
-	public ArrayList<String> parseFile(File fileToParse, String newPath, String oldPath) {
+	public ArrayList<String> parseFile(File fileToParse, String oldPath, String parentName) {
 		InputStream is = null;
 
 		try {
-			String fileName = fileToParse.getName();
+			String fileName = "";
+			if(parentName.equals(""))
+				fileName = fileToParse.getName();
+			else
+				fileName = parentName;
 			is = new BufferedInputStream(new FileInputStream(fileToParse));
 			Parser parser = new AutoDetectParser();
-			ContentHandler handler = new BodyContentHandler(); // it keeps
-																// content of
-																// document
+			// it keeps content of document
+			ContentHandler handler = new BodyContentHandler();
 			Metadata metadata = new Metadata(); // all metadata stored in file
-			parser.parse(is, handler, metadata); // do versii 0.3
+			parser.parse(is, handler, metadata); // do wersji 0.3
 			String size = fileToParse.length() / 1024 + "";
 			ArrayList<String> result = dataToArray(metadata, handler, fileName, size);
 
@@ -89,7 +93,6 @@ public class FileParser {
 	 */
 	public ArrayList<String> dataToArray(Metadata metadata, ContentHandler handler, String fileName, String size) {
 		ArrayList<String> data = new ArrayList<String>();
-		// String[] data = new String[5];
 		if (metadata.get("title") != null && metadata.get("title").length() != 0)
 			data.add(metadata.get("title"));
 		else

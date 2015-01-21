@@ -30,7 +30,6 @@ public class FileHandler {
 	public FileHandler(ElasticSearchServer elasticServer) {
 		this.elasticServer = elasticServer;
 		fileParser = new FileParser();
-		// md5 = new MD5Checksum();
 	}
 
 	/**
@@ -45,9 +44,7 @@ public class FileHandler {
 	public void handleFile(FilePart uploadedFile, ArrayList<String> tagList) {
 		File file = uploadedFile.getFile();
 		String uploadedFileName = uploadedFile.getFilename();
-
 		handleFile(file, uploadedFileName, tagList);
-
 	}
 
 	public void handleFile(File uploadedLink, ArrayList<String> tagList) {
@@ -61,11 +58,10 @@ public class FileHandler {
 	 */
 	private void handleFile(File file, String uploadedFileName, ArrayList<String> tagList) {
 		// get new file hash
-		String newFileCheckSum = getHash(file);
 
+		String newFileCheckSum = getHash(file);
 		String newFileName = uploadedFileName;
 		File destFile = new File(newFileName);
-
 		if (fileExists(newFileCheckSum)) {
 			// file exists with the same name:
 			if (destFile.exists()) {
@@ -74,18 +70,17 @@ public class FileHandler {
 			}
 			// file exist with different name:
 			newFileName = dirPath + getExistingFileName(newFileCheckSum);
+			ArrayList<String> parsedFile = fileParser.parseFile(new File(newFileName), uploadedFileName, "");
 
-			ArrayList<String> parsedFile = fileParser.parseFile(new File(newFileName), newFileName, uploadedFileName);
-			if (uploadedFileName.endsWith(".jpg")) {
-				GeolocationExtractor gextractor = new GeolocationExtractor ();
-				String photoGeolocation = "";
-						try {
-							photoGeolocation  = gextractor.extractor(file);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-				tagList.add(photoGeolocation);
+			if (uploadedFileName.endsWith(".zip")) {
+				handleZip(tagList, newFileCheckSum, newFileName);
+				Logger.info("metadata saved");
+				return;
 			}
+			if (uploadedFileName.endsWith(".jpg")) {
+				handleJPG(tagList, file);
+			}
+
 			if (parsedFile != null) {
 				insertToElastic(tagList, newFileCheckSum, parsedFile);
 				Logger.info("metadata saved");
@@ -96,11 +91,11 @@ public class FileHandler {
 
 		// check if filename already exists
 		int number = 0;
-		while (destFile.exists()) {// file exists. need new name
+		while (destFile.exists()) {// file exists need new name
 			number++;
 			destFile = new File(dirPath + number + uploadedFileName);
 		}
-		if(number == 0)
+		if (number == 0)
 			destFile = new File(dirPath + uploadedFileName);
 		newFileName = dirPath + uploadedFileName;
 
@@ -112,21 +107,41 @@ public class FileHandler {
 			e.printStackTrace();
 		}
 
-		ArrayList<String> parsedFile = fileParser.parseFile(destFile, newFileName, uploadedFileName);
+		if (uploadedFileName.endsWith(".zip")) {
+			handleZip(tagList, newFileCheckSum, newFileName);
+			Logger.info("metadata saved");
+			return;
+		}
+		ArrayList<String> parsedFile = fileParser.parseFile(destFile, uploadedFileName, "");
+
 		if (uploadedFileName.endsWith(".jpg")) {
-			GeolocationExtractor gextractor = new GeolocationExtractor ();
-			String photoGeolocation = "";
-					try {
-						photoGeolocation  = gextractor.extractor(destFile);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-			tagList.add(photoGeolocation);
+			handleJPG(tagList, destFile);
 		}
 		if (parsedFile != null) {
 			insertToElastic(tagList, newFileCheckSum, parsedFile);
 			Logger.info("metadata saved");
 		}
+	}
+
+	private void handleZip(ArrayList<String> tagList, String newFileCheckSum, String newFileName) {
+		ZipHandler zipHandler = new ZipHandler();
+		ArrayList<String> zipFilesNames = zipHandler.handleZip(newFileName, dirPath + "zip/");
+		for (String s : zipFilesNames) {
+			ArrayList<String> parsedFile = fileParser.parseFile(new File(s), s, newFileName);
+			Logger.info(s);
+			insertToElastic(tagList, newFileCheckSum, parsedFile);
+		}
+	}
+
+	private void handleJPG(ArrayList<String> tagList, File destFile) {
+		GeolocationExtractor gextractor = new GeolocationExtractor();
+		String photoGeolocation = "";
+		try {
+			photoGeolocation = gextractor.extractor(destFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		tagList.add(photoGeolocation);
 	}
 
 	/**
@@ -174,14 +189,6 @@ public class FileHandler {
 
 	private String getExistingFileName(String MD5) {
 		String[] fields = { "MD5" };
-//		ClusterHealthResponse healthResponse = elasticServer.client.admin().cluster().prepareHealth()
-//				.setWaitForGreenStatus().execute().actionGet();
-//		ClusterHealthStatus healthStatus = healthResponse.getStatus();
-		/*if (!healthStatus.equals("GREEN")) {
-			Logger.info("Waiting for GREEN or YELLOW status, now it is: " + healthStatus);
-			//elasticServer.client.admin().cluster().prepareHealth().setWaitForYellowStatus().execute().actionGet();
-		}*/
-		//Logger.info("Elastic is " + healthStatus);
 		if (elasticServer.client.admin().indices().prepareExists("documents").execute().actionGet().isExists() == false)
 			return null;
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,

@@ -16,4 +16,6 @@ libraryDependencies += "org.apache.tika" % "tika-parsers" % "1.6"
 
 libraryDependencies += "junit" % "junit" % "4.11"
 
+libraryDependencies += "net.lingala.zip4j" % "zip4j" % "1.2.3"
+
 play.Project.playJavaSettings

@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.Map;
  
 
+import java.util.Set;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -83,7 +85,7 @@ public class ElasticSearchManager {
 			return null;
 	}
 
-	public XContentBuilder putJsonDocument(ArrayList<String> parsedFile, ArrayList<String> tags) {
+	public XContentBuilder putJsonDocument(ArrayList<String> parsedFile, Set<String> tagList) {
 		if (parsedFile.isEmpty() == false) {
 			XContentBuilder builder = null;
 			try {
@@ -92,7 +94,7 @@ public class ElasticSearchManager {
 				builder = jsonBuilder().startObject().field("title", parsedFile.get(0))
 						.field("author", parsedFile.get(1)).field("content", parsedFile.get(2))
 						.field("path", parsedFile.get(3)).field("size", parsedFile.get(4))
-						.field("MD5", parsedFile.get(5)).field("postDate", postDate).field("tags", tags).endObject();
+						.field("MD5", parsedFile.get(5)).field("postDate", postDate).field("tags", tagList).endObject();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

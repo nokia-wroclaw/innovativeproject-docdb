@@ -55,7 +55,6 @@ public class GeolocationExtractor {
 			// Try to read out the location, making sure it's non-zero
 			if (gpsDirectory != null) {
 				GeoLocation geoLocation = gpsDirectory.getGeoLocation();
-				System.out.println(geoLocation.toString());
 				if (!geoLocation.isZero()) {
 					latlng = geoLocation.toString().split(", ");
 
@@ -75,7 +74,6 @@ public class GeolocationExtractor {
 		} catch (ImageProcessingException e) {
 			return location_string;
 		}
-		// return location_string;
 	}
 
 	/**
@@ -90,7 +88,6 @@ public class GeolocationExtractor {
 	 */
 	public JsonElement getLocationInfo(double lat, double lng) {
 
-		System.out.println("lat: " + lat + " lang: " + lng);
 		String url = "http://maps.google.com/maps/api/geocode/json?latlng=" + lat + "," + lng;
 		InputStream openStream;
 		try {
@@ -117,9 +114,10 @@ public class GeolocationExtractor {
 			JsonElement addressComponentsElement = addressComponents.get("formatted_address");
 			location_string = addressComponentsElement.toString();
 			location_string = Normalizer.normalize(location_string, Normalizer.Form.NFD)
-					.replaceAll("[^\\p{ASCII}]", ""); //removing polish signs 
-			location_string = Normalizer.normalize(location_string, Normalizer.Form.NFD)
-					.replaceAll("[\"]", "");//removing " sign
+					.replaceAll("[^\\p{ASCII}]", ""); // removing polish signs
+			location_string = Normalizer.normalize(location_string, Normalizer.Form.NFD).replaceAll("[\"]", "");// removing
+																												// "
+																												// sign
 
 		}
 		return location_string;

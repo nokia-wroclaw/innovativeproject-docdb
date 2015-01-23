@@ -45,6 +45,7 @@ public class FileParser {
 				fileName = fileToParse.getName();
 			else
 				fileName = parentName;
+			System.out.println("File name = "+fileName);
 			is = new BufferedInputStream(new FileInputStream(fileToParse));
 			Parser parser = new AutoDetectParser();
 			// it keeps content of document

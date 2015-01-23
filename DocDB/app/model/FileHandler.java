@@ -3,6 +3,8 @@ package model;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
@@ -41,13 +43,13 @@ public class FileHandler {
 	 * @param uploadedFile
 	 *            file given by user to upload
 	 */
-	public void handleFile(FilePart uploadedFile, ArrayList<String> tagList) {
+	public void handleFile(FilePart uploadedFile, Set<String> tagList) {
 		File file = uploadedFile.getFile();
 		String uploadedFileName = uploadedFile.getFilename();
 		handleFile(file, uploadedFileName, tagList);
 	}
 
-	public void handleFile(File uploadedLink, ArrayList<String> tagList) {
+	public void handleFile(File uploadedLink, Set<String> tagList) {
 		handleFile(uploadedLink, uploadedLink.getName(), tagList);
 	}
 
@@ -56,11 +58,11 @@ public class FileHandler {
 	 * @param file
 	 * @param uploadedFileName
 	 */
-	private void handleFile(File file, String uploadedFileName, ArrayList<String> tagList) {
+	private void handleFile(File file, String uploadedFileName, Set<String> tagList) {
 		// get new file hash
 
 		String newFileCheckSum = getHash(file);
-		String newFileName = uploadedFileName;
+		String newFileName = dirPath + uploadedFileName;
 		File destFile = new File(newFileName);
 		if (fileExists(newFileCheckSum)) {
 			// file exists with the same name:
@@ -73,7 +75,7 @@ public class FileHandler {
 			ArrayList<String> parsedFile = fileParser.parseFile(new File(newFileName), uploadedFileName, "");
 
 			if (uploadedFileName.endsWith(".zip")) {
-				handleZip(tagList, newFileCheckSum, newFileName);
+				handleZip(tagList, newFileCheckSum, uploadedFileName);
 				Logger.info("metadata saved");
 				return;
 			}
@@ -97,7 +99,7 @@ public class FileHandler {
 		}
 		if (number == 0)
 			destFile = new File(dirPath + uploadedFileName);
-		newFileName = dirPath + uploadedFileName;
+		
 
 		try {
 			Files.move(file, destFile);
@@ -108,7 +110,7 @@ public class FileHandler {
 		}
 
 		if (uploadedFileName.endsWith(".zip")) {
-			handleZip(tagList, newFileCheckSum, newFileName);
+			handleZip(tagList, newFileCheckSum, uploadedFileName);
 			Logger.info("metadata saved");
 			return;
 		}
@@ -123,17 +125,17 @@ public class FileHandler {
 		}
 	}
 
-	private void handleZip(ArrayList<String> tagList, String newFileCheckSum, String newFileName) {
+	private void handleZip(Set<String> tagList, String newFileCheckSum, String newFileName) {
 		ZipHandler zipHandler = new ZipHandler();
-		ArrayList<String> zipFilesNames = zipHandler.handleZip(newFileName, dirPath + "zip/");
-		for (String s : zipFilesNames) {
-			ArrayList<String> parsedFile = fileParser.parseFile(new File(s), s, newFileName);
-			Logger.info(s);
+		ArrayList<String> zipFilesNames = zipHandler.handleZip(newFileName, dirPath +"zip/");
+		for (String curFileName : zipFilesNames) {
+			ArrayList<String> parsedFile = fileParser.parseFile(new File(curFileName), curFileName, newFileName);
 			insertToElastic(tagList, newFileCheckSum, parsedFile);
 		}
+
 	}
 
-	private void handleJPG(ArrayList<String> tagList, File destFile) {
+	private void handleJPG(Set<String> tagList, File destFile) {
 		GeolocationExtractor gextractor = new GeolocationExtractor();
 		String photoGeolocation = "";
 		try {
@@ -149,7 +151,7 @@ public class FileHandler {
 	 * @param newFileCheckSum
 	 * @param parsedFile
 	 */
-	private void insertToElastic(ArrayList<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile) {
+	private void insertToElastic(Set<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile) {
 		extractTags(tagList, newFileCheckSum, parsedFile);
 		XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagList);
 		elasticServer.elasticSearch.insert(elasticServer.client, json, "documents", "file");
@@ -172,14 +174,14 @@ public class FileHandler {
 	}
 
 	/**
-	 * @param tagsArray
+	 * @param tagList
 	 * @param newFileCheckSum
 	 * @param parsedFile
 	 */
-	private void extractTags(ArrayList<String> tagsArray, String newFileCheckSum, ArrayList<String> parsedFile) {
+	private void extractTags(Set<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile) {
 		String temp = parsedFile.get(parsedFile.size() - 1);
 		parsedFile.remove(parsedFile.size() - 1);
-		tagsArray.add(temp);
+		tagList.add(temp);
 		parsedFile.add(newFileCheckSum);
 	}
 

@@ -30,14 +30,14 @@ public class ZipHandler {
 
 	ArrayList<String> handleZip(String source, String destination) {
 		ZipHandler zip = new ZipHandler();
-		zip.unzip(source, destination);
+		zip.unzip("files/"+source, destination);
 		ArrayList<String> filesPaths = new ArrayList<String>();
 		File dir = new File(destination);
 		try {
 			List<File> files = (List<File>) FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 			// going thru all dir
 			for (File file : files) {
-				filesPaths.add(file.getCanonicalPath());
+				filesPaths.add(file.getPath());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

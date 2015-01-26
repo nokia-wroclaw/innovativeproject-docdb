@@ -132,6 +132,7 @@ public class FileHandler {
 			ArrayList<String> parsedFile = fileParser.parseFile(new File(curFileName), curFileName, newFileName);
 			insertToElastic(tagList, newFileCheckSum, parsedFile);
 		}
+		zipHandler.removeUnpackedZip(dirPath+"zip/");
 
 	}
 

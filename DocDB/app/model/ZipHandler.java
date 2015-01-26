@@ -30,18 +30,38 @@ public class ZipHandler {
 
 	ArrayList<String> handleZip(String source, String destination) {
 		ZipHandler zip = new ZipHandler();
-		zip.unzip("files/"+source, destination);
+		zip.unzip("files/" + source, destination);
 		ArrayList<String> filesPaths = new ArrayList<String>();
 		File dir = new File(destination);
 		try {
 			List<File> files = (List<File>) FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 			// going thru all dir
-			for (File file : files) {
-				filesPaths.add(file.getPath());
+			for (File file : files) { //
+				if (file.getPath().endsWith(".zip")) {
+					//TODO: Handle zip inside zip
+					// System.out.println(file.getPath());
+					// System.out.println("Source = " + source);
+					// ArrayList<String> temp = new ArrayList<String>();
+					// temp = handleZip(file.getName(), destination);
+					// filesPaths.addAll(temp);
+				} else
+					filesPaths.add(file.getPath());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return filesPaths;
+	}
+
+	void removeUnpackedZip(String destination) {
+		File dir = new File(destination);
+		try {
+			List<File> files = (List<File>) FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
+			for (File file : files) {
+				file.delete();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

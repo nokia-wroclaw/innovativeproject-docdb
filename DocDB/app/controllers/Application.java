@@ -8,9 +8,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import model.ClientWebSocket;
 import model.ElasticSearchServer;
@@ -49,12 +54,10 @@ public class Application extends Controller {
 		String filename = getFreeRandomFileName() + ".html";
 		try {
 			File uploadedLink = saveLinkToFile(link, filename);
-
 			Logger.info("link received. tags are:\"" + tags + "\". Handling...");
-
-			ArrayList<String> tagList = new ArrayList<>(Arrays.asList(tags.split(",")));
-
-			fileHandler.handleFile(uploadedLink, tagList);
+			Set<String> tagSet = new HashSet<String>();
+			tagSet.addAll(Arrays.asList(tags.split(",")));
+			fileHandler.handleFile(uploadedLink, tagSet);
 
 			response().setHeader("Access-Control-Allow-Origin", "*");
 
@@ -71,10 +74,9 @@ public class Application extends Controller {
 		FilePart uploadedFile = body.getFile("file");
 		if (uploadedFile != null) {
 			Logger.info("file received. tags are:\"" + tags + "\". Handling...");
-
-			ArrayList<String> tagList = new ArrayList<>(Arrays.asList(tags.split(",")));
-
-			fileHandler.handleFile(uploadedFile, tagList);
+			Set<String> tagSet = new HashSet<String>();
+			tagSet.addAll(Arrays.asList(tags.split(",")));
+			fileHandler.handleFile(uploadedFile, tagSet);
 
 			return ok(index.render("File is on server"));
 		} else {

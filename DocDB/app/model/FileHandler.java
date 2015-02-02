@@ -3,11 +3,8 @@ package model;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 
 import play.Logger;
@@ -17,8 +14,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 /**
- * Class control flow of file during uploading, parsing and sending it to
- * elastic search database.
+ * Class control flow of file during uploading, parsing and sending it to elastic search database.
  * 
  * @author a.dyngosz, s.majkrzak. m. wierzbicki
  */
@@ -35,9 +31,8 @@ public class FileHandler {
 	}
 
 	/**
-	 * Controller invokes this method, when user wants to send files to server.
-	 * It takes care of giving it to Tika Apache parser, getting back array with
-	 * content and metadata. Next, method receive the map (requiered for Elastic
+	 * Controller invokes this method, when user wants to send files to server. It takes care of giving it to Tika
+	 * Apache parser, getting back array with content and metadata. Next, method receive the map (requiered for Elastic
 	 * search) and send it to ES server
 	 * 
 	 * @param uploadedFile
@@ -97,9 +92,7 @@ public class FileHandler {
 			number++;
 			destFile = new File(dirPath + number + uploadedFileName);
 		}
-		if (number == 0)
-			destFile = new File(dirPath + uploadedFileName);
-		
+		if (number == 0) destFile = new File(dirPath + uploadedFileName);
 
 		try {
 			Files.move(file, destFile);
@@ -127,12 +120,12 @@ public class FileHandler {
 
 	private void handleZip(Set<String> tagList, String newFileCheckSum, String newFileName) {
 		ZipHandler zipHandler = new ZipHandler();
-		ArrayList<String> zipFilesNames = zipHandler.handleZip(newFileName, dirPath +"zip/");
+		ArrayList<String> zipFilesNames = zipHandler.handleZip(newFileName, dirPath + "zip/");
 		for (String curFileName : zipFilesNames) {
 			ArrayList<String> parsedFile = fileParser.parseFile(new File(curFileName), curFileName, newFileName);
 			insertToElastic(tagList, newFileCheckSum, parsedFile);
 		}
-		zipHandler.removeUnpackedZip(dirPath+"zip/");
+		zipHandler.removeUnpackedZip(dirPath + "zip/");
 
 	}
 
@@ -196,8 +189,7 @@ public class FileHandler {
 			return null;
 		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,
 				"documents", "file", fields, true);
-		if (searchResult == null)
-			return null;
+		if (searchResult == null) return null;
 		return searchResult.get(0).get(1);
 	}
 

@@ -8,13 +8,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.Normalizer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import model.ClientWebSocket;
@@ -41,7 +36,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class Application extends Controller {
 	private static ElasticSearchServer elasticServer = new ElasticSearchServer();
 	private static FileHandler fileHandler = new FileHandler(elasticServer);
-	private static Random rnd = new Random();
 
 	public static Result index() {
 		Logger.info("service started");

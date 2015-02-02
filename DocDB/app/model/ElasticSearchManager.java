@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
- 
-
 import java.util.Set;
 
 import org.elasticsearch.action.search.SearchResponse;
@@ -32,7 +30,7 @@ public class ElasticSearchManager {
 				System.out.println("Problem with insert()");
 
 		} catch (Exception e) {
-		 e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 
@@ -42,6 +40,7 @@ public class ElasticSearchManager {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public ArrayList<ArrayList<String>> search(Client client, String content, String index, String type,
 			String[] fieldNames, Boolean limit) {
 
@@ -52,11 +51,11 @@ public class ElasticSearchManager {
 
 		MultiMatchQueryBuilder qb3 = new MultiMatchQueryBuilder(content, fieldNames);
 		int resultSize = 10;
-		if(limit == true)
-			resultSize = Integer.MAX_VALUE;
+		if (limit == true) resultSize = Integer.MAX_VALUE;
 		// proceed search with query created above
 		SearchResponse response = client.prepareSearch(index).setTypes(type)
-				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(qb3).setSize(resultSize).addHighlightedField(content) // Query
+				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(qb3).setSize(resultSize)
+				.addHighlightedField(content) // Query
 				.execute().actionGet();
 
 		// getting search result in form of array
@@ -76,7 +75,7 @@ public class ElasticSearchManager {
 				temp.add((String) result.get("path"));
 				temp.add((String) result.get("size"));
 				temp.add((String) result.get("content"));
-				temp.addAll((ArrayList) result.get("tags"));
+				temp.addAll((ArrayList<String>) result.get("tags"));
 				resultArray.add(temp);
 			}
 			return resultArray;

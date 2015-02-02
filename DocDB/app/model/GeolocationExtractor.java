@@ -1,23 +1,18 @@
 package model;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.text.Normalizer;
+
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.lang.GeoLocation;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.GpsDirectory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.text.Normalizer;
-
-import org.json.JSONException;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.gson.JsonArray;
@@ -26,8 +21,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * This class is used to read exifs from *.jpg and *.jpeg. If there are
- * geolocation tags, it will convert it to name of place, using Google API
+ * This class is used to read exifs from *.jpg and *.jpeg. If there are geolocation tags, it will convert it to name of
+ * place, using Google API
  * 
  * @author a.dyngosz, s.majkrzak, m.wierzbicki
  */
@@ -77,8 +72,7 @@ public class GeolocationExtractor {
 	}
 
 	/**
-	 * Using Google API this method read information about a place, and return
-	 * it.
+	 * Using Google API this method read information about a place, and return it.
 	 * 
 	 * @param lat
 	 *            latitude of a place

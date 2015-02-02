@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.json.JSONObject;
-
 import play.Logger;
 import play.libs.F.Callback;
 import play.libs.F.Callback0;
@@ -97,7 +95,7 @@ public class ClientWebSocket extends UntypedActor {
 					int tagcount = result.size() - 4;
 					for (int tagnr = 0; tagnr < tagcount; tagnr++) {
 						tags.add(result.get(4 + tagnr));
-						tagsSet.add("\""+result.get(4 + tagnr)+"\"");
+						tagsSet.add("\"" + result.get(4 + tagnr) + "\"");
 					}
 					results.add(innerMsg);
 				}
@@ -163,6 +161,6 @@ public class ClientWebSocket extends UntypedActor {
 	}
 
 	@Override
-	public void onReceive(Object arg0) throws Exception { 
+	public void onReceive(Object arg0) throws Exception {
 	}
 }

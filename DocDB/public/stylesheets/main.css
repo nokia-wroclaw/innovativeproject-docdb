@@ -21,3 +21,33 @@ div #outer{
  #linkUpload{
  margin: 0 auto;
  }
+
+#listGridDiv{
+	text-align: right;
+	position: relative;
+	top: -12px;
+	line-height: 0px;
+}
+
+.gridView.singleResultDiv {
+	width: 33%;
+	display: inline-table;
+}
+
+.gridView.panel-body{
+	height: 150px;
+	overflow-y: auto;
+}
+.gridView img{
+	max-width: 100%;
+}
+.listView img {
+	max-height: 200px;
+}
+
+#resultDiv .glyphicon{
+	position:relative;
+	top:-5px;
+	margin: 0 2px;
+	float:right;
+}

@@ -79,7 +79,21 @@ public class Application extends Controller {
 		}
 	}
 
-	public static Result getFile(String path) {
+	public static Result getFile(String path) {// Download/
+		File file = new File("files/" + path);
+		if (file.exists()) {
+
+			response().setHeader("Content-Type", file.getName());
+			response().setHeader("Content-Length", String.valueOf(file.length()));
+			response().setHeader("Content-Disposition", "attachment; filename=" + path);
+
+			return ok(file);
+		} else {
+			return redirect(routes.Application.index());
+		}
+	}
+
+	public static Result showFile(String path) {// Preview/
 		File file = new File("files/" + path);
 		if (file.exists()) {
 

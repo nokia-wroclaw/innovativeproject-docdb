@@ -1,25 +1,36 @@
+var kafelekHeight=175;
 var newSearch, webSocket, searchTimer=0, sendLink,allTags;
-var geoloc =[];
+var geoloc =[], lastLimit=false;
 $(document).ready(function(){
 	var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
 	webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
+
 
     var receiveEvent = function(event) {
         var data = JSON.parse(event.data)
 
 		if( data.result != null){
-			$("#resCount").text("I found " + data.resultsCount + " matches");
+			$("#resCount").text(data.resultsCount==undefined?"No results":"" + data.resultsCount + " matches found");
 
-			$('#resultDiv').scope().results = eval(data.result);
-			$('#resultDiv').scope().tags = eval(data.tagList);
-			$("#resultDiv").scope().$apply();
+			$('#resultDiv').scope().results = eval(data.result);		//wyciągamy rezultaty
+			$('#resultDiv').scope().tags = eval(data.tagList);			//wyciągamy tagi
+			$("#resultDiv").scope().$apply();							//generujemy html z wyników
+			if(typeof localStorage["gridView"] == 'undefined'){			//ustawiamy widok odpowiedni dla użytkownika
+				localStorage["gridView"]="false";						//(domyślnie lista) tutaj zmieniać domyślny widok!!!!!!
+			}else if(localStorage["gridView"]=="true"){
+				$(".gridable").removeClass("listView").addClass("gridView");//changing to grid
+			}
+			$("#resultDiv").slideDown();
+			$(".panel-body.gridView").each(function(){$(this).height(kafelekHeight-$(this).next().height());});//ustawianie wysokości kafelków
 			rebindEventHandlers();
+			if($('#resultDiv').scope().results.length==9 && lastLimit=="false") $('#newSearch').slideDown();
+			else $('#newSearch').slideUp();
 		}
 
 		if (data.geo != null) {
 			var gloc = data.geo;
 			geoloc = gloc.split(", ");
-			$("#geoLoc").append(gloc);		
+			$("#geoLoc").html(gloc);
 		}
 	}
 
@@ -69,7 +80,7 @@ $(document).ready(function(){
 		switch(e.which) {
 			case 13: // enter
 				address = "takeLink/"+prompt("Wpisz tagi")+","+$('#geoLoc').text();
-				$.post( address.replace("#",""), { link : $("#linkUpload").val() } );
+				$.post( address.replace("# ","").replace("#",""), { link : $("#linkUpload").val() } );
 			break;
 			default: return; // exit this handler for other keys
 		}
@@ -104,7 +115,7 @@ window.onhashchange = searchFromHash;
 
 function searchRequest(limit){
 	var searchText = $("#search").val();
-
+	lastLimit=limit;
 	window.location.hash  = '/Search/'+searchText.replace("#","%23").replace(" ","%20")
 	send(JSON.stringify({"request": "search", "pattern": searchText,"limit": limit}));
 }
@@ -114,4 +125,19 @@ function send(json){
     } else {
         setTimeout("send('"+json+"');", 100);
 	}
+}
+
+function changeToGrid(){
+	localStorage["gridView"]="true";
+	$("#resultDiv").fadeTo(100,0.01, function(){
+		$(".gridable").removeClass("listView").addClass("gridView");
+		$(".panel-body.gridable").each(function(){$(this).height(kafelekHeight-$(this).next().height());});//ustawianie wysokości kafelków
+	}).fadeTo(300,1);
+}
+function changeToList(){
+	localStorage["gridView"]="false";
+	$("#resultDiv").fadeTo(100,0.01,function(){
+		$(".gridable").removeClass("gridView").addClass("listView");
+		$(".panel-body.gridable").each(function(){$(this).css("height","");});//ustawianie wysokości kafelków
+	}).fadeTo(300,1);
 }

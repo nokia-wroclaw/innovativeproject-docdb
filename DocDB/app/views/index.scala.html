@@ -44,39 +44,49 @@
 					  source: availableSearch
 					});
 				  });
+				  String.prototype.endsWith = function(suffix) {
+						return this.indexOf(suffix, this.length - suffix.length) !== -1;
+					};
 			</script>
 	<h2 style="margin-top: 0px;">Search</h2>
-		<div id="geoLoc" style=" visibility: hidden;" ></div>
+		<div id="geoLoc" style="display:none;"></div>
 		<div id="content1">
+		<div id="listGridDiv"><span class="glyphicon glyphicon-th-large" onclick="changeToGrid()"></span> <span class="glyphicon glyphicon-list" onclick="changeToList()"></span></div>
 			<div class="input-group">
 				<input type="text" id="search" onkeydown="checkKey('search');" class="form-control" placeholder="Search">
 				<span class="input-group-addon glyphicon glyphicon-search"></span>
 			</div>
 
-			<div id="resultDiv" ng-app="searchRes" ng-controller="searchController" class="list-group">
-				<div ng-repeat="result in results track by $index" ><a href={{result.link}} target="_blank" class="list-group-item">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							<span class="badge" style="float: right;">{{result.size}}kB</span>
-							<h3 class="panel-title">{{result.file}}</h3>
-						</div>
+			<div id="resultDiv" style="display:none;" ng-app="searchRes" ng-controller="searchController" class="list-group">
+				<div ng-repeat="result in results track by $index" class="singleResultDiv gridable">
+					<span class="list-group-item">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<span class="badge" style="float: right;">{{result.size}}kB</span>
+								<h3 class="panel-title">{{result.file}}</h3>
+							</div>
 
-						<div class="panel-body">
-							<span style="float:right;" class="glyphicon glyphicon-download"></span>
-							<span ng-bind-html="result.context | unsafe"></span>
+							<div class="panel-body gridable">
+								<a href={{"Download/"+result.link}}>
+									<span class="glyphicon glyphicon-download downloadIcon"></span>
+								</a>
+								<a href={{"Preview/"+result.link}} target="_blank">
+									<span class="glyphicon glyphicon-info-sign downloadIcon"></span>
+								</a>
+								<span ng-bind-html="result.context | unsafe"></span>
+								<img ng-if="result.link.endsWith('.jpg')||result.link.endsWith('.JPG')||result.link.endsWith('.png')||result.link.endsWith('.PNG')" src={{"Preview/"+result.link}}></img>
+							</div>
+							<div class="panel-footer">
+								<span ng-repeat="tag in result.tags track by $index"><small class="label label-info" >#{{tag}}</small> </span>
+							</div>
 						</div>
-						<div class="panel-footer">
-							<small ng-repeat="tag in result.tags track by $index" class="label label-info" >#{{tag}}</small>
-						</div>
-					</div>
-					</a>
-
-					<div ng-if="$last == true && $index == 9">
-							<button id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all result </button>
-					</div>
+					</span>
 				</div>
+
+				<button style="display:none;" id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all results </button>
 				<div id="tagsFound" class="list-group-item" style="padding: 15px 100px;">
-					<small ng-repeat="tag in tags track by $index" class="label label-info" >#{{tag}}</small>
+
+					<span ng-repeat="tag in tags track by $index"><small class="label label-info" >#{{tag}}</small> </span>
 				</div>
 				<div id="resCount" ></div>
 		</div>
@@ -132,10 +142,9 @@
 			dictDefaultMessage: tag[0],
 			init: function() {
 				this.on("processing", function(file) {
-					var arr = getTags(0);
 					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
-					this.options.url = "upload/"+arr;
+					this.options.url = "upload/"+tag[0];
 				});
 			}
 		};
@@ -143,10 +152,9 @@
 			dictDefaultMessage: tag[1],
 			init: function() {
 				this.on("processing", function(file) {
-					var arr = getTags(1);
 					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
-					this.options.url = "upload/"+arr;
+					this.options.url = "upload/"+tag[1];
 				});
 			}
 		};
@@ -154,15 +162,25 @@
 			dictDefaultMessage: tag[2],
 			init: function() {
 				this.on("processing", function(file) {
-					var arr = getTags(2);
 					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
-					this.options.url = "upload/"+arr;
+					this.options.url = "upload/"+tag[2];
 				});
 			}
 		};
 		Dropzone.autoDiscover = true;
-		var commentApp = angular.module('searchRes', []);
+
+
+		//angular
+		var commentApp = angular.module('searchRes', ['ngRoute']);
+		commentApp.config(function($routeProvider) {
+			$routeProvider.when('/details',{
+				templateUrl : 'details/ścieżka',
+				controller : 'detailsController'
+			});
+		});
+
+
 		commentApp.filter('unsafe', function($sce) {
 			return function(val) {
 				return $sce.trustAsHtml(val);

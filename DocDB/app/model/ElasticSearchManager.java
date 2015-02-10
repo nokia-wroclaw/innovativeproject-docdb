@@ -13,8 +13,6 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
 public class ElasticSearchManager {
@@ -47,10 +45,10 @@ public class ElasticSearchManager {
 		// creating query to find out if any of files on server contain search
 		// value
 
-		QueryBuilder qb = QueryBuilders.matchQuery("content", content);
+		// QueryBuilder qb = QueryBuilders.matchQuery("content", content);
 
 		MultiMatchQueryBuilder qb3 = new MultiMatchQueryBuilder(content, fieldNames);
-		int resultSize = 10;
+		int resultSize = 9;
 		if (limit == true) resultSize = Integer.MAX_VALUE;
 		// proceed search with query created above
 		SearchResponse response = client.prepareSearch(index).setTypes(type)

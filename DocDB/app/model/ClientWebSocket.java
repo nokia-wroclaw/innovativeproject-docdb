@@ -86,7 +86,7 @@ public class ClientWebSocket extends UntypedActor {
 				for (ArrayList<String> result : searchResult) {
 					ObjectNode innerMsg = Json.newObject(); // inner message (file info)
 					innerMsg.put("file", result.get(0));
-					innerMsg.put("link", "Download/" + result.get(1));
+					innerMsg.put("link", result.get(1));
 					innerMsg.put("size", result.get(2));
 					innerMsg.put("context", ctxEx.getContext(result.get(3), searchPattern));
 

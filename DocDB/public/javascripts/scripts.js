@@ -22,7 +22,7 @@
 			function changeTag(tagIDName){
 				var newTag = document.getElementById(tagIDName).value;
 				var	tagID = document.getElementById(tagIDName);
-				tagID.value = newTag;
+				tagID.value = newTag.replace("# ","").replace(", ",",").replace(",,",",").replace("/^,/","");
 				localStorage[tagIDName] = newTag;
 				tag[tagIDName] = newTag+","+$('#geoLoc').html();;
 				$(".dz-message span").eq(tagIDName).text(newTag);

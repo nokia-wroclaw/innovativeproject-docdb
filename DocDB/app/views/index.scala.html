@@ -141,7 +141,7 @@
 						this.options.previewTemplate = previewTemplatee;
 					temp = getTags(0);
 					temp = removeDup(temp);
-					this.options.url = "upload/"+tag[0]+", "+temp;
+					this.options.url = "upload/"+tag[0]+","+temp;
 				});
 			}
 		};
@@ -151,7 +151,9 @@
 				this.on("processing", function(file) {
 					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
-					this.options.url = "upload/"+tag[1];
+					temp = getTags(1);
+					temp = removeDup(temp);	
+					this.options.url = "upload/"+tag[1]+","+temp;
 				});
 			}
 		};
@@ -161,7 +163,9 @@
 				this.on("processing", function(file) {
 					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
-					this.options.url = "upload/"+tag[2];
+					temp = getTags(2);
+					temp = removeDup(temp);
+					this.options.url = "upload/"+tag[2]+","+temp;
 				});
 			}
 		};

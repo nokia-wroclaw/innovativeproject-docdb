@@ -22,7 +22,6 @@ public class FileHandler {
 
 	private final FileParser fileParser;
 	private final ElasticSearchServer elasticServer;
-	// private final MD5Checksum md5;
 	private static String dirPath = "files/";
 
 	public FileHandler(ElasticSearchServer elasticServer) {
@@ -55,7 +54,6 @@ public class FileHandler {
 	 */
 	private void handleFile(File file, String uploadedFileName, Set<String> tagList) {
 		// get new file hash
-
 		String newFileCheckSum = getHash(file);
 		String newFileName = dirPath + uploadedFileName;
 		File destFile = new File(newFileName);
@@ -67,8 +65,8 @@ public class FileHandler {
 			}
 			// file exist with different name:
 			newFileName = dirPath + getExistingFileName(newFileCheckSum);
-			ArrayList<String> parsedFile = fileParser.parseFile(new File(newFileName), uploadedFileName, "");
-
+			ArrayList<String> parsedFileData = fileParser.parseFile(new File(newFileName), uploadedFileName, "");
+			
 			if (uploadedFileName.endsWith(".zip")) {
 				handleZip(tagList, newFileCheckSum, uploadedFileName);
 				Logger.info("metadata saved");
@@ -78,8 +76,8 @@ public class FileHandler {
 				handleJPG(tagList, file);
 			}
 
-			if (parsedFile != null) {
-				insertToElastic(tagList, newFileCheckSum, parsedFile);
+			if (parsedFileData != null) {
+				insertToElastic(tagList, newFileCheckSum, parsedFileData);
 				Logger.info("metadata saved");
 				return;
 			}
@@ -137,7 +135,9 @@ public class FileHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		tagList.add(photoGeolocation);
+		if(!photoGeolocation.equals(""))
+			tagList.add(photoGeolocation);
+		 
 	}
 
 	/**

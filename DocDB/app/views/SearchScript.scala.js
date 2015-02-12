@@ -29,8 +29,7 @@ $(document).ready(function(){
 
 		if (data.geo != null) {
 			var gloc = data.geo;
-			geoloc = gloc.split(", ");
-			$("#geoLoc").html(geoloc);
+			$("#geoLoc").html(gloc);
 		}
 	}
 

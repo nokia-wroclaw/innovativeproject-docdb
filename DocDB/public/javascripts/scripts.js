@@ -20,9 +20,9 @@
 			function changeTag(tagIDName){
 				var newTag = document.getElementById(tagIDName).value;
 				var	tagID = document.getElementById(tagIDName);
-				tagID.value = newTag.replace("# ","").replace(" #","").replace(", ",",").replace(",,",",").replace("/^,/","").raplace(" ,", ",");
+				tagID.value = newTag.replace("# ","").replace("#","").replace(" ,", ",").replace(", ", ",");
 				localStorage[tagIDName] = newTag;
-				tag[tagIDName] = newTag+","+$('#geoLoc').html();;
+				tag[tagIDName] = newTag+","+$('#geoLoc').html();
 				$(".dz-message span").eq(tagIDName).text(newTag);
 				addAutoComp(newTag, 'oldTags');
 			}
@@ -60,10 +60,13 @@
 			  return merged;
 			}
 			function getTags(index){
-				var temp = document.getElementById('geoLoc').innerHTML;
-				var arr = temp.split(",");
-				temp = tag[index].replace("# ","").replace("#","").replace(", ",",").replace(",,",",").replace("/^,/","").raplace(" ,", ",");
-				arr.push(temp);
+				var temp = $('#geoLoc').html();	
+console.log("|",temp);				
+				temp = temp.replace("# ","").replace("#","").replace(" ,", ",").replace(", ", ",");
+				
+				var arr = temp.split(", ");
+				arr = removeDup(arr);
+
 				return arr;
 			}
 

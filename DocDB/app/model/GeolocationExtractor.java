@@ -52,11 +52,12 @@ public class GeolocationExtractor {
 				GeoLocation geoLocation = gpsDirectory.getGeoLocation();
 				if (!geoLocation.isZero()) {
 					latlng = geoLocation.toString().split(", ");
-
 				}
+				
 			} else {
 				return "";
 			}
+		
 
 			lat = Double.valueOf(latlng[0]);
 			lng = Double.valueOf(latlng[1]);
@@ -64,6 +65,7 @@ public class GeolocationExtractor {
 
 			location_string = getPlaceName(ret);
 			return location_string;
+			
 		} catch (NullPointerException e2) {
 			return location_string;
 		} catch (ImageProcessingException e) {
@@ -106,14 +108,20 @@ public class GeolocationExtractor {
 			JsonArray resultArray = jsonobject.get("results").getAsJsonArray();
 			JsonObject addressComponents = resultArray.get(0).getAsJsonObject();
 			JsonElement addressComponentsElement = addressComponents.get("formatted_address");
-			location_string = addressComponentsElement.toString();
-			location_string = Normalizer.normalize(location_string, Normalizer.Form.NFD)
-					.replaceAll("[^\\p{ASCII}]", ""); // removing polish signs
-			location_string = Normalizer.normalize(location_string, Normalizer.Form.NFD).replaceAll("[\"]", "");// removing
-																												// "
-																												// sign
-
+			location_string = addressComponentsElement.toString();	
+			location_string = handlePolishSigns(location_string);
 		}
 		return location_string;
+	}
+	
+	public String handlePolishSigns(String location){
+		location= Normalizer.normalize(location, Normalizer.Form.NFKD)
+				.replaceAll("[^\\p{ASCII}]", ""); // removing polish signs 
+		
+		location= Normalizer.normalize(location, Normalizer.Form.NFD)
+				.replaceAll("[\"]", "");// removing " sign
+
+		
+		return location;
 	}
 }

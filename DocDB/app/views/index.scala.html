@@ -135,10 +135,13 @@
 		Dropzone.options.dropzone1 = {
 			dictDefaultMessage: tag[0],
 			init: function() {
+				 
 				this.on("processing", function(file) {
 					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
-					this.options.url = "upload/"+tag[0];
+					temp = getTags(0);
+					temp = removeDup(temp);
+					this.options.url = "upload/"+tag[0]+", "+temp;
 				});
 			}
 		};

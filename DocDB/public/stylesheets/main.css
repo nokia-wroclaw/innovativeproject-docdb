@@ -18,6 +18,11 @@ div #outer{
 	cursor: alias;
  }
 
+ .panel-title{
+	 height:2em;
+	 overflow:hidden;
+ }
+
  #linkUpload{
  margin: 0 auto;
  }
@@ -51,3 +56,4 @@ div #outer{
 	margin: 0 2px;
 	float:right;
 }
+

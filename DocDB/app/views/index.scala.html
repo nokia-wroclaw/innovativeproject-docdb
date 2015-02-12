@@ -63,7 +63,7 @@
 						<div class="panel panel-primary">
 							<div class="panel-heading">
 								<span class="badge" style="float: right;">{{result.size}}kB</span>
-								<h3 class="panel-title">{{result.file}}</h3>
+								<h3 class="panel-title" title={{result.file}} >{{result.file}}</h3>
 							</div>
 
 							<div class="panel-body gridable">
@@ -135,7 +135,7 @@
 		Dropzone.options.dropzone1 = {
 			dictDefaultMessage: tag[0],
 			init: function() {
-				 
+
 				this.on("processing", function(file) {
 					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
@@ -152,7 +152,7 @@
 					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
 					temp = getTags(1);
-					temp = removeDup(temp);	
+					temp = removeDup(temp);
 					this.options.url = "upload/"+tag[1]+","+temp;
 				});
 			}

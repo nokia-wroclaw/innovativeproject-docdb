@@ -51,12 +51,12 @@ public class GeolocationExtractor {
 		} catch (IOException e) {
 			throw Throwables.propagate(e);
 		}
-		
+
 		return locationCoordinates;
 	}
 
 	/**
-	 * Read geolocation tags from file and convert it to adress
+	 * Read geolocation tags from file and convert it to address
 	 * 
 	 * @param file
 	 *            photo, in which you want to search geolocation tags
@@ -87,7 +87,7 @@ public class GeolocationExtractor {
 	 * @param lat
 	 *            latitude of a place
 	 * @param lng
-	 *            longtitude of a place
+	 *            Longitude of a place
 	 * @return JSON with all data about this place
 	 */
 	public JsonElement getLocationInfo(double lat, double lng) {

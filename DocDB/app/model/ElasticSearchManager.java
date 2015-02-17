@@ -3,7 +3,9 @@ package model;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -15,8 +17,11 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
-public class ElasticSearchManager {
+import com.google.common.collect.ObjectArrays;
 
+public class ElasticSearchManager {
+	
+	int resultSize = 9;
 	/*
 	 * Method that put json file on server
 	 */
@@ -48,8 +53,9 @@ public class ElasticSearchManager {
 		// QueryBuilder qb = QueryBuilders.matchQuery("content", content);
 
 		MultiMatchQueryBuilder qb3 = new MultiMatchQueryBuilder(content, fieldNames);
-		int resultSize = 9;
-		if (limit == true) resultSize = Integer.MAX_VALUE;
+		
+		if (limit == true) 
+			resultSize = Integer.MAX_VALUE;
 		// proceed search with query created above
 		SearchResponse response = client.prepareSearch(index).setTypes(type)
 				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(qb3).setSize(resultSize)
@@ -74,6 +80,7 @@ public class ElasticSearchManager {
 				temp.add((String) result.get("size"));
 				temp.add((String) result.get("content"));
 				temp.addAll((ArrayList<String>) result.get("tags"));
+				temp.addAll((ArrayList<String>) (result.get("locationCoordinates")));
 				resultArray.add(temp);
 			}
 			return resultArray;
@@ -82,16 +89,21 @@ public class ElasticSearchManager {
 			return null;
 	}
 
-	public XContentBuilder putJsonDocument(ArrayList<String> parsedFile, Set<String> tagList) {
+	public XContentBuilder putJsonDocument(ArrayList<String> parsedFile, Set<String> tagList, String[] locationCoordinates) {
 		if (parsedFile.isEmpty() == false) {
 			XContentBuilder builder = null;
 			try {
 				Date postDate = new Date();
-
-				builder = jsonBuilder().startObject().field("title", parsedFile.get(0))
-						.field("author", parsedFile.get(1)).field("content", parsedFile.get(2))
-						.field("path", parsedFile.get(3)).field("size", parsedFile.get(4))
-						.field("MD5", parsedFile.get(5)).field("postDate", postDate).field("tags", tagList).endObject();
+				builder = jsonBuilder().startObject()
+						.field("title", parsedFile.get(0))
+						.field("author", parsedFile.get(1))
+						.field("content", parsedFile.get(2))
+						.field("path", parsedFile.get(3))
+						.field("size", parsedFile.get(4))
+						.field("MD5", parsedFile.get(5))
+						.field("postDate", postDate)
+						.field("tags", tagList)
+						.field("locationCoordinates", locationCoordinates).endObject();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

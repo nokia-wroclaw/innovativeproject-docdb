@@ -59,7 +59,8 @@ public class ContextExtractor {
 	}
 
 	public static ContextExtractor getInstance() {
-		if (instance == null) instance = new ContextExtractor();
+		if (instance == null)
+			instance = new ContextExtractor();
 		return instance;
 	}
 }

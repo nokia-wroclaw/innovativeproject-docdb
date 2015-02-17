@@ -63,14 +63,17 @@ public class Application extends Controller {
 		}
 	}
 
-	public static Result upload(String tags) {
+	public static Result upload(String fileData) {
 		MultipartFormData body = request().body().asMultipartFormData();
 		FilePart uploadedFile = body.getFile("file");
 		if (uploadedFile != null) {
-			Logger.info("file received. tags are:\"" + tags + "\". Handling...");
+			Logger.info("File received. Tags and coordinates are:\"" + fileData + "\". Handling...");
 			Set<String> tagSet = new HashSet<String>();
-			tagSet.addAll(Arrays.asList(tags.split(",")));
-			fileHandler.handleFile(uploadedFile, tagSet);
+			// musze podzielic czesc z tagami i lokalizacja
+			String[] temp = fileData.split("`");
+			String[] locationCoordinates = temp[1].split(" ");
+			tagSet.addAll(Arrays.asList(temp[0].split(",")));
+			fileHandler.handleFile(uploadedFile, tagSet, locationCoordinates);
 
 			return ok(index.render("File is on server"));
 		} else {

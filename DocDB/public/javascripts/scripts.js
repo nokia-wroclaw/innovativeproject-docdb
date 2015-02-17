@@ -60,8 +60,7 @@
 			  return merged;
 			}
 			function getTags(index){
-				var temp = $('#geoLoc').html();	
-console.log("|",temp);				
+				var temp = $('#geoLoc').html();				
 				temp = temp.replace("# ","").replace("#","").replace(" ,", ",").replace(", ", ",");
 				
 				var arr = temp.split(", ");
@@ -75,4 +74,3 @@ console.log("|",temp);
 					return true;
 				return false;
 			}
-

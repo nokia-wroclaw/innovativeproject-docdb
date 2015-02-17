@@ -99,7 +99,7 @@
 				</div>
 		</div>
 
-		<!-- This is used as the file preview template -->
+<!-- This is used as the file preview template -->
 	<div id="template" class="file-row">
         <div>
             <span class="preview"><img data-dz-thumbnail /></span>
@@ -109,7 +109,7 @@
             <strong class="error text-danger" data-dz-errormessage></strong>
         </div>
     </div>
-		<!------------------------------------------>
+<!------------------------------------------>
 	<div class="jumbotron">
 		<h2>Drop files</h2>
 			<div id="content2">
@@ -131,17 +131,17 @@
 		previewNode.id = "";
 		var previewTemplatee = previewNode.parentNode.innerHTML;
 		previewNode.parentNode.removeChild(previewNode);
-
+		
 		Dropzone.options.dropzone1 = {
 			dictDefaultMessage: tag[0],
 			init: function() {
-
 				this.on("processing", function(file) {
 					if( isPic(file.type) == true )
 						this.options.previewTemplate = previewTemplatee;
 					temp = getTags(0);
 					temp = removeDup(temp);
-					this.options.url = "upload/"+tag[0]+","+temp;
+					console.log(tag[0] + "," + temp + "|" + lat + " " + lng);
+					this.options.url = "upload/"+tag[0] + "," + temp + "`" + lat + " " + lng;
 				});
 			}
 		};

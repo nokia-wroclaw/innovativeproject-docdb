@@ -1,6 +1,7 @@
-var kafelekHeight=175;
+var kafelekHeight = 175;
 var newSearch, webSocket, searchTimer=0, sendLink,allTags;
 var geoloc =[], lastLimit=false;
+var lat; var lng;
 $(document).ready(function(){
 	var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
 	webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
@@ -50,8 +51,7 @@ $(document).ready(function(){
 	} else {
 		x.innerHTML = "Geolocation is not supported by this browser.";
 	}
-	var lat;
-	var lng;
+	
 	function showPosition(position) {
 		lat = position.coords.latitude;
 		lng = position.coords.longitude;

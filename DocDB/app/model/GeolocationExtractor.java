@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.Normalizer;
 
+import org.apache.lucene.document.StraightBytesDocValuesField;
+
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.lang.GeoLocation;
@@ -21,12 +23,37 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * This class is used to read exifs from *.jpg and *.jpeg. If there are geolocation tags, it will convert it to name of
- * place, using Google API
+ * This class is used to read exifs from *.jpg and *.jpeg. If there are
+ * geolocation tags, it will convert it to name of place, using Google API
  * 
  * @author a.dyngosz, s.majkrzak, m.wierzbicki
  */
 public class GeolocationExtractor {
+
+	public String[] latitudeExtractor(File file) {
+		String[] locationCoordinates = new String[2];
+		try {
+			Metadata metadata = ImageMetadataReader.readMetadata(file);
+			// See whether it has GPS data
+			GpsDirectory gpsDirectory = metadata.getDirectory(GpsDirectory.class);
+			// Try to read out the location, making sure it's non-zero
+			if (gpsDirectory != null) {
+				GeoLocation geoLocation = gpsDirectory.getGeoLocation();
+				if (!geoLocation.isZero())
+					locationCoordinates = geoLocation.toString().split(", ");
+			} else {
+				return null;
+			}
+		} catch (NullPointerException e2) {
+			return null;
+		} catch (ImageProcessingException e) {
+			return null;
+		} catch (IOException e) {
+			throw Throwables.propagate(e);
+		}
+		
+		return locationCoordinates;
+	}
 
 	/**
 	 * Read geolocation tags from file and convert it to adress
@@ -38,43 +65,24 @@ public class GeolocationExtractor {
 	 *             no file found
 	 * @throws ImageProcessingException
 	 */
-	public String extractor(File file) throws IOException {
+	public String locationExtractor(File file) throws IOException {
 		String location_string = "";
-		String[] latlng = {};
-		Double lat, lng;
 		JsonElement ret;
-		try {
-			Metadata metadata = ImageMetadataReader.readMetadata(file);
-			// See whether it has GPS data
-			GpsDirectory gpsDirectory = metadata.getDirectory(GpsDirectory.class);
-			// Try to read out the location, making sure it's non-zero
-			if (gpsDirectory != null) {
-				GeoLocation geoLocation = gpsDirectory.getGeoLocation();
-				if (!geoLocation.isZero()) {
-					latlng = geoLocation.toString().split(", ");
-				}
-				
-			} else {
-				return "";
-			}
-		
+		double[] coordinates = new double[2];
+		String temp[] = latitudeExtractor(file);
+		if (temp == null)
+			return "";
+		coordinates[0] = Double.valueOf(temp[0]);
+		coordinates[1] = Double.valueOf(temp[1]);
+		ret = getLocationInfo(coordinates[0], coordinates[2]);
+		location_string = getPlaceName(ret);
+		return location_string;
 
-			lat = Double.valueOf(latlng[0]);
-			lng = Double.valueOf(latlng[1]);
-			ret = getLocationInfo(lat, lng);
-
-			location_string = getPlaceName(ret);
-			return location_string;
-			
-		} catch (NullPointerException e2) {
-			return location_string;
-		} catch (ImageProcessingException e) {
-			return location_string;
-		}
 	}
 
 	/**
-	 * Using Google API this method read information about a place, and return it.
+	 * Using Google API this method read information about a place, and return
+	 * it.
 	 * 
 	 * @param lat
 	 *            latitude of a place
@@ -108,20 +116,18 @@ public class GeolocationExtractor {
 			JsonArray resultArray = jsonobject.get("results").getAsJsonArray();
 			JsonObject addressComponents = resultArray.get(0).getAsJsonObject();
 			JsonElement addressComponentsElement = addressComponents.get("formatted_address");
-			location_string = addressComponentsElement.toString();	
+			location_string = addressComponentsElement.toString();
 			location_string = handlePolishSigns(location_string);
 		}
 		return location_string;
 	}
-	
-	public String handlePolishSigns(String location){
-		location= Normalizer.normalize(location, Normalizer.Form.NFKD)
-				.replaceAll("[^\\p{ASCII}]", ""); // removing polish signs 
-		
-		location= Normalizer.normalize(location, Normalizer.Form.NFD)
-				.replaceAll("[\"]", "");// removing " sign
 
-		
+	public String handlePolishSigns(String location) {
+		// removing polish signs
+		location = Normalizer.normalize(location, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", "");
+		// removing " sign
+		location = Normalizer.normalize(location, Normalizer.Form.NFD).replaceAll("[\"]", "");
+
 		return location;
 	}
 }

@@ -88,7 +88,10 @@ public class ClientWebSocket extends UntypedActor {
 					innerMsg.put("file", result.get(0));
 					innerMsg.put("link", result.get(1));
 					innerMsg.put("size", result.get(2));
-					innerMsg.put("context", ctxEx.getContext(result.get(3), searchPattern));
+					String tempCont = ctxEx.getContext(result.get(3), searchPattern);
+					if(!tempCont.contains(" "))
+						tempCont = "Context thumbnail is not available";
+					innerMsg.put("context", tempCont);
 
 					ArrayNode tags = innerMsg.putArray("tags"); // tags array in innerMsg (for this file)
 

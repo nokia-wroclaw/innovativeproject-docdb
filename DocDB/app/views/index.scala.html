@@ -153,7 +153,7 @@
 						this.options.previewTemplate = previewTemplatee;
 					temp = getTags(1);
 					temp = removeDup(temp);
-					this.options.url = "upload/"+tag[1]+","+temp;
+					this.options.url = "upload/"+tag[1]+","+temp + "`" + lat + " " + lng;
 				});
 			}
 		};
@@ -165,7 +165,7 @@
 						this.options.previewTemplate = previewTemplatee;
 					temp = getTags(2);
 					temp = removeDup(temp);
-					this.options.url = "upload/"+tag[2]+","+temp;
+					this.options.url = "upload/"+tag[2]+","+temp + "`" + lat + " " + lng;
 				});
 			}
 		};

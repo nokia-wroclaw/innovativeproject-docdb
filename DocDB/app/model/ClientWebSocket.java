@@ -94,9 +94,9 @@ public class ClientWebSocket extends UntypedActor {
 					innerMsg.put("context", tempCont);
 
 					ArrayNode tags = innerMsg.putArray("tags"); // tags array in innerMsg (for this file)
-
+					//odejmujemy 4 ze wzgledu na to ze na poczatku sa 4 elementy ktore nie sa tagami
 					int tagcount = result.size() - 4;
-					for (int tagnr = 0; tagnr < tagcount; tagnr++) {
+					for (int tagnr = 0; tagnr < tagcount - 2; tagnr++) {
 						tags.add(result.get(4 + tagnr));
 						tagsSet.add("\"" + result.get(4 + tagnr) + "\"");
 					}
@@ -143,8 +143,9 @@ public class ClientWebSocket extends UntypedActor {
 		ArrayList<ArrayList<String>> resultList = new ArrayList<>();
 
 		for (ArrayList<String> result : searchResult) {
+			//odejmujemy 4 ze wzgledu na to ze na poczatku sa 4 elementy ktore nie sa tagami
 			int tagcount = result.size() - 4;
-			for (int tagnr = 0; tagnr < tagcount; tagnr++) {
+			for (int tagnr = 0; tagnr < tagcount - 2; tagnr++) {
 				for (String tag : tags) {
 					if (result.get(tagnr + 4).equals(tag)) {
 						resultList.add(result);

@@ -74,3 +74,8 @@
 					return true;
 				return false;
 			}
+			
+			function changeDropzones(number){
+				localStorage["numberOfDropzones"] = number;
+				location.reload();
+			}

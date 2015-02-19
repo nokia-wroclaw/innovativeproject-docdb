@@ -7,12 +7,16 @@
 	<a href=""><img src="assets/images/logo.png" style="margin: 0 45%;"></a>
 		<script>
 			if(typeof localStorage["oldTags"] == 'undefined')
-				localStorage["oldTags"]=""
+				localStorage["oldTags"]="";
 			if(typeof localStorage["oldSearch"] == 'undefined')
-				localStorage["oldSearch"]=""
-
+				localStorage["oldSearch"]="";
+			if(typeof localStorage["numberOfDropzones"] == 'undefined')
+				localStorage["numberOfDropzones"] = 1;
+			
+			
 			Dropzone.autoDiscover = false;
-			var tag = []
+			var tag = [];
+			var numberOfDropzones = localStorage["numberOfDropzones"];
 			for (i = 0; i <= 2; i++) {
 				if(typeof localStorage[i] != 'undefined')
 					tag[i] = localStorage[i];
@@ -48,57 +52,59 @@
 						return this.indexOf(suffix, this.length - suffix.length) !== -1;
 					};
 			</script>
+	 		
 	<h2 style="margin-top: 0px;">Search</h2>
 		<div id="geoLoc" style="display:none;"></div>
 		<div id="content1">
-		<div id="listGridDiv"><span class="glyphicon glyphicon-th-large" onclick="changeToGrid()"></span> <span class="glyphicon glyphicon-list" onclick="changeToList()"></span></div>
-			<div class="input-group">
-				<input type="text" id="search" onkeydown="checkKey('search');" class="form-control" placeholder="Search">
-				<span class="input-group-addon glyphicon glyphicon-search"></span>
+			<div id="listGridDiv"><span class="glyphicon glyphicon-th-large" onclick="changeToGrid()"></span> <span class="glyphicon glyphicon-list" onclick="changeToList()"></span></div>
+				<div class="input-group">
+					<input type="text" id="search" onkeydown="checkKey('search');" class="form-control" placeholder="Search">
+					<span class="input-group-addon glyphicon glyphicon-search"></span>
+				</div>
+
+				<div id="resultDiv" style="display:none;" ng-app="searchRes" ng-controller="searchController" class="list-group">
+					<div ng-repeat="result in results track by $index" class="singleResultDiv gridable">
+						<span class="list-group-item">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<span class="badge" style="float: right;">{{result.size}}kB</span>
+									<h3 class="panel-title" title={{result.file}} >{{result.file}}</h3>
+								</div>
+
+								<div class="panel-body gridable">
+									<a href={{"Download/"+result.link}}>
+										<span class="glyphicon glyphicon-download downloadIcon"></span>
+									</a>
+									<a href={{"Preview/"+result.link}} target="_blank">
+										<span class="glyphicon glyphicon-info-sign downloadIcon"></span>
+									</a>
+									<span ng-bind-html="result.context | unsafe"></span>
+									<img ng-if="result.link.endsWith('.jpg')||result.link.endsWith('.JPG')||result.link.endsWith('.png')||result.link.endsWith('.PNG')" src={{"Preview/"+result.link}}></img>
+								</div>
+								<div class="panel-footer">
+									<span ng-repeat="tag in result.tags track by $index"><small class="label label-info" >#{{tag}}</small> </span>
+								</div>
+							</div>
+						</span>
+					</div>
+
+					<button style="display:none;" id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all results </button>
+					<div id="tagsFound" class="list-group-item" style="padding: 15px 100px;">
+
+						<span ng-repeat="tag in tags track by $index"><small class="label label-info" >#{{tag}}</small> </span>
+					</div>
+					<div id="resCount" ></div>
 			</div>
-
-			<div id="resultDiv" style="display:none;" ng-app="searchRes" ng-controller="searchController" class="list-group">
-				<div ng-repeat="result in results track by $index" class="singleResultDiv gridable">
-					<span class="list-group-item">
-						<div class="panel panel-primary">
-							<div class="panel-heading">
-								<span class="badge" style="float: right;">{{result.size}}kB</span>
-								<h3 class="panel-title" title={{result.file}} >{{result.file}}</h3>
-							</div>
-
-							<div class="panel-body gridable">
-								<a href={{"Download/"+result.link}}>
-									<span class="glyphicon glyphicon-download downloadIcon"></span>
-								</a>
-								<a href={{"Preview/"+result.link}} target="_blank">
-									<span class="glyphicon glyphicon-info-sign downloadIcon"></span>
-								</a>
-								<span ng-bind-html="result.context | unsafe"></span>
-								<img ng-if="result.link.endsWith('.jpg')||result.link.endsWith('.JPG')||result.link.endsWith('.png')||result.link.endsWith('.PNG')" src={{"Preview/"+result.link}}></img>
-							</div>
-							<div class="panel-footer">
-								<span ng-repeat="tag in result.tags track by $index"><small class="label label-info" >#{{tag}}</small> </span>
-							</div>
-						</div>
-					</span>
-				</div>
-
-				<button style="display:none;" id="newSearch" type="button" onclick="newSearch()" class="btn btn-default btn-lg btn-block">Show all results </button>
-				<div id="tagsFound" class="list-group-item" style="padding: 15px 100px;">
-
-					<span ng-repeat="tag in tags track by $index"><small class="label label-info" >#{{tag}}</small> </span>
-				</div>
-				<div id="resCount" ></div>
 		</div>
-	</div>
-
+		
+		<hr class="featurette-divider">
 		<div class="jumbotron">
 			<h2>Drop files via link</h2>
 				<div id="content3">
 					<input type="text" class="form-control" id="linkUpload" placeholder="Put Your link here">
 				</div>
 		</div>
-
+		<hr class="featurette-divider">
 <!-- This is used as the file preview template -->
 	<div id="template" class="file-row">
         <div>
@@ -110,68 +116,91 @@
         </div>
     </div>
 <!------------------------------------------>
+	 
 	<div class="jumbotron">
+		
 		<h2>Drop files</h2>
+		 
+			<div id="dropzoneSettings"><span type="button" class="glyphicon glyphicon-cog" data-toggle="modal" data-target="#myModal"></span></div>
+			<!-- Button trigger modal -->
+			
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title" id="myModalLabel">Dropzones settings</h4>
+						</div>
+						<script>
+						$(function() {
+							$(dropzoneNumber).val(numberOfDropzones);
+						});
+						</script>
+						<div class="modal-body">
+							Number of dropzones: 
+							<select name="selectDrop" id="dropzoneNumber" onchange="" size="1">
+								<option value="1">One</option>
+								<option value="2">Two</option>
+								<option value="3">Three</option>
+							</select>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" onclick="changeDropzones(document.getElementById('dropzoneNumber').value)"  class="btn btn-primary" data-dismiss="modal">Save changes</button>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div id="content2">
-				<input type="text" class="form-control" style=" margin: 0 auto;" id="0" placeholder="Put Your tags here" onkeydown="checkKey('0');">
-				<form method="POST" id="dropzone1" action="@routes.Application.upload("tag[0]")" enctype="multipart/form-data" class="dropzone"></form>
+				<input type="text" class="form-control" style="display:none; margin: 0 auto;" id="0" placeholder="Put Your tags here" onkeydown="checkKey('0');">
+				<form method="POST" id="dropzone0" style="display:none;" action="@routes.Application.upload("tag[0]")" enctype="multipart/form-data" class="dropzone"></form>
 
-				<input type="text" class="form-control" style="margin: 0 auto;" id="1" placeholder="Put Your tags here" onkeydown="checkKey('1');">
-				<form method="POST" id="dropzone2" action="@routes.Application.upload("tag[1]")" enctype="multipart/form-data" class="dropzone"></form>
+				<input type="text" class="form-control" style="display:none; margin: 0 auto;" id="1" placeholder="Put Your tags here" onkeydown="checkKey('1');">
+				<form method="POST" id="dropzone1" style="display:none;" action="@routes.Application.upload("tag[1]")" enctype="multipart/form-data" class="dropzone"></form>
 
-				<input type="text" class="form-control" class="ui-widget" style=" margin: 0 auto;" id="2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
-				<form method="POST" id="dropzone3" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></form>
+				<input type="text" class="form-control" class="ui-widget" style="display:none; margin: 0 auto;" id="2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
+				<form method="POST" id="dropzone2" style="display:none;" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></form>
 			</div>
 	</div>
+	<hr class="featurette-divider">
 	<div style="text-align:center;">Drag <a href='javascript:(function(){var xmlhttp=new XMLHttpRequest();xmlhttp.open("POST","http://185.5.97.71:9000/takeLink/bookmarked,"+prompt("Any tags?"),true);xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");xmlhttp.send("link="+window.location.href);})();'>this link</a> to your favorites bar, and add any website to DocDB with just 1 click!</div>
-</div>
 
+	<hr class="featurette-divider">
+	<footer class="footer" style="text-align: center;">
+      
+		<a href="#">Back to top</a>
+     
+    </footer>
+</div>	
+</div> 
 <script>
+		
 		var previewNode = document.querySelector("#template");
 		previewNode.id = "";
 		var previewTemplatee = previewNode.parentNode.innerHTML;
 		previewNode.parentNode.removeChild(previewNode);
+		var dropzoneArray = [];
+		for (k = 0; k < numberOfDropzones; k++) {  
+			defineDropzone('form#dropzone'+k, k);
+		}
+				
+		function defineDropzone(name, id){
+			document.getElementById("dropzone"+id+"").style.display='block';
+			document.getElementById(id+"").style.display='block';
+			dropzoneArray[id] = new Dropzone(name, {
+				dictDefaultMessage: tag[id]
+			});
+			dropzoneArray[id].on("processing", function(file) {
+				if( isPic(file.type) == true )
+					dropzoneArray[id].options.previewTemplate = previewTemplatee;
+				temp = getTags(id);
+				temp = removeDup(temp);
+				dropzoneArray[id].options.url = "upload/"+tag[id]+","+temp + "`" + lat + " " + lng;
+			});
+				
+		}
 		
-		Dropzone.options.dropzone1 = {
-			dictDefaultMessage: tag[0],
-			init: function() {
-				this.on("processing", function(file) {
-					if( isPic(file.type) == true )
-						this.options.previewTemplate = previewTemplatee;
-					temp = getTags(0);
-					temp = removeDup(temp);
-					console.log(tag[0] + "," + temp + "|" + lat + " " + lng);
-					this.options.url = "upload/"+tag[0] + "," + temp + "`" + lat + " " + lng;
-				});
-			}
-		};
-		Dropzone.options.dropzone2 = {
-			dictDefaultMessage: tag[1],
-			init: function() {
-				this.on("processing", function(file) {
-					if( isPic(file.type) == true )
-						this.options.previewTemplate = previewTemplatee;
-					temp = getTags(1);
-					temp = removeDup(temp);
-					this.options.url = "upload/"+tag[1]+","+temp + "`" + lat + " " + lng;
-				});
-			}
-		};
-		Dropzone.options.dropzone3 = {
-			dictDefaultMessage: tag[2],
-			init: function() {
-				this.on("processing", function(file) {
-					if( isPic(file.type) == true )
-						this.options.previewTemplate = previewTemplatee;
-					temp = getTags(2);
-					temp = removeDup(temp);
-					this.options.url = "upload/"+tag[2]+","+temp + "`" + lat + " " + lng;
-				});
-			}
-		};
 		Dropzone.autoDiscover = true;
-
-
 		//angular
 		var commentApp = angular.module('searchRes', ['ngRoute']);
 		commentApp.config(function($routeProvider) {

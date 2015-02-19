@@ -1,7 +1,7 @@
 div #content2{
 	margin: 0 auto;
 	margin-bottom: 1%;
-	background-color: #82B89F;
+	background-color: #BA9C0B;
 	text-align: center;
 	-webkit-border-radius:20px;
 	-moz-border-radius:20px;
@@ -44,6 +44,18 @@ div #outer{
 	line-height: 0px;
 }
 
+.glyphicon:hover{
+	cursor: pointer;
+	-webkit-transform: scale(1.5,1.5);
+	transition: 0.65s ease;
+}
+.glyphicon-search{
+	top: -0.5px;
+}
+.glyphicon-search:hover{
+	-webkit-transform: scale(1.0,1.0);
+	
+}
 .gridView.singleResultDiv {
 	width: 33%;
 	display: inline-table;
@@ -67,3 +79,13 @@ div #outer{
 	float:right;
 }
 
+#dropzoneSettings{
+	text-align: right;
+	position: relative;
+	top: -15px;
+	line-height: 0px;
+}
+ 
+.featurette-divider{
+	width: 100%;
+}

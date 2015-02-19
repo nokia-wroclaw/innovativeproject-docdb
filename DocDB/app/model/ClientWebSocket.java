@@ -89,7 +89,7 @@ public class ClientWebSocket extends UntypedActor {
 					innerMsg.put("link", result.get(1));
 					innerMsg.put("size", result.get(2));
 					String tempCont = ctxEx.getContext(result.get(3), searchPattern);
-					if(!tempCont.contains(" "))
+					if(!tempCont.contains(" ") && !tempCont.isEmpty())
 						tempCont = "Context thumbnail is not available";
 					innerMsg.put("context", tempCont);
 

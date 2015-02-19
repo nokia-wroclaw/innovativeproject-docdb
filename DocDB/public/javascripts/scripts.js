@@ -75,7 +75,21 @@
 				return false;
 			}
 			
-			function changeDropzones(number){
+			function changeDropzones(number, color0, color1, color2){
 				localStorage["numberOfDropzones"] = number;
+				temp = [color0, color1, color2];
+				for(i = 0; i < 3; i++) {
+					if(!temp[i] == ''){
+						localStorage["color"+i] = temp[i];
+					}
+				}
 				location.reload();
+			}
+			function getRandomColor() {
+				var letters = '0123456789ABCDEF'.split('');
+				var color = '#';
+				for (var i = 0; i < 6; i++ )
+					color += letters[Math.floor(Math.random() * 16)];
+				
+				return color;
 			}

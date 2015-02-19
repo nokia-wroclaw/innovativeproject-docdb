@@ -6,14 +6,18 @@
 	<div class="jumbotron" style="padding-top: 10px;">
 	<a href=""><img src="assets/images/logo.png" style="margin: 0 45%;"></a>
 		<script>
+
 			if(typeof localStorage["oldTags"] == 'undefined')
 				localStorage["oldTags"]="";
 			if(typeof localStorage["oldSearch"] == 'undefined')
 				localStorage["oldSearch"]="";
 			if(typeof localStorage["numberOfDropzones"] == 'undefined')
 				localStorage["numberOfDropzones"] = 1;
-			
-			
+						
+			for(i = 0; i < 3; i++) {
+				if(typeof localStorage["color"+i] == 'undefined')
+					localStorage["color"+i] = getRandomColor();
+			}
 			Dropzone.autoDiscover = false;
 			var tag = [];
 			var numberOfDropzones = localStorage["numberOfDropzones"];
@@ -117,7 +121,7 @@
     </div>
 <!------------------------------------------>
 	 
-	<div class="jumbotron">
+	<div class="jumbotron" style="margin-top: auto;">
 		
 		<h2>Drop files</h2>
 		 
@@ -137,29 +141,53 @@
 						});
 						</script>
 						<div class="modal-body">
-							Number of dropzones: 
+							Number of dropzones:  
 							<select name="selectDrop" id="dropzoneNumber" onchange="" size="1">
 								<option value="1">One</option>
 								<option value="2">Two</option>
 								<option value="3">Three</option>
 							</select>
+							</br>
+							Choose colors of dropzones: </br>
+							
+								#1  <input type='text' id="color0" class='override' value='' >
+								</br>
+								#2  <input type='text' id="color1" class='override' value='' />
+								</br>
+								#3  <input type='text' id="color2" class='override' value='' />
+							
+							<script>
+								$("#color0").spectrum({
+									color: localStorage["color0"]
+								});
+								$("#color1").spectrum({
+									color: localStorage["color1"]
+								});
+								$("#color2").spectrum({
+									color: localStorage["color2"]
+								});
+							</script>
+								
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<button type="button" onclick="changeDropzones(document.getElementById('dropzoneNumber').value)"  class="btn btn-primary" data-dismiss="modal">Save changes</button>
+							 
+							<button type="button" onclick="changeDropzones(document.getElementById('dropzoneNumber').value, document.getElementById('color0').value, document.getElementById('color1').value, document.getElementById('color2').value)"  class="btn btn-primary" data-dismiss="modal">Save changes</button>
 						</div>
 					</div>
 				</div>
 			</div>
+		
+				
 			<div id="content2">
 				<input type="text" class="form-control" style="display:none; margin: 0 auto;" id="0" placeholder="Put Your tags here" onkeydown="checkKey('0');">
-				<form method="POST" id="dropzone0" style="display:none;" action="@routes.Application.upload("tag[0]")" enctype="multipart/form-data" class="dropzone"></form>
+				<div method="POST" id="dropzone0" style="display:none; overflow-y:auto; height: 200px;" action="@routes.Application.upload("tag[0]")" enctype="multipart/form-data" class="dropzone"></div>
 
 				<input type="text" class="form-control" style="display:none; margin: 0 auto;" id="1" placeholder="Put Your tags here" onkeydown="checkKey('1');">
-				<form method="POST" id="dropzone1" style="display:none;" action="@routes.Application.upload("tag[1]")" enctype="multipart/form-data" class="dropzone"></form>
+				<div method="POST" id="dropzone1" style="display:none; overflow-y:auto; height: 200px;" action="@routes.Application.upload("tag[1]")" enctype="multipart/form-data" class="dropzone"></div>
 
 				<input type="text" class="form-control" class="ui-widget" style="display:none; margin: 0 auto;" id="2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
-				<form method="POST" id="dropzone2" style="display:none;" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></form>
+				<div method="POST" id="dropzone2" style="display:none; overflow-y:auto; height: 200px;" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></div>
 			</div>
 	</div>
 	<hr class="featurette-divider">
@@ -181,12 +209,15 @@
 		previewNode.parentNode.removeChild(previewNode);
 		var dropzoneArray = [];
 		for (k = 0; k < numberOfDropzones; k++) {  
-			defineDropzone('form#dropzone'+k, k);
+			defineDropzone('div#dropzone'+k, k);
 		}
 				
 		function defineDropzone(name, id){
-			document.getElementById("dropzone"+id+"").style.display='block';
+			document.getElementById("dropzone"+id).style.backgroundColor = $("#color"+id).spectrum("get").toHexString();
+			console.log($("#color"+id).spectrum("get").toHexString());
+			document.getElementById("dropzone"+id).style.display='block';
 			document.getElementById(id+"").style.display='block';
+			
 			dropzoneArray[id] = new Dropzone(name, {
 				dictDefaultMessage: tag[id]
 			});

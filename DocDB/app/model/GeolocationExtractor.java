@@ -31,16 +31,19 @@ import com.google.gson.JsonParser;
 public class GeolocationExtractor {
 
 	public String[] latitudeExtractor(File file) {
-		String[] locationCoordinates = new String[2];
+		String[] locationCoordinates = null;
 		try {
 			Metadata metadata = ImageMetadataReader.readMetadata(file);
 			// See whether it has GPS data
 			GpsDirectory gpsDirectory = metadata.getDirectory(GpsDirectory.class);
 			// Try to read out the location, making sure it's non-zero
+			
 			if (gpsDirectory != null) {
 				GeoLocation geoLocation = gpsDirectory.getGeoLocation();
-				if (!geoLocation.isZero())
+				if (!geoLocation.isZero()){
 					locationCoordinates = geoLocation.toString().split(", ");
+					
+				}
 			} else {
 				return null;
 			}

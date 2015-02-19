@@ -27,8 +27,6 @@ import com.google.common.collect.ObjectArrays;
 
 public class ElasticSearchManager {
 
-	int resultSize = 9;
-
 	/*
 	 * Method that put json file on server
 	 */
@@ -60,10 +58,10 @@ public class ElasticSearchManager {
 		// QueryBuilder qb = QueryBuilders.matchQuery("content", content);
 
 		MultiMatchQueryBuilder qb3 = new MultiMatchQueryBuilder(content, fieldNames);
-
+		int resultSize = 9;
 		if (limit == true)
 			resultSize = Integer.MAX_VALUE;
-				
+
 		// proceed search with query created above
 		SearchResponse response = client.prepareSearch(index).setTypes(type)
 				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(qb3).setSize(resultSize)

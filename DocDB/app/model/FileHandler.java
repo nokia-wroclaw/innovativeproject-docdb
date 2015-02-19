@@ -61,7 +61,7 @@ public class FileHandler {
 		String newFileCheckSum = getHash(file);
 		String newFileName = dirPath + uploadedFileName;
 		File destFile = new File(newFileName);
-		String[] imageLocationCoordinates = null;
+		String[] imageLocationCoordinates = new String[2];
 		
 		GeolocationExtractor gextractor = new GeolocationExtractor();
 		if (fileExists(newFileCheckSum)) {
@@ -82,6 +82,7 @@ public class FileHandler {
 			if (uploadedFileName.endsWith(".jpg")) {
 				handleJPG(tagList, file);
 				imageLocationCoordinates = gextractor.latitudeExtractor(destFile);
+			
 			}
 
 			if (parsedFileData != null) {
@@ -121,8 +122,12 @@ public class FileHandler {
 		if (uploadedFileName.endsWith(".jpg")) {
 			handleJPG(tagList, destFile);
 			imageLocationCoordinates = gextractor.latitudeExtractor(destFile);
+			//System.out.println(imageLocationCoordinates[0]);
+			
 		}
 		if (parsedFile != null) {
+//			System.out.println(imageLocationCoordinates[0]);
+//			System.out.println(locationCoordinates[0]);
 			if (imageLocationCoordinates != null)
 				locationCoordinates = imageLocationCoordinates;
 			insertToElastic(tagList, newFileCheckSum, parsedFile, locationCoordinates);
@@ -192,6 +197,9 @@ public class FileHandler {
 	 */
 	private void extractTags(Set<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile) {
 		String temp = parsedFile.get(parsedFile.size() - 1);
+		parsedFile.remove(parsedFile.size() - 1);
+		tagList.add(temp);
+		temp = parsedFile.get(parsedFile.size() - 1);
 		parsedFile.remove(parsedFile.size() - 1);
 		tagList.add(temp);
 		parsedFile.add(newFileCheckSum);

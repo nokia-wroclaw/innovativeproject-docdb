@@ -34,14 +34,15 @@ public class FileParser {
 	 * 
 	 * @param fileToParse
 	 *            file given by client, which have to be parsed
-	 * @param parentName TODO
+	 * @param parentName
+	 *            TODO
 	 */
 	public ArrayList<String> parseFile(File fileToParse, String oldPath, String parentName) {
 		InputStream is = null;
 
 		try {
 			String fileName = "";
-			if(parentName.equals(""))
+			if (parentName.equals(""))
 				fileName = fileToParse.getName();
 			else
 				fileName = parentName;
@@ -55,7 +56,12 @@ public class FileParser {
 			ArrayList<String> result = dataToArray(metadata, handler, fileName, size);
 
 			Path path = Paths.get(oldPath);
-			result.add(Files.probeContentType(path));
+			String fileType = Files.probeContentType(path);
+			String[] temp = fileType.split("/");
+
+			for (int s = 0; s < temp.length; s++) {
+				result.add(temp[s]);
+			}
 			return result;
 
 		} catch (IOException e) {

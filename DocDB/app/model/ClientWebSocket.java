@@ -68,7 +68,6 @@ public class ClientWebSocket extends UntypedActor {
 			Logger.info("searching for:" + pattern + " with" + (limit ? "out" : "") + " limit");
 			Logger.info("search:" + searchPattern + "\ntags:" + tagList.toString());
 
-			// search elasticSearch search. search
 			ArrayList<ArrayList<String>> searchResult = search(searchPattern, limit);
 
 			if (!tagList.isEmpty()) searchResult = filterOutByTags(searchResult, tagList);

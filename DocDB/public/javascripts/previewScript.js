@@ -1,8 +1,6 @@
 
-var myApp = angular.module('myApp', ['ui.router']);
-
-
-//~ showPreview = function (panel){
+showPreview = function (panel){
+	$(panel).fadeTo(200,0.5);
 	//~ panel = $(panel).first();
 	//~ var me = panel.parents(".singleResultDiv");
 	//~ var next = me.next();
@@ -14,4 +12,4 @@ var myApp = angular.module('myApp', ['ui.router']);
 	//~ $.post( "/Preview/"+jQuery.data( panel, "link" ), function( data ) {
 		//~ me.after("<div class='preview'>"+data+"</div>");
 	//~ });
-//~ }
+}

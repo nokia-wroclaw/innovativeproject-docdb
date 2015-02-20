@@ -20,9 +20,11 @@ $(document).ready(function(){
 				localStorage["gridView"]="false";						//(domyślnie lista) tutaj zmieniać domyślny widok!!!!!!
 			}else if(localStorage["gridView"]=="true"){
 				$(".gridable").removeClass("listView").addClass("gridView");//changing to grid
+				$(".panel-body.gridView").each(function(){$(this).height(kafelekHeight-$(this).next().height());});//ustawianie wysokości kafelków
+			}else if(localStorage["gridView"]=="false"){
+				$(".gridable").removeClass("gridView").addClass("listView");//to list
 			}
 			$("#resultDiv").slideDown();
-			$(".panel-body.gridView").each(function(){$(this).height(kafelekHeight-$(this).next().height());});//ustawianie wysokości kafelków
 			rebindEventHandlers();
 			if($('#resultDiv').scope().results.length==9 && lastLimit=="false") $('#newSearch').slideDown();
 			else $('#newSearch').slideUp();
@@ -51,7 +53,7 @@ $(document).ready(function(){
 	} else {
 		x.innerHTML = "Geolocation is not supported by this browser.";
 	}
-	
+
 	function showPosition(position) {
 		lat = position.coords.latitude;
 		lng = position.coords.longitude;
@@ -90,14 +92,14 @@ $(document).ready(function(){
 
 });
 function rebindEventHandlers(){
-	$(".panel")
+	$(".panel-title, .panel-body").unbind("click").unbind("mouseover").unbind("mouseout")
 		.mouseover(function() {
 			$( this ).find(".panel-title").addClass("panelTitleHover");
 			$( this ).find(".panel-body").addClass("panelBodyHover");
 		}).mouseout(function() {
 			$( this ).find(".panel-title").removeClass("panelTitleHover");
 			$( this ).find(".panel-body").removeClass("panelBodyHover");
-		});
+		}).click(function(){showPreview($(this).parents(".panel"));});
 
 	//~ $(".panel").click(function(){showPreview(e);});
 

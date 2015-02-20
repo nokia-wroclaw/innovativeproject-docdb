@@ -73,18 +73,19 @@
 									<span class="badge" style="float: right;">{{result.size}}kB</span>
 									<h3 class="panel-title" title={{result.file}} >{{result.file}}</h3>
 								</div>
-							<div class="panel-body gridable">
-								<a href={{"Download/"+result.link}} onclick="function(e){e.preventDefault();}">
-									<span class="glyphicon glyphicon-download downloadIcon"></span>
-								</a>
-								<a href={{"Preview/"+result.link}} target="_blank" onclick="function(e){e.preventDefault();}">
-									<span class="glyphicon glyphicon-info-sign downloadIcon"></span>
-								</a>
-								<span ng-bind-html="result.context | unsafe"></span>
-								<img ng-if="result.link.endsWith('.jpg')||result.link.endsWith('.JPG')||result.link.endsWith('.png')||result.link.endsWith('.PNG')" src={{"Preview/"+result.link}}></img>
-							</div>
-							<div class="panel-footer">
-								<span ng-repeat="tag in result.tags track by $index"><small class="label label-info" >#{{tag}}</small> </span>
+								<div class="panel-body gridable">
+									<a href={{"Download/"+result.link}} onclick="function(e){e.preventDefault();}">
+										<span class="glyphicon glyphicon-download downloadIcon"></span>
+									</a>
+									<a href={{"Preview/"+result.link}} target="_blank" onclick="function(e){e.preventDefault();}">
+										<span class="glyphicon glyphicon-info-sign downloadIcon"></span>
+									</a>
+									<span ng-bind-html="result.context | unsafe"></span>
+									<img ng-if="result.link.toLowerCase().endsWith('.jpg')||result.link.toLowerCase().endsWith('.png')||result.link.toLowerCase().endsWith('.gif')" src={{"Preview/"+result.link}}></img>
+								</div>
+								<div class="panel-footer">
+									<span ng-repeat="tag in result.tags track by $index"><small class="label label-info" >#{{tag}}</small> </span>
+								</div>
 							</div>
 						</span>
 					</div>
@@ -199,7 +200,6 @@
 </div>
 </div>
 <script>
-
 		var previewNode = document.querySelector("#template");
 		previewNode.id = "";
 		var previewTemplate = previewNode.parentNode.innerHTML;
@@ -234,15 +234,9 @@
 
 		Dropzone.autoDiscover = true;
 		//angular
-		var commentApp = angular.module('searchRes', ['ngRoute']);
-		commentApp.config(function($routeProvider) {
-			$routeProvider.when('/details',{
-				templateUrl : 'details/ścieżka',
-				controller : 'detailsController'
-			});
-		});
 
 
+		var commentApp = angular.module('searchRes', []);
 		commentApp.filter('unsafe', function($sce) {
 			return function(val) {
 				return $sce.trustAsHtml(val);

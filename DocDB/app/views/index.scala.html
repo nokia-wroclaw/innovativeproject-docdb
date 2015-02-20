@@ -205,7 +205,7 @@
 		
 		var previewNode = document.querySelector("#template");
 		previewNode.id = "";
-		var previewTemplatee = previewNode.parentNode.innerHTML;
+		var previewTemplate = previewNode.parentNode.innerHTML;
 		previewNode.parentNode.removeChild(previewNode);
 		var dropzoneArray = [];
 		for (k = 0; k < numberOfDropzones; k++) {  
@@ -223,7 +223,11 @@
 			});
 			dropzoneArray[id].on("processing", function(file) {
 				if( isPic(file.type) == true )
-					dropzoneArray[id].options.previewTemplate = previewTemplatee;
+					dropzoneArray[id].options.previewTemplate = previewTemplate;
+				else
+					if(file.type == "*/.pdf")
+						dropzoneArray[id].emit("thumbnail", file, "/assets/images/thumbnail_pdf.png");
+				console.log(file.type);
 				temp = getTags(id);
 				temp = removeDup(temp);
 				dropzoneArray[id].options.url = "upload/"+tag[id]+","+temp + "`" + lat + " " + lng;

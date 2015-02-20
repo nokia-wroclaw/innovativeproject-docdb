@@ -42,8 +42,8 @@ public class GeolocationExtractor {
 				GeoLocation geoLocation = gpsDirectory.getGeoLocation();
 				if (!geoLocation.isZero()){
 					locationCoordinates = geoLocation.toString().split(", ");
-					
-				}
+				} else
+					return null;
 			} else {
 				return null;
 			}
@@ -71,12 +71,9 @@ public class GeolocationExtractor {
 	public String locationExtractor(File file) throws IOException {
 		String location_string = "";
 		JsonElement ret;
-		double[] coordinates = new double[2];
-		String temp[] = latitudeExtractor(file);
-		if (temp == null)
+		String coordinates[] = latitudeExtractor(file);
+		if (coordinates == null)
 			return "";
-		coordinates[0] = Double.valueOf(temp[0]);
-		coordinates[1] = Double.valueOf(temp[1]);
 		ret = getLocationInfo(coordinates[0], coordinates[2]);
 		location_string = getPlaceName(ret);
 		return location_string;
@@ -93,9 +90,11 @@ public class GeolocationExtractor {
 	 *            Longitude of a place
 	 * @return JSON with all data about this place
 	 */
-	public JsonElement getLocationInfo(double lat, double lng) {
+	public JsonElement getLocationInfo(String lat, String lng) {
 
-		String url = "http://maps.google.com/maps/api/geocode/json?latlng=" + lat + "," + lng;
+		double latTemp = Double.parseDouble(lat);
+		double lngTemp = Double.parseDouble(lng);
+		String url = "http://maps.google.com/maps/api/geocode/json?latlng=" + latTemp + "," + lngTemp;
 		InputStream openStream;
 		try {
 			openStream = new URL(url).openStream();

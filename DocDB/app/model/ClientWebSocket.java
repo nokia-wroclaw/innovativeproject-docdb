@@ -126,8 +126,8 @@ public class ClientWebSocket extends UntypedActor {
 	 */
 	private void handleGeolocation(JsonNode event) {
 		GeolocationExtractor geoExtractor = new GeolocationExtractor();
-		double lat = Double.parseDouble(event.get("lat").asText());
-		double lng = Double.parseDouble(event.get("lng").asText());
+		String lat = event.get("lat").asText();
+		String lng = event.get("lng").asText();
 		String location = null;
 		try {
 			location = geoExtractor.getPlaceName(geoExtractor.getLocationInfo(lat, lng));

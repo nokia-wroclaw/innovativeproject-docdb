@@ -130,3 +130,6 @@ div #outer{
 	min-height:400px;
 	max-height:600px;
 }
+#previewModalBody img{
+	max-width:100%;
+}

@@ -53,7 +53,7 @@ div #outer{
 }
 .glyphicon-search:hover{
 	-webkit-transform: scale(1.0,1.0);
-	
+
 }
 .gridView.singleResultDiv {
 	width: 33%;
@@ -77,14 +77,37 @@ div #outer{
 	margin: 0 2px;
 	float:right;
 }
-
 #dropzoneSettings{
 	text-align: right;
 	position: relative;
 	top: -15px;
 	line-height: 0px;
 }
- 
+
 .featurette-divider{
 	width: 100%;
+}
+.panel{
+	cursor: -webkit-grab;
+}
+.panel:hover{
+	opacity: 0.9;
+    filter: alpha(opacity=90); /* For IE8 and earlier */
+}
+.panelTitleHover{
+	color: #fff;
+	text-decoration: underline;
+	font-weight:bold;
+}
+.panelBodyHover{
+	color: #003;
+	text-decoration: none;
+	font-weight:normal;
+}
+.panel:active{
+	cursor: -webkit-grabbing;
+}
+.preview{
+	width:100%;
+	height:100px;
 }

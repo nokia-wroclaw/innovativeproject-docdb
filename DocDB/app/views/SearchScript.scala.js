@@ -90,6 +90,17 @@ $(document).ready(function(){
 
 });
 function rebindEventHandlers(){
+	$(".panel")
+		.mouseover(function() {
+			$( this ).find(".panel-title").addClass("panelTitleHover");
+			$( this ).find(".panel-body").addClass("panelBodyHover");
+		}).mouseout(function() {
+			$( this ).find(".panel-title").removeClass("panelTitleHover");
+			$( this ).find(".panel-body").removeClass("panelBodyHover");
+		});
+
+	//~ $(".panel").click(function(){showPreview(e);});
+
 	$("#resultDiv small").unbind().click(function(e){
 		e.preventDefault();
 		e.stopPropagation();

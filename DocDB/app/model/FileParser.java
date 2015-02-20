@@ -55,13 +55,7 @@ public class FileParser {
 			String size = fileToParse.length() / 1024 + "";
 			ArrayList<String> result = dataToArray(metadata, handler, fileName, size);
 
-			Path path = Paths.get(oldPath);
-			String fileType = Files.probeContentType(path);
-			String[] temp = fileType.split("/");
-
-			for (int s = 0; s < temp.length; s++) {
-				result.add(temp[s]);
-			}
+			
 			return result;
 
 		} catch (IOException e) {

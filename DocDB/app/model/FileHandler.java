@@ -2,7 +2,11 @@ package model;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -52,17 +56,17 @@ public class FileHandler {
 	/**
 	 * @param file
 	 * @param uploadedFileName
-	 * @param tagList
+	 * @param tagSet
 	 * @param locationCoordinates
 	 *            TODO
 	 */
-	private void handleFile(File file, String uploadedFileName, Set<String> tagList, String[] locationCoordinates) {
+	private void handleFile(File file, String uploadedFileName, Set<String> tagSet, String[] locationCoordinates) {
 		// get new file hash
 		String newFileCheckSum = getHash(file);
 		String newFileName = dirPath + uploadedFileName;
 		File destFile = new File(newFileName);
 		String[] imageLocationCoordinates = new String[2];
-		
+
 		GeolocationExtractor gextractor = new GeolocationExtractor();
 		if (fileExists(newFileCheckSum)) {
 			// file exists with the same name:
@@ -73,22 +77,22 @@ public class FileHandler {
 			// file exist with different name:
 			newFileName = dirPath + getExistingFileName(newFileCheckSum);
 			ArrayList<String> parsedFileData = fileParser.parseFile(new File(newFileName), uploadedFileName, "");
-
 			if (uploadedFileName.endsWith(".zip")) {
-				handleZip(tagList, newFileCheckSum, uploadedFileName, locationCoordinates);
+				handleZip(tagSet, newFileCheckSum, uploadedFileName, locationCoordinates);
 				Logger.info("Metadata saved");
 				return;
 			}
 			if (uploadedFileName.endsWith(".jpg")) {
-				handleJPG(tagList, file);
+				handleJPG(tagSet, file);
 				imageLocationCoordinates = gextractor.latitudeExtractor(destFile);
-			
+
 			}
 
 			if (parsedFileData != null) {
+				tagSet.addAll(getFileType(uploadedFileName));
 				if (imageLocationCoordinates != null)
 					locationCoordinates = imageLocationCoordinates;
-				insertToElastic(tagList, newFileCheckSum, parsedFileData, locationCoordinates);
+				insertToElastic(tagSet, newFileCheckSum, parsedFileData, locationCoordinates);
 				Logger.info("Metadata saved");
 				return;
 			}
@@ -113,24 +117,21 @@ public class FileHandler {
 		}
 
 		if (uploadedFileName.endsWith(".zip")) {
-			handleZip(tagList, newFileCheckSum, uploadedFileName, locationCoordinates);
+			handleZip(tagSet, newFileCheckSum, uploadedFileName, locationCoordinates);
 			Logger.info("metadata saved");
 			return;
 		}
 		ArrayList<String> parsedFile = fileParser.parseFile(destFile, uploadedFileName, "");
 
 		if (uploadedFileName.endsWith(".jpg")) {
-			handleJPG(tagList, destFile);
+			handleJPG(tagSet, destFile);
 			imageLocationCoordinates = gextractor.latitudeExtractor(destFile);
-			//System.out.println(imageLocationCoordinates[0]);
-			
 		}
 		if (parsedFile != null) {
-//			System.out.println(imageLocationCoordinates[0]);
-//			System.out.println(locationCoordinates[0]);
+			tagSet.addAll(getFileType(uploadedFileName));
 			if (imageLocationCoordinates != null)
 				locationCoordinates = imageLocationCoordinates;
-			insertToElastic(tagList, newFileCheckSum, parsedFile, locationCoordinates);
+			insertToElastic(tagSet, newFileCheckSum, parsedFile, locationCoordinates);
 			Logger.info("metadata saved");
 		}
 	}
@@ -139,8 +140,10 @@ public class FileHandler {
 		ZipHandler zipHandler = new ZipHandler();
 		ArrayList<String> zipFilesNames = zipHandler.handleZip(newFileName, dirPath + "zip/");
 		for (String curFileName : zipFilesNames) {
+			Set<String> tagTemp = getFileType(curFileName);
+			tagTemp.addAll(tagList);
 			ArrayList<String> parsedFile = fileParser.parseFile(new File(curFileName), curFileName, newFileName);
-			insertToElastic(tagList, newFileCheckSum, parsedFile, locationCoordinates);
+			insertToElastic(tagTemp, newFileCheckSum, parsedFile, locationCoordinates);
 		}
 		zipHandler.removeUnpackedZip(dirPath + "zip/");
 
@@ -168,8 +171,7 @@ public class FileHandler {
 	 */
 	private void insertToElastic(Set<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile,
 			String[] locationCoordinates) {
-		extractTags(tagList, newFileCheckSum, parsedFile);
-		
+		parsedFile.add(newFileCheckSum);
 		XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagList, locationCoordinates);
 		elasticServer.elasticSearch.insert(elasticServer.client, json, "documents", "file");
 	}
@@ -190,19 +192,15 @@ public class FileHandler {
 		return newFileCheckSum;
 	}
 
-	/**
-	 * @param tagList
-	 * @param newFileCheckSum
-	 * @param parsedFile
-	 */
-	private void extractTags(Set<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile) {
-		String temp = parsedFile.get(parsedFile.size() - 1);
-		parsedFile.remove(parsedFile.size() - 1);
-		tagList.add(temp);
-		temp = parsedFile.get(parsedFile.size() - 1);
-		parsedFile.remove(parsedFile.size() - 1);
-		tagList.add(temp);
-		parsedFile.add(newFileCheckSum);
+	private Set getFileType(String oldPath) {
+		Set<String> result = new HashSet<String>();
+		Path path = Paths.get(oldPath);
+		String fileType = Files.getFileExtension(oldPath);
+		String[] temp = fileType.split("/");
+		for (int s = 0; s < temp.length; s++) {
+			result.add(temp[s]);
+		}
+		return result;
 	}
 
 	private boolean fileExists(String MD5) {

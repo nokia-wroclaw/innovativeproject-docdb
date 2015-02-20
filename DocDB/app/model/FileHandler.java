@@ -141,6 +141,7 @@ public class FileHandler {
 		ArrayList<String> zipFilesNames = zipHandler.handleZip(newFileName, dirPath + "zip/");
 		for (String curFileName : zipFilesNames) {
 			Set<String> tagTemp = getFileType(curFileName);
+			tagTemp.add("zip");
 			tagTemp.addAll(tagList);
 			ArrayList<String> parsedFile = fileParser.parseFile(new File(curFileName), curFileName, newFileName);
 			insertToElastic(tagTemp, newFileCheckSum, parsedFile, locationCoordinates);

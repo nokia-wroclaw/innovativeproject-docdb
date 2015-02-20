@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.Normalizer;
 
-import org.apache.lucene.document.StraightBytesDocValuesField;
-
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.lang.GeoLocation;

@@ -97,8 +97,6 @@ public class ClientWebSocket extends UntypedActor {
 						tagsSet.add("\"" + result.get(4 + tagnr) + "\"");
 					}
 					String tempCont = ctxEx.getContext(result.get(3), searchPattern);
-					if((!tempCont.contains(" ") && tagsSet.contains("png")) || tempCont.isEmpty())
-						tempCont = "Context thumbnail is not available";
 					innerMsg.put("context", tempCont);
 					results.add(innerMsg);
 				}

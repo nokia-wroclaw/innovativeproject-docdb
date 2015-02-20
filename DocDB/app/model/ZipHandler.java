@@ -37,14 +37,7 @@ public class ZipHandler {
 			List<File> files = (List<File>) FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
 			// going thru all dir
 			for (File file : files) { //
-				if (file.getPath().endsWith(".zip")) {
-					//TODO: Handle zip inside zip
-					// System.out.println(file.getPath());
-					// System.out.println("Source = " + source);
-					// ArrayList<String> temp = new ArrayList<String>();
-					// temp = handleZip(file.getName(), destination);
-					// filesPaths.addAll(temp);
-				} else
+				if (!file.getPath().endsWith(".zip"))
 					filesPaths.add(file.getPath());
 			}
 		} catch (Exception e) {

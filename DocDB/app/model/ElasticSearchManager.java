@@ -74,6 +74,7 @@ public class ElasticSearchManager {
 		if (n > 0) {
 			return searchResult(resultsArray);
 		} else {
+			System.out.println("Prefix search");
 			// if normal search didn't found anything then proceed prefix search
 			MultiMatchQueryBuilder prefixQ = QueryBuilders.multiMatchQuery(content, fieldNames).type(
 					MatchQueryBuilder.Type.PHRASE_PREFIX);
@@ -83,7 +84,6 @@ public class ElasticSearchManager {
 			resultsArray = response.getHits().getHits();
 			n = resultsArray.length;
 			if (n > 0) {
-				System.out.println("Prefix search");
 				return searchResult(resultsArray);
 			} else {
 				// if search is empty then return null

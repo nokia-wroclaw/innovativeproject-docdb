@@ -88,11 +88,7 @@ public class ClientWebSocket extends UntypedActor {
 					innerMsg.put("file", result.get(0));
 					innerMsg.put("link", result.get(1));
 					innerMsg.put("size", result.get(2));
-					String tempCont = ctxEx.getContext(result.get(3), searchPattern);
-					if(!tempCont.contains(" ") && !tempCont.isEmpty())
-						tempCont = "Context thumbnail is not available";
-					innerMsg.put("context", tempCont);
-
+					
 					ArrayNode tags = innerMsg.putArray("tags"); // tags array in innerMsg (for this file)
 					//odejmujemy 4 ze wzgledu na to ze na poczatku sa 4 elementy ktore nie sa tagami
 					int tagcount = result.size() - 4;
@@ -100,6 +96,10 @@ public class ClientWebSocket extends UntypedActor {
 						tags.add(result.get(4 + tagnr));
 						tagsSet.add("\"" + result.get(4 + tagnr) + "\"");
 					}
+					String tempCont = ctxEx.getContext(result.get(3), searchPattern);
+					if((!tempCont.contains(" ") && tagsSet.contains("png")) || tempCont.isEmpty())
+						tempCont = "Context thumbnail is not available";
+					innerMsg.put("context", tempCont);
 					results.add(innerMsg);
 				}
 				int temp = searchResult.size();

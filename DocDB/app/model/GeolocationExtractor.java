@@ -74,7 +74,7 @@ public class GeolocationExtractor {
 		String coordinates[] = latitudeExtractor(file);
 		if (coordinates == null)
 			return "";
-		ret = getLocationInfo(coordinates[0], coordinates[2]);
+		ret = getLocationInfo(coordinates[0], coordinates[1]);
 		location_string = getPlaceName(ret);
 		return location_string;
 

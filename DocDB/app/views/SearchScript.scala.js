@@ -2,6 +2,9 @@ var kafelekHeight = 175;
 var newSearch, webSocket, searchTimer=0, sendLink,allTags;
 var geoloc =[], lastLimit=false;
 var lat; var lng;
+$.fn.exists = function () {
+    return this.length !== 0;
+}
 $(document).ready(function(){
 	var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
 	webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
@@ -99,9 +102,8 @@ function rebindEventHandlers(){
 		}).mouseout(function() {
 			$( this ).find(".panel-title").removeClass("panelTitleHover");
 			$( this ).find(".panel-body").removeClass("panelBodyHover");
-		}).click(function(){showPreview($(this).parents(".panel"));});
+		});//.click(function(){showPreview($(this).parents(".panel"));});
 
-	//~ $(".panel").click(function(){showPreview(e);});
 
 	$("#resultDiv small").unbind().click(function(e){
 		e.preventDefault();

@@ -5,7 +5,7 @@ div #content2{
 	-webkit-border-radius:20px;
 	-moz-border-radius:20px;
 	border-radius:20px;
-	
+
 }
 
 div #outer{
@@ -132,4 +132,12 @@ div #outer{
 }
 #previewModalBody img{
 	max-width:100%;
+}
+
+#previewModalTags{
+	padding:10px;
+}
+
+#previewModalFooter button{
+	margin-top:70px;
 }

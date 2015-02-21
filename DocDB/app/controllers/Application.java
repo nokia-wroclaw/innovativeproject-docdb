@@ -9,8 +9,11 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import model.ClientWebSocket;
 import model.ElasticSearchServer;
@@ -99,7 +102,27 @@ public class Application extends Controller {
 	public static Result showFile(String path) {// Preview/
 		File file = new File("files/" + path);
 		if (path.endsWith(".zip")) {
-			return null;
+			// return null;
+			ZipFile zipFile;
+			String enteries = "<html><h4>Files stored in this zip:</h4>\n<ul>";
+			try {
+				zipFile = new ZipFile(file);
+
+				Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+				while (entries.hasMoreElements()) {
+					ZipEntry entry = entries.nextElement();
+					enteries += "<li>" + entry.getName() + "</li>\n";
+					// InputStream stream = zipFile.getInputStream(entry);
+				}
+				enteries += "</ul><html>";
+				zipFile.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return ok("cannot read");
+			}
+			response().setContentType("text/html");
+			return ok(enteries);
 		}
 		if (file.exists()) {
 

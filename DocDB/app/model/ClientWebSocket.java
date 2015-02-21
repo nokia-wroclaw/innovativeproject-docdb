@@ -98,6 +98,8 @@ public class ClientWebSocket extends UntypedActor {
 					}
 					String tempCont = ctxEx.getContext(result.get(3), searchPattern);
 					innerMsg.put("context", tempCont);
+					innerMsg.put("lat", result.get(result.size()-2));
+					innerMsg.put("lng", result.get(result.size()-1));
 					results.add(innerMsg);
 				}
 				int temp = searchResult.size();

@@ -1,4 +1,4 @@
-
+var myLatlng, map, marker;
 $(document).ready(function(){
 
 $('#previewModal').on('show.bs.modal', function (event) {
@@ -22,20 +22,23 @@ $('#previewModal').on('show.bs.modal', function (event) {
 	//~ <!----map-->
 
 	//~ var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-	var myLatlng = new google.maps.LatLng(panel.attr("data-lat"),panel.attr("data-lng"));
+	myLatlng = new google.maps.LatLng(panel.attr("data-lat"),panel.attr("data-lng"));
 	var mapOptions = {
-	  zoom: 5,
+	  zoom: 6,
 	  center: myLatlng
 	}
-	var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-
+	map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 	// To add the marker to the map, use the 'map' property
-	var marker = new google.maps.Marker({
+	marker = new google.maps.Marker({
 		position: myLatlng,
 		map: map,
 		title:"File source"
 	});
 
+})
+.on("shown.bs.modal", function (event) {
+		google.maps.event.trigger(map, 'resize');
+		map.setCenter(myLatlng);
 });
 
 });

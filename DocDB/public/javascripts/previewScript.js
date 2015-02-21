@@ -13,7 +13,7 @@ $('#previewModal').on('show.bs.modal', function (event) {
 	if(panel.find("img").exists()){
 		modal.find('#previewModalBody').html(panel.find("img").clone());
 	}else{
-		modal.find('#previewModalBody').html('<object data="/Preview/'+panel.attr("data-link")+'"><a href="/Download/'+panel.attr("data-link")+'"Your browser can\'t display this type of files.<br /> Click to download this file.</object>');
+		modal.find('#previewModalBody').html('<object data="/Preview/'+panel.attr("data-link")+'"><a href="/Download/'+panel.attr("data-link")+'"> Your browser can\'t display this type of files.<br /> Click to download this file.</a></object>');
 		modal.find('object').height($( window ).height()-200);
 	}
 

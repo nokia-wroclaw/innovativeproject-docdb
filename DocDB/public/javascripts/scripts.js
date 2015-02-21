@@ -18,13 +18,14 @@
 
 			}
 			function changeTag(tagIDName){
-				var newTag = document.getElementById(tagIDName).value;
-				var	tagID = document.getElementById(tagIDName);
+				var newTag = document.getElementById("text"+tagIDName).value;
+				var	tagID = document.getElementById("text"+tagIDName);
 				tagID.value = newTag.replace("# ","").replace("#","").replace(" ,", ",").replace(", ", ",");
 				localStorage[tagIDName] = newTag;
 				tag[tagIDName] = newTag+","+$('#geoLoc').html();
-				$(".dz-message span").eq(tagIDName).text(newTag);
+				$(".dz-message span").eq(tagIDName).text('#'+newTag);
 				addAutoComp(newTag, 'oldTags');
+				document.getElementById("text"+tagIDName).value = "";
 			}
 
 			function checkKey(tagID){
@@ -99,7 +100,7 @@
 				type = fileType.split("/");
 				if(fileType == 'undefined') //zips
 					return ".png";
-				availableTypes = ['pdf', "msword", "plain", "audio"]
+				availableTypes = ['pdf', "msword", "plain", "" ,"audio"]
 				for(i = 0; i < availableTypes.length; i++){
 					if(type[0] == availableTypes[i] || type[1] == availableTypes[i]){
 						return availableTypes[i]+".png"

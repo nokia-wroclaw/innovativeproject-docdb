@@ -207,13 +207,13 @@
 
 
 			<div id="content2">
-				<input type="text" class="form-control" style="display:none; margin: 0 auto;" id="0" placeholder="Put Your tags here" onkeydown="checkKey('0');">
+				<input type="text" class="form-control" style="display:none; margin: 0 auto;" id="text0" placeholder="Put Your tags here" onkeydown="checkKey('0');">
 				<div method="POST" id="dropzone0" style="display:none; overflow-y:auto; height: 200px;" action="@routes.Application.upload("tag[0]")" enctype="multipart/form-data" class="dropzone"></div>
 
-				<input type="text" class="form-control" style="display:none; margin: 0 auto;" id="1" placeholder="Put Your tags here" onkeydown="checkKey('1');">
+				<input type="text" class="form-control" style="display:none; margin: 0 auto;" id="text1" placeholder="Put Your tags here" onkeydown="checkKey('1');">
 				<div method="POST" id="dropzone1" style="display:none; overflow-y:auto; height: 200px;" action="@routes.Application.upload("tag[1]")" enctype="multipart/form-data" class="dropzone"></div>
 
-				<input type="text" class="form-control" class="ui-widget" style="display:none; margin: 0 auto;" id="2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
+				<input type="text" class="form-control" class="ui-widget" style="display:none; margin: 0 auto;" id="text2" placeholder="Put Your tags here" onkeydown="checkKey('2');">
 				<div method="POST" id="dropzone2" style="display:none; overflow-y:auto; height: 200px;" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></div>
 			</div>
 	</div>
@@ -240,13 +240,19 @@
 
 		function defineDropzone(name, id){
 			document.getElementById("dropzone"+id).style.backgroundColor = $("#color"+id).spectrum("get").toHexString();
-			document.getElementById("dropzone"+id).style.display='block';
-			document.getElementById(id+"").style.display='block';
-
+			
+			document.getElementById("dropzone"+id).style.display='inline-block';
+			document.getElementById("text"+id).style.display='inline-block';
+			
+			document.getElementById("dropzone"+id).style.fontSize='400%';
+			document.getElementById("dropzone"+id).style.width=100-5*id+"%";
+			document.getElementById("text"+id).style.width=100-5*id+"%";
+			
 			dropzoneArray[id] = new Dropzone(name, {
-				dictDefaultMessage: tag[id]
+				dictDefaultMessage: "#"+tag[id]
 			});
 			dropzoneArray[id].on("processing", function(file) {
+				document.getElementById("dropzone"+id).style.fontSize='150%';
 				if( isPic(file.type) == true )
 					dropzoneArray[id].options.previewTemplate = previewTemplate;
 				else{
@@ -254,7 +260,10 @@
 				}		
 				temp = getTags(id);
 				temp = removeDup(temp);
-				dropzoneArray[id].options.url = "upload/"+tag[id]+","+temp + "`" + lat + " " + lng;
+				for(i = numberOfDropzones - 1; i >= 0; i--)
+					tag[id] += ", "+tag[i];
+				tagArray = removeDup(tag[id].split(", "));
+				dropzoneArray[id].options.url = "upload/"+tagArray.toString()+","+temp + "`" + lat + " " + lng;
 			});
 
 		}

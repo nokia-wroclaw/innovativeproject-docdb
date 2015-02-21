@@ -17,6 +17,25 @@ $('#previewModal').on('show.bs.modal', function (event) {
 		modal.find('object').height($( window ).height()-200);
 	}
 
+
+
+	//~ <!----map-->
+
+	//~ var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+	var myLatlng = new google.maps.LatLng(panel.attr("data-lat"),panel.attr("data-lng"));
+	var mapOptions = {
+	  zoom: 5,
+	  center: myLatlng
+	}
+	var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+	// To add the marker to the map, use the 'map' property
+	var marker = new google.maps.Marker({
+		position: myLatlng,
+		map: map,
+		title:"File source"
+	});
+
 });
 
 });

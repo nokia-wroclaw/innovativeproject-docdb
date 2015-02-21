@@ -68,7 +68,7 @@
 				<div id="resultDiv" style="display:none;" ng-app="searchRes" ng-controller="searchController" class="list-group">
 					<div ng-repeat="result in results track by $index" class="singleResultDiv gridable">
 						<span class="list-group-item">
-							<div class="panel panel-primary" data-link={{result.link}} data-file={{result.file}}>
+							<div class="panel panel-primary" data-link={{result.link}} data-file={{result.file}} data-lat={{result.lat}} data-lng={{result.lng}}>
 								<div class="panel-heading" data-toggle="modal" data-target="#previewModal">
 									<span class="badge" style="float: right;">{{result.size}}kB</span>
 									<h3 class="panel-title" title={{result.file}} >{{result.file}}</h3>
@@ -137,7 +137,8 @@
 
 						</div>
 						<div class="modal-footer" id="previewModalFooter">
-						<span id="previewModalTags"></span>
+							<div id='map-canvas' style='height: 150px;width: 200px;float: left;'></div>
+							<span id="previewModalTags"></span>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</div>
@@ -240,14 +241,14 @@
 
 		function defineDropzone(name, id){
 			document.getElementById("dropzone"+id).style.backgroundColor = $("#color"+id).spectrum("get").toHexString();
-			
+
 			document.getElementById("dropzone"+id).style.display='inline-block';
 			document.getElementById("text"+id).style.display='inline-block';
-			
+
 			document.getElementById("dropzone"+id).style.fontSize='400%';
 			document.getElementById("dropzone"+id).style.width=100-5*id+"%";
 			document.getElementById("text"+id).style.width=100-5*id+"%";
-			
+
 			dropzoneArray[id] = new Dropzone(name, {
 				dictDefaultMessage: "#"+tag[id]
 			});
@@ -257,7 +258,7 @@
 					dropzoneArray[id].options.previewTemplate = previewTemplate;
 				else{
 					dropzoneArray[id].emit("thumbnail", file, "/assets/images/thumbnail_"+getFileType(file.type));
-				}		
+				}
 				temp = getTags(id);
 				temp = removeDup(temp);
 				for(i = numberOfDropzones - 1; i >= 0; i--)

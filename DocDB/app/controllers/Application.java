@@ -98,6 +98,9 @@ public class Application extends Controller {
 
 	public static Result showFile(String path) {// Preview/
 		File file = new File("files/" + path);
+		if (path.endsWith(".zip")) {
+			return null;
+		}
 		if (file.exists()) {
 
 			response().setHeader("Content-Type", file.getName());

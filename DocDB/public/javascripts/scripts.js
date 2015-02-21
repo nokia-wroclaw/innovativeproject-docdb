@@ -85,6 +85,7 @@
 				}
 				location.reload();
 			}
+			
 			function getRandomColor() {
 				var letters = '0123456789ABCDEF'.split('');
 				var color = '#';
@@ -92,4 +93,16 @@
 					color += letters[Math.floor(Math.random() * 16)];
 				
 				return color;
+			}
+			
+			function getFileType(fileType){
+				type = fileType.split("/");
+				if(fileType == 'undefined') //zips
+					return ".png";
+				availableTypes = ['pdf', "msword", "plain", "audio"]
+				for(i = 0; i < availableTypes.length; i++){
+					if(type[0] == availableTypes[i] || type[1] == availableTypes[i]){
+						return availableTypes[i]+".png"
+					}
+				}
 			}

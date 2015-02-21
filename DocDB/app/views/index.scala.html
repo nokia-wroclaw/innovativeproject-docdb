@@ -240,7 +240,6 @@
 
 		function defineDropzone(name, id){
 			document.getElementById("dropzone"+id).style.backgroundColor = $("#color"+id).spectrum("get").toHexString();
-			console.log($("#color"+id).spectrum("get").toHexString());
 			document.getElementById("dropzone"+id).style.display='block';
 			document.getElementById(id+"").style.display='block';
 
@@ -250,10 +249,9 @@
 			dropzoneArray[id].on("processing", function(file) {
 				if( isPic(file.type) == true )
 					dropzoneArray[id].options.previewTemplate = previewTemplate;
-				else
-					if(file.type == "*/.pdf")
-						dropzoneArray[id].emit("thumbnail", file, "/assets/images/thumbnail_pdf.png");
-				console.log(file.type);
+				else{
+					dropzoneArray[id].emit("thumbnail", file, "/assets/images/thumbnail_"+getFileType(file.type));
+				}		
 				temp = getTags(id);
 				temp = removeDup(temp);
 				dropzoneArray[id].options.url = "upload/"+tag[id]+","+temp + "`" + lat + " " + lng;

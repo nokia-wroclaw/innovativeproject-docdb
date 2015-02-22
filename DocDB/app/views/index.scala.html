@@ -102,13 +102,13 @@
 		</div>
 
 		<hr class="featurette-divider">
-		<div class="jumbotron">
+<!--		<div class="jumbotron">
 			<h2>Drop files via link</h2>
 				<div id="content3">
 					<input type="text" class="form-control" id="linkUpload" placeholder="Put Your link here">
 				</div>
 		</div>
-		<hr class="featurette-divider">
+		<hr class="featurette-divider"> -->
 <!-- This is used as the file preview template -->
 	<div id="template" class="file-row">
         <div>
@@ -229,9 +229,9 @@
 				<div method="POST" id="dropzone2" style="display:none; overflow-y:auto; height: 200px;" action="@routes.Application.upload("tag[2]")" enctype="multipart/form-data" class="dropzone"></div>
 			</div>
 	</div>
-	<hr class="featurette-divider">
+<!--	<hr class="featurette-divider">
 	<div style="text-align:center;">Drag <a href='javascript:(function(){var xmlhttp=new XMLHttpRequest();xmlhttp.open("POST","http://185.5.97.71:9000/takeLink/bookmarked,"+prompt("Any tags?"),true);xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");xmlhttp.send("link="+window.location.href);})();'>this link</a> to your favorites bar, and add any website to DocDB with just 1 click!</div>
-
+-->
 	<hr class="featurette-divider">
 	<footer class="footer" style="text-align: center;">
 
@@ -266,24 +266,40 @@
 				document.getElementById("text"+id).style.width=100+"%";
 			}
 			dropzoneArray[id] = new Dropzone(name, {
-				dictDefaultMessage: "#"+tag[id]
+				dictDefaultMessage: "#"+tag[id],
 			});
+			//handling file upload
 			dropzoneArray[id].on("processing", function(file) {
 				document.getElementById("dropzone"+id).style.fontSize='150%';
+				//thumbnails handling
 				if( isPic(file.type) == true )
 					dropzoneArray[id].options.previewTemplate = previewTemplate;
 				else{
 					dropzoneArray[id].emit("thumbnail", file, "/assets/images/thumbnail_"+getFileType(file.type));
 				}
+				//inclusion of dropzones
 				temp = getTags(id);
 				temp = removeDup(temp);
 				if(localStorage["inclusionCheck"] == 'true'){
-					for(i = numberOfDropzones - 1; i >= 0; i--)
+					for(i = 0; i <= id; i++)
 						tag[id] += ", "+tag[i];
 				}
 				tagArray = removeDup(tag[id].split(", "));
 				dropzoneArray[id].options.url = "upload/"+tagArray.toString()+","+temp + "`" + lat + " " + lng;
 			});
+			
+			dropzoneArray[id].on("error", function(file, response) { //error handling
+                var node, i, ref, results;
+				var message = "Error occurred :(" 
+				file.previewElement.classList.add("dz-error");
+				ref = file.previewElement.querySelectorAll("[data-dz-errormessage]");
+				results = [];
+				for (i = 0; i < ref.length; i++) {
+				  node = ref[i];
+				  results.push(node.textContent = message);
+				}
+
+            });
 
 		}
 

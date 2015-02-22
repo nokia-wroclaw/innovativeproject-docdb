@@ -63,7 +63,7 @@
 			}
 			function getTags(index){
 				var temp = $('#geoLoc').html();				
-				temp = temp.replace(/[^a-zA-Z0-9]*/g,"");
+				temp = temp.replace("# ","").replace("#","").replace(" ,", ",").replace(", ", ",");
 				
 				var arr = temp.split(", ");
 				arr = removeDup(arr);

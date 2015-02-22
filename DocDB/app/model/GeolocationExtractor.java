@@ -29,7 +29,7 @@ import com.google.gson.JsonParser;
 public class GeolocationExtractor {
 
 	public String[] latitudeExtractor(File file) {
-		String[] locationCoordinates = null;
+		String[] locationCoordinates = new String[2];
 		try {
 			Metadata metadata = ImageMetadataReader.readMetadata(file);
 			// See whether it has GPS data

@@ -65,8 +65,8 @@ public class FileHandler {
 		String newFileCheckSum = getHash(file);
 		String newFileName = dirPath + uploadedFileName;
 		File destFile = new File(newFileName);
-		String[] imageLocationCoordinates = new String[2];
-
+		String[] imageLocationCoordinates = null;
+		 
 		GeolocationExtractor gextractor = new GeolocationExtractor();
 		if (fileExists(newFileCheckSum)) {
 			// file exists with the same name:
@@ -85,9 +85,9 @@ public class FileHandler {
 			if (uploadedFileName.endsWith(".jpg")) {
 				handleJPG(tagSet, file);
 				imageLocationCoordinates = gextractor.latitudeExtractor(destFile);
-
+				
 			}
-
+			
 			if (parsedFileData != null) {
 				tagSet.addAll(getFileType(uploadedFileName));
 				if (imageLocationCoordinates != null)
@@ -126,6 +126,7 @@ public class FileHandler {
 		if (uploadedFileName.endsWith(".jpg")) {
 			handleJPG(tagSet, destFile);
 			imageLocationCoordinates = gextractor.latitudeExtractor(destFile);
+			System.out.println(imageLocationCoordinates);
 		}
 		if (parsedFile != null) {
 			tagSet.addAll(getFileType(uploadedFileName));
@@ -172,6 +173,7 @@ public class FileHandler {
 	 */
 	private void insertToElastic(Set<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile,
 			String[] locationCoordinates) {
+		
 		parsedFile.add(newFileCheckSum);
 		XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagList, locationCoordinates);
 		elasticServer.elasticSearch.insert(elasticServer.client, json, "documents", "file");

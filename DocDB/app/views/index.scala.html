@@ -272,9 +272,9 @@
 			dropzoneArray[id].on("processing", function(file) {
 				document.getElementById("dropzone"+id).style.fontSize='150%';
 				//thumbnails handling
-				if( isPic(file.type) == true )
+				if( isPic(file.type) == true ){
 					dropzoneArray[id].options.previewTemplate = previewTemplate;
-				else{
+				} else {
 					dropzoneArray[id].emit("thumbnail", file, "/assets/images/thumbnail_"+getFileType(file.type));
 				}
 				//inclusion of dropzones

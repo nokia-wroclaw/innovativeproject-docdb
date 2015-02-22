@@ -23,6 +23,9 @@ $('#previewModal').on('show.bs.modal', function (event) {
 
 	//~ var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 	myLatlng = new google.maps.LatLng(panel.attr("data-lat"),panel.attr("data-lng"));
+	console.log(panel.attr("data-lat"));
+	console.log(panel.attr("data-lng"));
+	
 	var mapOptions = {
 	  zoom: 9,
 	  center: myLatlng

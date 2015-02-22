@@ -63,7 +63,7 @@
 			}
 			function getTags(index){
 				var temp = $('#geoLoc').html();				
-				temp = temp.replace("# ","").replace("#","").replace(" ,", ",").replace(", ", ",");
+				temp = temp.replace(/[^a-zA-Z0-9]*/g,"");
 				
 				var arr = temp.split(", ");
 				arr = removeDup(arr);
@@ -107,10 +107,11 @@
 				type = fileType.split("/");
 				if(fileType == 'undefined') //zips
 					return ".png";
-				availableTypes = ['pdf', "msword", "plain", "" ,"audio"]
+				availableTypes = ['pdf', "msword", "plain", "" ,"audio", "video"]
 				for(i = 0; i < availableTypes.length; i++){
 					if(type[0] == availableTypes[i] || type[1] == availableTypes[i]){
 						return availableTypes[i]+".png"
 					}
 				}
+				return "file.png"
 			}

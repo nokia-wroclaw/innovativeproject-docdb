@@ -20,7 +20,8 @@
 			function changeTag(tagIDName){
 				var newTag = document.getElementById("text"+tagIDName).value;
 				var	tagID = document.getElementById("text"+tagIDName);
-				tagID.value = newTag.replace("# ","").replace("#","").replace(" ,", ",").replace(", ", ",");
+				newTag = newTag.replace(/[^a-zA-Z0-9]*/g,"");
+				tagID.value = newTag;
 				localStorage[tagIDName] = newTag;
 				tag[tagIDName] = newTag+","+$('#geoLoc').html();
 				$(".dz-message span").eq(tagIDName).text('#'+newTag);
@@ -76,13 +77,19 @@
 				return false;
 			}
 			
-			function changeDropzones(number, color0, color1, color2){
+			function changeDropzones(number, color0, color1, color2, checked){
 				localStorage["numberOfDropzones"] = number;
 				temp = [color0, color1, color2];
 				for(i = 0; i < 3; i++) {
 					if(!temp[i] == ''){
 						localStorage["color"+i] = temp[i];
 					}
+				}
+				if(checked == true){
+					
+					localStorage["inclusionCheck"] = true;
+				} else {
+					localStorage["inclusionCheck"] = false;
 				}
 				location.reload();
 			}

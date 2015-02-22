@@ -13,7 +13,9 @@
 				localStorage["oldSearch"]="";
 			if(typeof localStorage["numberOfDropzones"] == 'undefined')
 				localStorage["numberOfDropzones"] = 1;
-
+			if(typeof localStorage["inclusionCheck"] == 'undefined')
+				localStorage["inclusionCheck"] = false;
+				
 			for(i = 0; i < 3; i++) {
 				if(typeof localStorage["color"+i] == 'undefined')
 					localStorage["color"+i] = getRandomColor();
@@ -195,12 +197,21 @@
 									color: localStorage["color2"]
 								});
 							</script>
-
+								
+							</br>Dropzone inclusion: <label><input type="checkbox" id="inclusionCheck" />
+							<script>
+							if(localStorage["inclusionCheck"] == 'true')
+								document.getElementById('inclusionCheck').checked = true;
+							</script>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
-							<button type="button" onclick="changeDropzones(document.getElementById('dropzoneNumber').value, document.getElementById('color0').value, document.getElementById('color1').value, document.getElementById('color2').value)"  class="btn btn-primary" data-dismiss="modal">Save changes</button>
+							<button type="button" onclick="changeDropzones(document.getElementById('dropzoneNumber').value, 
+															document.getElementById('color0').value,
+															document.getElementById('color1').value, 
+															document.getElementById('color2').value,
+															document.getElementById('inclusionCheck').checked)"  class="btn btn-primary" data-dismiss="modal">Save changes</button>
 						</div>
 					</div>
 				</div>
@@ -244,11 +255,16 @@
 
 			document.getElementById("dropzone"+id).style.display='inline-block';
 			document.getElementById("text"+id).style.display='inline-block';
-
 			document.getElementById("dropzone"+id).style.fontSize='400%';
-			document.getElementById("dropzone"+id).style.width=100-5*id+"%";
-			document.getElementById("text"+id).style.width=100-5*id+"%";
-
+			
+			if(localStorage["inclusionCheck"] == 'true'){
+				document.getElementById("dropzone"+id).style.width=100-5*id+"%";
+				document.getElementById("text"+id).style.width=100-5*id+"%";
+			} else{
+				
+				document.getElementById("dropzone"+id).style.width=100+"%";
+				document.getElementById("text"+id).style.width=100+"%";
+			}
 			dropzoneArray[id] = new Dropzone(name, {
 				dictDefaultMessage: "#"+tag[id]
 			});
@@ -261,8 +277,10 @@
 				}
 				temp = getTags(id);
 				temp = removeDup(temp);
-				for(i = numberOfDropzones - 1; i >= 0; i--)
-					tag[id] += ", "+tag[i];
+				if(localStorage["inclusionCheck"] == 'true'){
+					for(i = numberOfDropzones - 1; i >= 0; i--)
+						tag[id] += ", "+tag[i];
+				}
 				tagArray = removeDup(tag[id].split(", "));
 				dropzoneArray[id].options.url = "upload/"+tagArray.toString()+","+temp + "`" + lat + " " + lng;
 			});

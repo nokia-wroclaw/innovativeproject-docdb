@@ -2,9 +2,11 @@ package model;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -160,7 +162,7 @@ public class FileHandler {
 			e.printStackTrace();
 		}
 		if (!photoGeolocation.equals(""))
-			tagList.add(photoGeolocation.split(", "));
+			tagList.addAll(Arrays.asList(photoGeolocation.split(", ")));
 
 	}
 

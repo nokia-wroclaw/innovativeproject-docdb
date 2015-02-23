@@ -48,7 +48,7 @@ public class ElasticSearchManager {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	public ArrayList<ArrayList<String>> search(Client client, String content, String index, String type,
 			String[] fieldNames, Boolean limit) {
 
@@ -92,7 +92,7 @@ public class ElasticSearchManager {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	
 	private ArrayList<ArrayList<String>> searchResult(SearchHit[] resultsArray) {
 		// two dimensional array that will contain all titles and paths
 		// to files that satisfied search conditions. In following form:

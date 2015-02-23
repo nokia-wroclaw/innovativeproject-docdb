@@ -7,8 +7,8 @@ $.fn.exists = function () {
 }
 $(document).ready(function(){
 	var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-	webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
-
+	//~ webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
+	webSocket = new WS("wss:\/\/localhost:9443\/WebSocket")
 
     var receiveEvent = function(event) {
         var data = JSON.parse(event.data)

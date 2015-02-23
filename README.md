@@ -1,20 +1,20 @@
-*DocDB*
+#DocDB
 =======================
 
-Web aplication that allows to store and index any popular form of documents like pdfs, Microsoft Office formats or zips.
+Web application that allows to store and index any popular form of documents like pdfs, Microsoft Office formats or zips.
 
-**The most useful libraries:**
+##The most useful libraries:##
 - Tika Apache parse documents and extracts metadata
 - ElasticSearch non-SQL DB that allows indexing and fast searching
 
-**Technologies used in project:**
+##Technologies used in project:##
 - Java
 - Play
 - JavaScript
 - Angular
 - Google Geolocation API
 
-**Features**
+##Features##
 - storing uploaded documents
 - real-time searching in DB
 - adding tags to dropzones
@@ -29,3 +29,6 @@ Web aplication that allows to store and index any popular form of documents like
 - map with location, where file was uploaded (or photo taken)
 - search limit set to 10 result with option see all result
 - file thumbnails
+
+###You can find our application here:###
+[DocDB](http://docdb.todr.me)

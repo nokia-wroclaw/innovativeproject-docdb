@@ -84,7 +84,7 @@ public class FileHandler {
 				Logger.info("Metadata saved");
 				return;
 			}
-			if (uploadedFileName.endsWith(".jpg")) {
+			if (uploadedFileName.endsWith(".jpg") || uploadedFileName.endsWith(".png")) {
 				handleJPG(tagSet, file);
 				imageLocationCoordinates = gextractor.latitudeExtractor(destFile);
 				
@@ -125,7 +125,7 @@ public class FileHandler {
 		}
 		ArrayList<String> parsedFile = fileParser.parseFile(destFile, uploadedFileName, "");
 
-		if (uploadedFileName.endsWith(".jpg")) {
+		if (uploadedFileName.endsWith(".jpg") || uploadedFileName.endsWith(".png")) {
 			handleJPG(tagSet, destFile);
 			imageLocationCoordinates = gextractor.latitudeExtractor(destFile);
 			System.out.println(imageLocationCoordinates);

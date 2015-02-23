@@ -98,6 +98,7 @@ public class FileParser {
 			data.add(metadata.get("Author"));
 		else
 			data.add("No_author");
+		
 		data.add(handler.toString()); // content of file
 		data.add(fileName);
 		data.add(size);

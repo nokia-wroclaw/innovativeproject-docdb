@@ -35,10 +35,10 @@ public class GeolocationExtractor {
 			// See whether it has GPS data
 			GpsDirectory gpsDirectory = metadata.getDirectory(GpsDirectory.class);
 			// Try to read out the location, making sure it's non-zero
-			
+
 			if (gpsDirectory != null) {
 				GeoLocation geoLocation = gpsDirectory.getGeoLocation();
-				if (!geoLocation.isZero()){
+				if (!geoLocation.isZero()) {
 					locationCoordinates = geoLocation.toString().split(", ");
 				} else
 					return null;
@@ -124,10 +124,10 @@ public class GeolocationExtractor {
 
 	public String handlePolishSigns(String location) {
 		// removing polish signs
-		location = Normalizer.normalize(location, Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", "");
+		location = Normalizer.normalize(location, Normalizer.Form.NFD);
+		String resultString = location.replaceAll("[^\\x00-\\x7F]", "");
 		// removing " sign
-		location = Normalizer.normalize(location, Normalizer.Form.NFD).replaceAll("[\"]", "");
-
-		return location;
+		resultString = Normalizer.normalize(location, Normalizer.Form.NFD).replaceAll("[\"]", "");
+		return resultString;
 	}
 }

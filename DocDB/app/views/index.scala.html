@@ -15,7 +15,7 @@
 				localStorage["numberOfDropzones"] = 1;
 			if(typeof localStorage["inclusionCheck"] == 'undefined')
 				localStorage["inclusionCheck"] = false;
-				
+
 			for(i = 0; i < 3; i++) {
 				if(typeof localStorage["color"+i] == 'undefined')
 					localStorage["color"+i] = getRandomColor();
@@ -84,6 +84,7 @@
 									</a>
 									<span ng-bind-html="result.context | unsafe" data-toggle="modal" data-target="#previewModal"></span>
 									<img ng-if="result.link.toLowerCase().endsWith('.jpg')||result.link.toLowerCase().endsWith('.png')||result.link.toLowerCase().endsWith('.gif')" src={{"Preview/"+result.link}} data-toggle="modal" data-target="#previewModal"></img>
+									<span ng-if="result.link.toLowerCase().endsWith('.zip')" data-toggle="modal" data-target="#previewModal" class="zipContent"></span>
 								</div>
 								<div class="panel-footer">
 									<span ng-repeat="tag in result.tags track by $index"><small class="label label-info" >#{{tag}}</small> </span>
@@ -197,7 +198,7 @@
 									color: localStorage["color2"]
 								});
 							</script>
-								
+
 							</br>Dropzone inclusion: <label><input type="checkbox" id="inclusionCheck" />
 							<script>
 							if(localStorage["inclusionCheck"] == 'true')
@@ -207,9 +208,9 @@
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
-							<button type="button" onclick="changeDropzones(document.getElementById('dropzoneNumber').value, 
+							<button type="button" onclick="changeDropzones(document.getElementById('dropzoneNumber').value,
 															document.getElementById('color0').value,
-															document.getElementById('color1').value, 
+															document.getElementById('color1').value,
 															document.getElementById('color2').value,
 															document.getElementById('inclusionCheck').checked)"  class="btn btn-primary" data-dismiss="modal">Save changes</button>
 						</div>
@@ -256,12 +257,12 @@
 			document.getElementById("dropzone"+id).style.display='inline-block';
 			document.getElementById("text"+id).style.display='inline-block';
 			document.getElementById("dropzone"+id).style.fontSize='400%';
-			
+
 			if(localStorage["inclusionCheck"] == 'true'){
 				document.getElementById("dropzone"+id).style.width=100-5*id+"%";
 				document.getElementById("text"+id).style.width=100-5*id+"%";
 			} else{
-				
+
 				document.getElementById("dropzone"+id).style.width=100+"%";
 				document.getElementById("text"+id).style.width=100+"%";
 			}
@@ -287,10 +288,10 @@
 				tagArray = removeDup(tag[id].split(", "));
 				dropzoneArray[id].options.url = "upload/"+tagArray.toString()+","+temp + "`" + lat + " " + lng;
 			});
-			
+
 			dropzoneArray[id].on("error", function(file, response) { //error handling
                 var node, i, ref, results;
-				var message = "Error occurred :(" 
+				var message = "Error occurred :("
 				file.previewElement.classList.add("dz-error");
 				ref = file.previewElement.querySelectorAll("[data-dz-errormessage]");
 				results = [];

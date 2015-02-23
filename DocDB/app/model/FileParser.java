@@ -42,10 +42,14 @@ public class FileParser {
 
 		try {
 			String fileName = "";
-			if (parentName.equals(""))
+			String path = "";
+			if (parentName.equals("")) {
+				path = fileToParse.getName();
 				fileName = fileToParse.getName();
-			else
-				fileName = parentName;
+			} else {
+				fileName = fileToParse.getName();
+				path = parentName;
+			}
 			System.out.println(fileName);
 			is = new BufferedInputStream(new FileInputStream(fileToParse));
 			Parser parser = new AutoDetectParser();
@@ -54,7 +58,7 @@ public class FileParser {
 			Metadata metadata = new Metadata(); // all metadata stored in file
 			parser.parse(is, handler, metadata); // do wersji 0.3
 			String size = fileToParse.length() / 1024 + "";
-			ArrayList<String> result = dataToArray(metadata, handler, fileName, size);
+			ArrayList<String> result = dataToArray(metadata, handler, fileName, path, size);
 
 			return result;
 
@@ -91,16 +95,17 @@ public class FileParser {
 	 *            size of given file in kb
 	 * @return Array with all interesting data for us
 	 */
-	public ArrayList<String> dataToArray(Metadata metadata, ContentHandler handler, String fileName, String size) {
+	public ArrayList<String> dataToArray(Metadata metadata, ContentHandler handler, String fileName, String path,
+			String size) {
 		ArrayList<String> data = new ArrayList<String>();
 		data.add(fileName);
 		if (metadata.get("Author") != null && metadata.get("Author").length() != 0)
 			data.add(metadata.get("Author"));
 		else
 			data.add("No_author");
-		
+
 		data.add(handler.toString()); // content of file
-		data.add(fileName);
+		data.add(path);
 		data.add(size);
 
 		return data;

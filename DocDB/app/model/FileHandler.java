@@ -160,7 +160,7 @@ public class FileHandler {
 			e.printStackTrace();
 		}
 		if (!photoGeolocation.equals(""))
-			tagList.add(photoGeolocation);
+			tagList.add(photoGeolocation.split(", "));
 
 	}
 

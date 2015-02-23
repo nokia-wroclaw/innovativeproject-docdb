@@ -1,5 +1,4 @@
 #DocDB
-=======================
 
 Web application that allows to store and index any popular form of documents like pdfs, Microsoft Office formats or zips.
 
@@ -28,7 +27,13 @@ Web application that allows to store and index any popular form of documents lik
 - previev of file
 - map with location, where file was uploaded (or photo taken)
 - search limit set to 10 result with option see all result
-- file thumbnails
+- files thumbnails
 
-###You can find our application here:###
+###You can also find our application here:###
 [DocDB](http://docdb.todr.me)
+
+###About us###
+Students in the faculty of Fundamental Problem of Technology at Wroc³aw University of Technology
+Adam Dyngosz [Dasiuss](https://github.com/Dasiuss)
+Seweryn Majkrzak [smajkrzak](https://github.com/smajkrzak)
+Mateusz Wierzbicki [willowish](https://github.com/willowish)

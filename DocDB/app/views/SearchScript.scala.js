@@ -28,6 +28,15 @@ $(document).ready(function(){
 			}else if(localStorage["gridView"]=="false"){
 				$(".gridable").removeClass("gridView").addClass("listView");//to list
 			}
+
+			$(".zipContent").each(function(){
+				var thisZip = $(this);
+				var link = thisZip.parents(".panel").attr("data-link");
+				$.get( "/Preview/"+link, function( data ) {
+					thisZip.html( data );
+				});
+			});
+
 			$("#resultDiv").slideDown();
 			rebindEventHandlers();
 			if($('#resultDiv').scope().results.length==9 && lastLimit=="false") $('#newSearch').slideDown();
@@ -65,6 +74,7 @@ $(document).ready(function(){
 	}
 
 	newSearch = function (){
+		$("#newSearch").slideUp(200);
 		searchRequest("true");
 	}
 

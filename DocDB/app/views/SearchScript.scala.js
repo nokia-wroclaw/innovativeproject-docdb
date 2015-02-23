@@ -20,9 +20,9 @@ $(document).ready(function(){
 			$('#resultDiv').scope().tags = eval(data.tagList);			//wyciągamy tagi
 			$("#resultDiv").scope().$apply();							//generujemy html z wyników
 			if(typeof localStorage["gridView"] == 'undefined'){			//ustawiamy widok odpowiedni dla użytkownika
-				localStorage["gridView"]="false";						//(domyślnie lista) tutaj zmieniać domyślny widok!!!!!!
-				$(".gridable").removeClass("gridView").addClass("listView");//to list
-			}else if(localStorage["gridView"]=="true"){
+				localStorage["gridView"]="true";						//(domyślnie lista) tutaj zmieniać domyślny widok!!!!!!
+			}
+			if(localStorage["gridView"]=="true"){
 				$(".gridable").removeClass("listView").addClass("gridView");//changing to grid
 				$(".panel-body.gridView").each(function(){$(this).height(kafelekHeight-$(this).next().height());});//ustawianie wysokości kafelków
 			}else if(localStorage["gridView"]=="false"){

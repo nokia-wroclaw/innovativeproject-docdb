@@ -1,4 +1,4 @@
-#DocDB
+﻿#DocDB
 
 Web application that allows to store and index any popular form of documents like pdfs, Microsoft Office formats or zips.
 
@@ -36,7 +36,7 @@ Web application that allows to store and index any popular form of documents lik
 [DocDB](http://docdb.todr.me)
 
 ###About us###
-Students in the faculty of Fundamental Problem of Technology at Wroc�aw University of Technology
+Students in the faculty of Fundamental Problem of Technology at Wrocław University of Technology
 - Adam Dyngosz [Dasiuss](https://github.com/Dasiuss)
 - Seweryn Majkrzak [smajkrzak](https://github.com/smajkrzak)
 - Mateusz Wierzbicki [willowish](https://github.com/willowish)

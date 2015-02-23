@@ -53,7 +53,7 @@ public class Application extends Controller {
 			File uploadedLink = saveLinkToFile(link, filename);
 			Logger.info("link received. tags are:\"" + tags + "\". Handling...");
 			Set<String> tagSet = new HashSet<String>();
-			tagSet.addAll(Arrays.asList(tags.split(",")));
+			tagSet.addAll(Arrays.asList(tags.replaceAll(" ", "").split(",")));
 			fileHandler.handleFile(uploadedLink, tagSet);
 
 			response().setHeader("Access-Control-Allow-Origin", "*");
@@ -123,6 +123,8 @@ public class Application extends Controller {
 			}
 			response().setContentType("text/html");
 			return ok(enteries);
+		} else if (path.endsWith(".flv") || path.endsWith(".m4v") || path.endsWith(".avi")) {
+			return ok("cannot read");
 		}
 		if (file.exists()) {
 

@@ -25,7 +25,7 @@ $('#previewModal').on('show.bs.modal', function (event) {
 	myLatlng = new google.maps.LatLng(panel.attr("data-lat"),panel.attr("data-lng"));
 	console.log(panel.attr("data-lat"));
 	console.log(panel.attr("data-lng"));
-	
+
 	var mapOptions = {
 	  zoom: 10,
 	  center: myLatlng
@@ -42,6 +42,9 @@ $('#previewModal').on('show.bs.modal', function (event) {
 .on("shown.bs.modal", function (event) {
 		google.maps.event.trigger(map, 'resize');
 		map.setCenter(myLatlng);
+})
+.on("hide.bs.modal",function(event){
+	$(this).find('#previewModalBody object').remove();
 });
 
 });

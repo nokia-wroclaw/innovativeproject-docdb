@@ -15,7 +15,7 @@ Web application that allows to store and index any popular form of documents lik
 
 ##Features##
 - storing uploaded documents
-- real-time searching in DB
+- real-time searching in DB by contents of files
 - adding tags to dropzones
 - editing number and colors of dropzones
 - dropzone inclusion
@@ -28,12 +28,15 @@ Web application that allows to store and index any popular form of documents lik
 - map with location, where file was uploaded (or photo taken)
 - search limit set to 10 result with option see all result
 - files thumbnails
+- sending search results by link
+- opening file in browser
+- downloading desired file
 
 ###You can also find our application here:###
 [DocDB](http://docdb.todr.me)
 
 ###About us###
 Students in the faculty of Fundamental Problem of Technology at Wroc³aw University of Technology
-Adam Dyngosz [Dasiuss](https://github.com/Dasiuss)
-Seweryn Majkrzak [smajkrzak](https://github.com/smajkrzak)
-Mateusz Wierzbicki [willowish](https://github.com/willowish)
+- Adam Dyngosz [Dasiuss](https://github.com/Dasiuss)
+- Seweryn Majkrzak [smajkrzak](https://github.com/smajkrzak)
+- Mateusz Wierzbicki [willowish](https://github.com/willowish)

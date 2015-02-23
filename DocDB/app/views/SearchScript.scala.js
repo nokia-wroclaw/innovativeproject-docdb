@@ -74,6 +74,7 @@ $(document).ready(function(){
 	}
 
 	newSearch = function (){
+		$("#newSearch").slideUp(200);
 		searchRequest("true");
 	}
 

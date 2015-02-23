@@ -46,6 +46,7 @@ public class FileParser {
 				fileName = fileToParse.getName();
 			else
 				fileName = parentName;
+			System.out.println(fileName);
 			is = new BufferedInputStream(new FileInputStream(fileToParse));
 			Parser parser = new AutoDetectParser();
 			// it keeps content of document
@@ -55,7 +56,6 @@ public class FileParser {
 			String size = fileToParse.length() / 1024 + "";
 			ArrayList<String> result = dataToArray(metadata, handler, fileName, size);
 
-			
 			return result;
 
 		} catch (IOException e) {
@@ -93,11 +93,7 @@ public class FileParser {
 	 */
 	public ArrayList<String> dataToArray(Metadata metadata, ContentHandler handler, String fileName, String size) {
 		ArrayList<String> data = new ArrayList<String>();
-		if (metadata.get("title") != null && metadata.get("title").length() != 0)
-			data.add(metadata.get("title"));
-		else
-			data.add(fileName);
-
+		data.add(fileName);
 		if (metadata.get("Author") != null && metadata.get("Author").length() != 0)
 			data.add(metadata.get("Author"));
 		else

@@ -27,7 +27,7 @@ $('#previewModal').on('show.bs.modal', function (event) {
 	console.log(panel.attr("data-lng"));
 	
 	var mapOptions = {
-	  zoom: 9,
+	  zoom: 10,
 	  center: myLatlng
 	}
 	map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);

@@ -7,8 +7,8 @@ $.fn.exists = function () {
 }
 $(document).ready(function(){
 	var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-	//~ webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
-	webSocket = new WS("wss:\/\/docdb.todr.me\/WebSocket")
+	//webSocket = new WS("@routes.Application.WebSocket().webSocketURL(request)")
+	webSocket = new WS("wss:\/\/docdb.todr.me\/WebSocket") //comment this for localhost tests, and uncomment line above
 
     var receiveEvent = function(event) {
         var data = JSON.parse(event.data)
@@ -29,7 +29,7 @@ $(document).ready(function(){
 				$(".gridable").removeClass("gridView").addClass("listView");//to list
 			}
 
-			$(".zipContent").each(function(){
+			$(".zipContent").each(function(){//for printing all files in zip
 				var thisZip = $(this);
 				var link = thisZip.parents(".panel").attr("data-link");
 				$.get( "/Preview/"+link, function( data ) {
@@ -80,17 +80,6 @@ $(document).ready(function(){
 
 	$("h2").css("cursor","pointer");
 
-	$("#content1").prev("h2").click(function(){
-		$("#content1").slideToggle(300);
-	});
-	$("#content2").prev("h2").click(function(){
-		$("#content2").slideToggle(300);
-	});
-	$("#content3").prev("h2").click(function(){
-		$("#content3").slideToggle(300);
-	});
-
-
 	$("#linkUpload").keyup(function(e) {
 		switch(e.which) {
 			case 13: // enter
@@ -127,12 +116,14 @@ function rebindEventHandlers(){
 
 function searchFromHash(){
 	var hash = window.location.hash;
-	if(hash.indexOf("/Search/")==-1) return;
+	if(hash.indexOf("/Search/")==-1) 
+		return;
 
 	var searchText = hash.substring(9).replace("%23","#").replace("%20"," ");
-	if($("#search").val() == searchText) return;
+	if($("#search").val() == searchText) 
+		return;
 	$("#search").val(searchText);
-	searchRequest("false");
+	searchRequest("false"); //search with limit to 9
 
 }
 

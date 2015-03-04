@@ -171,7 +171,7 @@
 						});
 						</script>
 						<div class="modal-body">
-							Number of dropzones:
+							Choose Number of dropzones:
 							<select name="selectDrop" id="dropzoneNumber" onchange="" size="1">
 								<option value="1">One</option>
 								<option value="2">Two</option>
@@ -252,19 +252,20 @@
 
 		function defineDropzone(name, id){
 			document.getElementById("dropzone"+id).style.backgroundColor = $("#color"+id).spectrum("get").toHexString();
-
 			document.getElementById("dropzone"+id).style.display='inline-block';
 			document.getElementById("text"+id).style.display='inline-block';
 			document.getElementById("dropzone"+id).style.fontSize='400%';
-
+			
+			//when inclusion is checked, We need to change 
+			//way of displaying dropzones
 			if(localStorage["inclusionCheck"] == 'true'){
 				document.getElementById("dropzone"+id).style.width=100-5*id+"%";
 				document.getElementById("text"+id).style.width=100-5*id+"%";
-			} else{
-
+			} else{ // if not, then do it regular way
 				document.getElementById("dropzone"+id).style.width=100+"%";
 				document.getElementById("text"+id).style.width=100+"%";
 			}
+			//creating new dropzones
 			dropzoneArray[id] = new Dropzone(name, {
 				dictDefaultMessage: "#"+tag[id],
 			});

@@ -54,30 +54,26 @@
 				sendLink(link);
 				return false;
 			}
-
-			//funtion to flat array of arrays
-			var flatten = function (array){
-			  var merged = [];
-			  merged = merged.concat.apply(merged, array);
-			  return merged;
-			}
+			
 			function getTags(index){
 				var temp = $('#geoLoc').html();				
 				temp = temp.replace("# ","").replace("#","").replace(" ,", ",").replace(", ", ",");
-				
 				var arr = temp.split(", ");
 				arr = removeDup(arr);
 
 				return arr;
 			}
 
-			function isPic(type){
-				if(type == "image/*")
+			function isPic(fileType){
+				type = fileType.split("/");
+				if(type[0] == "image")
 					return true;
-				return false;
+				else
+					return false;
 			}
 			
 			function changeDropzones(number, color0, color1, color2, checked){
+				//changing color part
 				localStorage["numberOfDropzones"] = number;
 				temp = [color0, color1, color2];
 				for(i = 0; i < 3; i++) {
@@ -85,13 +81,13 @@
 						localStorage["color"+i] = temp[i];
 					}
 				}
+				//inclusion part
 				if(checked == true){
-					
 					localStorage["inclusionCheck"] = true;
 				} else {
 					localStorage["inclusionCheck"] = false;
 				}
-				location.reload();
+				location.reload(); // we need to reload, to apply changes
 			}
 			
 			function getRandomColor() {

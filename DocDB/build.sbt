@@ -18,4 +18,6 @@ libraryDependencies += "junit" % "junit" % "4.11"
 
 libraryDependencies += "net.lingala.zip4j" % "zip4j" % "1.2.3"
 
+libraryDependencies += "com.h2database" % "h2" % "1.4.186"
+
 play.Project.playJavaSettings

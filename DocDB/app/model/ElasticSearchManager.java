@@ -74,21 +74,20 @@ public class ElasticSearchManager {
 		if (n > 0) {
 			return searchResult(resultsArray);
 		} else {
-			System.out.println("Prefix search");
-			// if normal search didn't found anything then proceed prefix search
-			MultiMatchQueryBuilder prefixQ = QueryBuilders.multiMatchQuery(content, fieldNames).type(
-					MatchQueryBuilder.Type.PHRASE_PREFIX);
-			response = client.prepareSearch(index).setTypes(type).setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-					.setQuery(prefixQ).setSize(resultSize).addHighlightedField(content) // Query
-					.execute().actionGet();
-			resultsArray = response.getHits().getHits();
-			n = resultsArray.length;
-			if (n > 0) {
-				return searchResult(resultsArray);
-			} else {
-				// if search is empty then return null
-				return null;
+			if(content.length() > 2){
+				System.out.println("Prefix search");
+				// if normal search didn't found anything then proceed prefix search
+				MultiMatchQueryBuilder prefixQ = QueryBuilders.multiMatchQuery(content, fieldNames).type(
+						MatchQueryBuilder.Type.PHRASE_PREFIX);
+				response = client.prepareSearch(index).setTypes(type).setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+						.setQuery(prefixQ).setSize(resultSize).addHighlightedField(content) // Query
+						.execute().actionGet();
+				resultsArray = response.getHits().getHits();
+				n = resultsArray.length;
+				if (n > 0) //if prefix search found sth
+					return searchResult(resultsArray);
 			}
+			return null;
 		}
 	}
 

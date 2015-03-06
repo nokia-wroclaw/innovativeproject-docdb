@@ -64,49 +64,34 @@ public class ClientWebSocket extends UntypedActor {
 			// get request data
 			String pattern = event.get("pattern").asText();
 			Boolean limit = event.get("limit").asText().equals("true");
-			List<String> tagList = ctxEx.extractTags(pattern);
-			String searchPattern = ctxEx.stripTags(pattern);
+			// TODO: get tags from H2
+			List<String> tagList = null;
+			String searchPattern = null;
 
 			Logger.info("searching for:" + pattern + " with" + (limit ? "out" : "") + " limit");
 			Logger.info("search:" + searchPattern + "\ntags:" + tagList.toString());
 
 			ArrayList<ArrayList<String>> searchResult = search(searchPattern, limit);
-
-			if (!tagList.isEmpty()) searchResult = filterOutByTags(searchResult, tagList);
-
+			//TODO: 
+				// Filter by tags
+				// add remaining data to result from H2(geoLoc, tags, author, date, name etc)
 			if (searchResult == null) {
 				sendEmptyResults();
 			} else {
 				Logger.info(String.valueOf(searchResult.size()) + " found");
 
 				ObjectNode message = Json.newObject(); // create message
-
 				ArrayNode results = message.putArray("result"); // results array in message
 				Set<String> tagsSet = new HashSet<>();
 
 				for (ArrayList<String> result : searchResult) {
 					ObjectNode innerMsg = Json.newObject(); // inner message (file info)
-					innerMsg.put("file", result.get(0));
-					innerMsg.put("link", result.get(1));
-					innerMsg.put("size", result.get(2));
-					
-					ArrayNode tags = innerMsg.putArray("tags"); // tags array in innerMsg (for this file)
-					//odejmujemy 4 ze wzgledu na to ze na poczatku sa 4 elementy ktore nie sa tagami
-					int tagcount = result.size() - 4;
-					for (int tagnr = 0; tagnr < tagcount - 2; tagnr++) {
-						tags.add(result.get(4 + tagnr));
-						tagsSet.add("\"" + result.get(4 + tagnr) + "\"");
-					}
-					String tempCont = ctxEx.getContext(result.get(3), searchPattern);
-					innerMsg.put("context", tempCont);
-					innerMsg.put("lat", result.get(result.size()-2));
-					innerMsg.put("lng", result.get(result.size()-1));
+					innerMsg.put("content", result.get(0));
+					innerMsg.put("id", result.get(1));		
 					results.add(innerMsg);
 				}
-				int temp = searchResult.size();
-				String temp2 = "" + temp;
-				message.put("resultsCount", temp2);
-				message.put("tagList", tagsSet.toString());
+				// 'content' is already highlighted text by searched phrase
+				message.put("resultsCount", "" + searchResult.size());
 				socketOut.write(message);
 			}
 		}

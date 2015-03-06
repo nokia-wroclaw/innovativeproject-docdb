@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.elasticsearch.client.Client;
 
 import play.Logger;
 import play.libs.F.Callback;
@@ -139,28 +140,9 @@ public class ClientWebSocket extends UntypedActor {
 		socketOut.write(message);
 	}
 
-	private ArrayList<ArrayList<String>> filterOutByTags(ArrayList<ArrayList<String>> searchResult, List<String> tags) {
-		ArrayList<ArrayList<String>> resultList = new ArrayList<>();
-
-		for (ArrayList<String> result : searchResult) {
-			//odejmujemy 4 ze wzgledu na to ze na poczatku sa 4 elementy ktore nie sa tagami
-			int tagcount = result.size() - 4;
-			for (int tagnr = 0; tagnr < tagcount - 2; tagnr++) {
-				for (String tag : tags) {
-					if (result.get(tagnr + 4).equals(tag)) {
-						resultList.add(result);
-						tagnr = tagcount;// break the second loop
-						break;
-					}
-				}
-			}
-		}
-		return resultList;
-	}
-
-	private ArrayList<ArrayList<String>> search(String pattern, Boolean limit) {
-		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, pattern,
-				"documents", "file", limit);
+	private ArrayList<ArrayList<String>> search(String phrase, Boolean limit) {
+		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, phrase,
+				"documents", "file", "content", limit);
 		return searchResult;
 	}
 

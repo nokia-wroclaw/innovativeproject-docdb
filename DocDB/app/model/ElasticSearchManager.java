@@ -3,12 +3,8 @@ package model;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -16,14 +12,8 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.search.MultiMatchQuery.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
-
-import ucar.units.Prefix;
-
-import com.google.common.collect.ObjectArrays;
 
 public class ElasticSearchManager {
 
@@ -36,95 +26,78 @@ public class ElasticSearchManager {
 				client.prepareIndex(index, type).setSource(json).execute().actionGet();
 			else
 				System.out.println("Problem with insert()");
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public ArrayList<ArrayList<String>> search(Client client, String content, String index, String type, Boolean limit) {
-		String[] fieldNames = { "title", "content", "author", "size", "tags" };
-		return search(client, content, index, type, fieldNames, limit);
-
-	}
-
-	
 	public ArrayList<ArrayList<String>> search(Client client, String content, String index, String type,
-			String[] fieldNames, Boolean limit) {
+			String fieldName, Boolean limit) {
 
-		// creating query to find out if any of files on server contain search
-		// value
+		int searchLimit = limit ? 9 : Integer.MAX_VALUE;
 
-		// QueryBuilder qb = QueryBuilders.matchQuery("content", content);
+		MatchQueryBuilder query = new MatchQueryBuilder(content, fieldName);
+		SearchResponse response = performSearch(client, index, type, searchLimit, query);
 
-		MultiMatchQueryBuilder qb3 = new MultiMatchQueryBuilder(content, fieldNames);
-		int resultSize = 9;
-		if (limit == true)
-			resultSize = Integer.MAX_VALUE;
-
-		// proceed search with query created above
-		SearchResponse response = client.prepareSearch(index).setTypes(type)
-				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH).setQuery(qb3).setSize(resultSize)
-				.addHighlightedField(content) // Query
-				.execute().actionGet();
-
-		// getting search result in form of array
+		// getting search result in form of arrayList
 		SearchHit[] resultsArray = response.getHits().getHits();
 		int n = resultsArray.length;
 		if (n > 0) {
 			return searchResult(resultsArray);
 		} else {
-			if(content.length() > 2){
+			if (content.length() > 2) {
 				System.out.println("Prefix search");
-				// if normal search didn't found anything then proceed prefix search
-				MultiMatchQueryBuilder prefixQ = QueryBuilders.multiMatchQuery(content, fieldNames).type(
+				// normal search didn't found anything, proceed prefix search
+				MatchQueryBuilder prefixQery = QueryBuilders.matchQuery(content, fieldName).type(
 						MatchQueryBuilder.Type.PHRASE_PREFIX);
-				response = client.prepareSearch(index).setTypes(type).setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-						.setQuery(prefixQ).setSize(resultSize).addHighlightedField(content) // Query
-						.execute().actionGet();
-				resultsArray = response.getHits().getHits();
+
+				SearchResponse prefixResponse = performSearch(client, index, type, searchLimit, prefixQery);
+				resultsArray = prefixResponse.getHits().getHits();
 				n = resultsArray.length;
-				if (n > 0) //if prefix search found sth
+				if (n > 0) // if prefix search found sth
 					return searchResult(resultsArray);
 			}
 			return null;
 		}
 	}
 
-	
+	private SearchResponse performSearch(Client client, String index, String type, int searchLimit,
+			MatchQueryBuilder query) {
+		// @formatter:off
+		SearchResponse response = client.prepareSearch(index)
+				.setTypes(type)
+				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+				.setQuery(query)
+				.setFrom(0)
+				.setSize(searchLimit)
+				.setExplain(true)
+				.setHighlighterTagsSchema("default")
+				.addHighlightedField("content", 80, 1)
+				.execute().actionGet();
+		// @formatter:on
+		return response;
+	}
+
 	private ArrayList<ArrayList<String>> searchResult(SearchHit[] resultsArray) {
-		// two dimensional array that will contain all titles and paths
-		// to files that satisfied search conditions. In following form:
-		// resultArray[i][0] = title; resultArray[i][1] = path
 
 		ArrayList<ArrayList<String>> resultArray = new ArrayList<ArrayList<String>>();
 
 		for (SearchHit hit : resultsArray) {
-			Map<String, Object> result = hit.getSource();
-			ArrayList<String> temp = new ArrayList<String>();
-			temp.add((String) result.get("title"));
-			temp.add((String) result.get("path"));
-			temp.add((String) result.get("size"));
-			temp.add((String) result.get("content"));
-			temp.addAll((ArrayList<String>) result.get("tags"));
-			temp.addAll((ArrayList<String>) (result.get("locationCoordinates")));
-			resultArray.add(temp);
+			ArrayList<String> actualResult = new ArrayList<String>();
+			// instead of returning content, we return already highlighted text
+			actualResult.add((hit.getHighlightFields().get("content").getFragments()[0]).toString());
+			actualResult.add((String) hit.getId());
+			resultArray.add(actualResult);
 		}
 
 		return resultArray;
 	}
 
-	public XContentBuilder putJsonDocument(ArrayList<String> parsedFile, Set<String> tagList,
-			String[] locationCoordinates) {
-		if (parsedFile.isEmpty() == false) {
+	public XContentBuilder putJsonDocument(String content) {
+		if (!content.isEmpty()) {
 			XContentBuilder builder = null;
 			try {
-				Date postDate = new Date();
-				builder = jsonBuilder().startObject().field("title", parsedFile.get(0))
-						.field("author", parsedFile.get(1)).field("content", parsedFile.get(2))
-						.field("path", parsedFile.get(3)).field("size", parsedFile.get(4))
-						.field("MD5", parsedFile.get(5)).field("postDate", postDate).field("tags", tagList)
-						.field("locationCoordinates", locationCoordinates).endObject();
+				builder = jsonBuilder().startObject().field("content", content).endObject();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -47,12 +47,8 @@ public class ZipHandler {
 	}
 
 	void removeUnpackedZip(String destination) {
-		File dir = new File(destination);
 		try {
-			List<File> files = (List<File>) FileUtils.listFiles(dir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE);
-			for (File file : files) {
-				file.delete();
-			}
+			FileUtils.cleanDirectory(new File(destination));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

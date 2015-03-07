@@ -33,14 +33,12 @@ public class ClientWebSocket extends UntypedActor {
 		this.elasticServer = elasticServer;
 		ctxEx = ContextExtractor.getInstance();
 		socketIn.onMessage(new Callback<JsonNode>() { // msg z socketu
-			@Override
 			public void invoke(JsonNode event) {
 				handleEvent(event);
 			}
 		});
 
 		socketIn.onClose(new Callback0() { // socket sie zamkna
-			@Override
 			public void invoke() {
 				// stop actor
 				getContext().stop(getSelf());
@@ -82,7 +80,7 @@ public class ClientWebSocket extends UntypedActor {
 
 				ObjectNode message = Json.newObject(); // create message
 				ArrayNode results = message.putArray("result"); // results array in message
-				Set<String> tagsSet = new HashSet<>();
+				Set<String> tagsSet = new HashSet<String>();
 
 				for (ArrayList<String> result : searchResult) {
 					ObjectNode innerMsg = Json.newObject(); // inner message (file info)

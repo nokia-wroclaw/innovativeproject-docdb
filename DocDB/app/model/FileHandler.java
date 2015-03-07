@@ -68,7 +68,10 @@ public class FileHandler {
 		String newFileName = dirPath + uploadedFileName;
 		File destFile = new File(newFileName);
 		String[] imageLocationCoordinates = null;
-		 
+		/*
+		 * pobieram geolokalizacje
+		 * sprawdzam czy plik istnieje
+		 * */
 		GeolocationExtractor gextractor = new GeolocationExtractor();
 		if (fileExists(newFileCheckSum)) {
 			// file exists with the same name:
@@ -78,26 +81,8 @@ public class FileHandler {
 			}
 			// file exist with different name:
 			newFileName = dirPath + getExistingFileName(newFileCheckSum);
-			ArrayList<String> parsedFileData = fileParser.parseFile(new File(newFileName), uploadedFileName, "");
-			if (uploadedFileName.endsWith(".zip")) {
-				handleZip(tagSet, newFileCheckSum, uploadedFileName, locationCoordinates);
-				Logger.info("Metadata saved");
-				return;
-			}
-			if (uploadedFileName.endsWith(".jpg") || uploadedFileName.endsWith(".png")) {
-				handleJPG(tagSet, file);
-				imageLocationCoordinates = gextractor.latitudeExtractor(destFile);
-				
-			}
-			
-			if (parsedFileData != null) {
-				tagSet.addAll(getFileType(uploadedFileName));
-				if (imageLocationCoordinates != null)
-					locationCoordinates = imageLocationCoordinates;
-				insertToElastic(tagSet, newFileCheckSum, parsedFileData, locationCoordinates);
-				Logger.info("Metadata saved");
-				return;
-			}
+			handleFileUpload(uploadedFileName, tagSet, locationCoordinates, newFileCheckSum, destFile,
+					imageLocationCoordinates, gextractor);
 
 		}
 
@@ -112,12 +97,18 @@ public class FileHandler {
 
 		try {
 			Files.move(file, destFile);
-			Logger.info("file saved");
+			Logger.info("File saved");
 		} catch (IOException e) {
-			Logger.info("file save failed");
+			Logger.info("File save failed");
 			e.printStackTrace();
 		}
 
+		handleFileUpload(uploadedFileName, tagSet, locationCoordinates, newFileCheckSum, destFile,
+				imageLocationCoordinates, gextractor);
+	}
+
+	private void handleFileUpload(String uploadedFileName, Set<String> tagSet, String[] locationCoordinates,
+			String newFileCheckSum, File destFile, String[] imageLocationCoordinates, GeolocationExtractor gextractor) {
 		if (uploadedFileName.endsWith(".zip")) {
 			handleZip(tagSet, newFileCheckSum, uploadedFileName, locationCoordinates);
 			Logger.info("metadata saved");
@@ -134,7 +125,7 @@ public class FileHandler {
 			tagSet.addAll(getFileType(uploadedFileName));
 			if (imageLocationCoordinates != null)
 				locationCoordinates = imageLocationCoordinates;
-			insertToElastic(tagSet, newFileCheckSum, parsedFile, locationCoordinates);
+			insertToDatabase(tagSet, newFileCheckSum, parsedFile, locationCoordinates);
 			Logger.info("metadata saved");
 		}
 	}
@@ -147,7 +138,7 @@ public class FileHandler {
 			tagTemp.add("zip");
 			tagTemp.addAll(tagList);
 			ArrayList<String> parsedFile = fileParser.parseFile(new File(curFileName), curFileName, newFileName);
-			insertToElastic(tagTemp, newFileCheckSum, parsedFile, locationCoordinates);
+			insertToDatabase(tagTemp, newFileCheckSum, parsedFile, locationCoordinates);
 		}
 		zipHandler.removeUnpackedZip(dirPath + "zip/");
 
@@ -173,12 +164,15 @@ public class FileHandler {
 	 * @param locationCoordinates
 	 *            TODO
 	 */
-	private void insertToElastic(Set<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile,
+	private void insertToDatabase(Set<String> tagList, String newFileCheckSum, ArrayList<String> parsedFile,
 			String[] locationCoordinates) {
 		
 		parsedFile.add(newFileCheckSum);
-		XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile, tagList, locationCoordinates);
+		//elastic need only content of file
+		XContentBuilder json = elasticServer.elasticSearch.putJsonDocument(parsedFile.get(2));
 		elasticServer.elasticSearch.insert(elasticServer.client, json, "documents", "file");
+		
+		//TODO: Add to DB rest of data
 	}
 
 	/**
@@ -213,14 +207,8 @@ public class FileHandler {
 	}
 
 	private String getExistingFileName(String MD5) {
-		String[] fields = { "MD5" };
-		if (elasticServer.client.admin().indices().prepareExists("documents").execute().actionGet().isExists() == false)
-			return null;
-		ArrayList<ArrayList<String>> searchResult = elasticServer.elasticSearch.search(elasticServer.client, MD5,
-				"documents", "file", fields, true);
-		if (searchResult == null)
-			return null;
-		return searchResult.get(0).get(1);
+		//TODO: check in DB if file don't exist
+		return null;
 	}
 
 }
